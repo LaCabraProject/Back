@@ -1,0 +1,15 @@
+@base = http://localhost:8080/api/article
+@id = 0
+
+PUT {{base}}
+Content-Type: application/json
+
+{
+  "id": {{id}}
+}
+
+###
+
+GET {{base}}/{{id}}
+Accept: application/json
+
