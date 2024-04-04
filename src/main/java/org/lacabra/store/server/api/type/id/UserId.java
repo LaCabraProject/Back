@@ -10,9 +10,9 @@ public final class UserId {
     public final static Pattern regex;
 
     static {
-        String invalid[] = new String[]{};
+        String invalid[] = {"all"};
 
-        String[] chars = new String[]{"a-zA-Z0-9", // ascii
+        String[] chars = {"a-zA-Z0-9", // ascii
                 "\\u00c0-\\u00d6\\u00d8-\\u00f6\\u0080-\\u00ff\\u0100-\\u017f\\u0180-\\u024f\\u1e00-\\u1eff", // latin
                 "\\u0370-\\u03ff\\u1f00-\\u1fff", // greek
                 "\\u0400-\\u04ff\\u0500\\u052f" // cyrillic

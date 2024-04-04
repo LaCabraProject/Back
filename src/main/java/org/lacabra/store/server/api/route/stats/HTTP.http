@@ -6,12 +6,12 @@ Accept: {{type}}
 
 ###
 
-GET {{base}}/articles
+GET {{base}}/items
 Accept: {{type}}
 
 ###
 
-GET {{base}}/articles/total
+GET {{base}}/items/total
 Accept: {{type}}
 
 ###

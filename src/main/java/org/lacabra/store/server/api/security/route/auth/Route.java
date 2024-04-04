@@ -1,4 +1,4 @@
-package org.lacabra.store.server.api.security.resource;
+package org.lacabra.store.server.api.security.route.auth;
 
 import org.lacabra.store.server.api.security.service.token.AuthTokenUtils;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
@@ -20,8 +20,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 @RequestScoped
-@Path("auth")
-public class AuthResource {
+@Path("/auth")
+public final class Route {
 
     @Context
     private SecurityContext securityContext;
@@ -36,7 +36,7 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PermitAll
-    public Response authenticate(Credentials creds) {
+    public Response POST(Credentials creds) {
         User user = validator.validate(creds.id(), creds.passwd());
         return Response.ok(new AuthToken(tokenUtils.issue(user.id(), user.authorities()))).build();
     }

@@ -1,4 +1,4 @@
-@base = http://localhost:8080/api/article
+@base = http://localhost:8080/api/item
 @id = 0
 
 PUT {{base}}

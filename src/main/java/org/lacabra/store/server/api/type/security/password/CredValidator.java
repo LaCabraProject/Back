@@ -6,10 +6,13 @@ import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jpa.dao.UserDAO;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import java.util.Optional;
 
-public final class CredValidator {
-
+@ApplicationScoped
+public class CredValidator {
+    @Inject
     private PasswordHasher hasher;
 
     public User validate(Credentials creds) {

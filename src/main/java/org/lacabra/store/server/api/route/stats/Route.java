@@ -1,6 +1,6 @@
 package org.lacabra.store.server.api.route.stats;
 
-import org.lacabra.store.server.api.type.stats.ArticleStats;
+import org.lacabra.store.server.api.type.stats.ItemStats;
 import org.lacabra.store.server.api.type.stats.Stats;
 import org.lacabra.store.server.api.type.stats.UserStats;
 
@@ -14,21 +14,21 @@ import javax.ws.rs.core.MediaType;
 public final class Route {
     @GET
     public static Stats GET() {
-        return new Stats(Articles.GET(), Users.GET());
+        return new Stats(Items.GET(), Users.GET());
     }
 
-    @Path("/stats/articles")
-    public final static class Articles {
+    @Path("/stats/items")
+    public final static class Items {
         @GET
-        public static ArticleStats GET() {
-            return new ArticleStats();
+        public static ItemStats GET() {
+            return new ItemStats();
         }
 
-        @Path("/stats/articles/total")
+        @Path("/stats/items/total")
         public final static class Total {
             @GET
             public static long GET() {
-                return Articles.GET().total();
+                return Items.GET().total();
             }
         }
     }
