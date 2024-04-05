@@ -5,8 +5,8 @@ import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.configuration.Configurable;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.time.ZonedDateTime;
 import java.util.Set;
 import java.util.UUID;

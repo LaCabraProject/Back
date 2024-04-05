@@ -6,12 +6,12 @@ import io.jsonwebtoken.security.Keys;
 import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.security.token.AuthTokenSettings;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import java.util.Date;
 
 @Dependent
-public final class AuthTokenIssuer {
+public class AuthTokenIssuer {
     @Inject
     private AuthTokenSettings settings;
 

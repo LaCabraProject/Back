@@ -1,6 +1,6 @@
 package org.lacabra.store.server.api.type.security.exception;
 
-public final class AccessDeniedException extends RuntimeException {
+public class AccessDeniedException extends RuntimeException {
 
     public AccessDeniedException(String message) {
         super(message);

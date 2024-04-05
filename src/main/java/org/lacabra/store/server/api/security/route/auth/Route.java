@@ -1,5 +1,6 @@
 package org.lacabra.store.server.api.security.route.auth;
 
+import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.server.api.security.service.token.AuthTokenUtils;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
 import org.lacabra.store.server.api.type.security.password.CredValidator;
@@ -7,9 +8,8 @@ import org.lacabra.store.server.api.type.security.token.AuthToken;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 
-import javax.annotation.security.PermitAll;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -21,8 +21,7 @@ import javax.ws.rs.core.SecurityContext;
 
 @RequestScoped
 @Path("/auth")
-public final class Route {
-
+public class Route {
     @Context
     private SecurityContext securityContext;
 

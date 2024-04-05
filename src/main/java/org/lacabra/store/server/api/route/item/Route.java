@@ -2,7 +2,7 @@ package org.lacabra.store.server.api.route.item;
 
 import org.lacabra.store.server.jpa.dto.ItemDTO;
 
-import javax.enterprise.context.RequestScoped;
+import org.glassfish.jersey.process.internal.RequestScoped;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

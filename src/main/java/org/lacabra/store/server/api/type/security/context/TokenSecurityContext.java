@@ -7,10 +7,10 @@ import org.lacabra.store.server.api.type.user.Authority;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
-public final class TokenSecurityContext implements SecurityContext {
+public class TokenSecurityContext implements SecurityContext {
     private final boolean secure;
-    private AuthedUserDetails user;
-    private AuthTokenDetails token;
+    private final AuthedUserDetails user;
+    private final AuthTokenDetails token;
 
     public TokenSecurityContext(AuthedUserDetails user, AuthTokenDetails token, boolean secure) {
         this.user = user;

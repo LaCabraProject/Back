@@ -2,11 +2,11 @@ package org.lacabra.store.server.api.type.security.token;
 
 import org.lacabra.store.server.configuration.Configurable;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 @Dependent
-public final class AuthTokenSettings {
+public class AuthTokenSettings {
     @Inject
     @Configurable("authentication.jwt.secret")
     private String secret;

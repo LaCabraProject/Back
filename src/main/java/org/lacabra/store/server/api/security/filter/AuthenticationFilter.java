@@ -7,9 +7,9 @@ import org.lacabra.store.server.api.type.security.user.AuthedUserDetails;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jpa.dao.UserDAO;
 
-import javax.annotation.Priority;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;

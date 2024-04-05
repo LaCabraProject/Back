@@ -3,7 +3,10 @@ package org.lacabra.store.server.jpa.dao;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.user.User;
 
-public final class ItemDAO extends DAO<User> {
+import jakarta.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class ItemDAO extends DAO<User> {
     private static ItemDAO instance;
 
     static {

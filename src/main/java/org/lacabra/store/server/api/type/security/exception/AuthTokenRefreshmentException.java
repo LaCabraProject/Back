@@ -1,6 +1,6 @@
 package org.lacabra.store.server.api.type.security.exception;
 
-public final class AuthTokenRefreshmentException extends RuntimeException {
+public class AuthTokenRefreshmentException extends RuntimeException {
 
     public AuthTokenRefreshmentException(String message) {
         super(message);

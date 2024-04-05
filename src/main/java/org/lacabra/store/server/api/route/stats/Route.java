@@ -1,5 +1,7 @@
 package org.lacabra.store.server.api.route.stats;
 
+import jakarta.annotation.security.PermitAll;
+import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.server.api.type.stats.ItemStats;
 import org.lacabra.store.server.api.type.stats.Stats;
 import org.lacabra.store.server.api.type.stats.UserStats;
@@ -9,22 +11,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/stats")
+@Path("stats")
 @Produces(MediaType.APPLICATION_JSON)
+@RequestScoped
+@PermitAll
 public final class Route {
     @GET
     public static Stats GET() {
         return new Stats(Items.GET(), Users.GET());
     }
 
-    @Path("/stats/items")
+    @Path("stats/items")
     public final static class Items {
         @GET
         public static ItemStats GET() {
             return new ItemStats();
         }
 
-        @Path("/stats/items/total")
+        @Path("stats/items/total")
         public final static class Total {
             @GET
             public static long GET() {
@@ -33,14 +37,14 @@ public final class Route {
         }
     }
 
-    @Path("/stats/users")
+    @Path("stats/users")
     public final static class Users {
         @GET
         public static UserStats GET() {
             return new UserStats(0, 0, 0);
         }
 
-        @Path("/stats/users/total")
+        @Path("stats/users/total")
         public final static class Total {
             @GET
             public static long GET() {

@@ -2,7 +2,7 @@ package org.lacabra.store.server.api.type.security.password;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class PasswordHasher {

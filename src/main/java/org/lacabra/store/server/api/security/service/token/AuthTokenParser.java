@@ -11,8 +11,8 @@ import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.security.token.AuthTokenSettings;
 import org.lacabra.store.server.api.type.user.Authority;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Dependent
-public final class AuthTokenParser {
+public class AuthTokenParser {
     @Inject
     private AuthTokenSettings settings;
 
