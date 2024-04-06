@@ -30,6 +30,7 @@ public class WindowLogin extends JFrame {
         getContentPane().setBackground(Color.WHITE);
 
         setIconImage(new ImageIcon("icon.png").getImage());
+        setVisible(true); 
     }
 
     private JPanel createLoginPanel() {

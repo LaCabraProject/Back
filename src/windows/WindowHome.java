@@ -1,10 +1,14 @@
 package windows;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class WindowHome extends JFrame {
 	private JPanel carouselPanel;
@@ -53,8 +57,7 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					WindowLogin wl=new WindowLogin();	
-					wl.setVisible(true);
+					WindowLogin wl=new WindowLogin();
 				}
 			});
         }else {
@@ -174,7 +177,7 @@ public class WindowHome extends JFrame {
         // Create and add a panel for the main content
         carouselPanel = new JPanel();
         carouselPanel.setLayout(new GridLayout(1, 1)); // Un solo componente visible a la vez
-        carouselPanel.setPreferredSize(new Dimension(800, 400)); // Ajusta el tamaño según tus necesidades
+        carouselPanel.setPreferredSize(new Dimension(200, 200)); // Ajusta el tamaño según tus necesidades
         scrollPane = new JScrollPane(carouselPanel);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -200,8 +203,18 @@ public class WindowHome extends JFrame {
         add(footerPanel, BorderLayout.SOUTH);
 
         // Add some example components to the footer panel
-        footerPanel.add(new JLabel("Follow us on social media"), BorderLayout.WEST);
-        JButton socialMedia= new JButton("Join now");
+        footerPanel.add(new JLabel("Siguenos en Facebook"), BorderLayout.WEST);
+        JButton socialMedia= new JButton();
+        socialMedia.setPreferredSize(new Dimension(90, 30));
+        BufferedImage image = null;
+		try {
+			image = ImageIO.read(new File("imagenes/facebook.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        Image scaledImage = image.getScaledInstance(90, 30, Image.SCALE_SMOOTH);
+        socialMedia.setIcon(new ImageIcon(scaledImage));
         socialMedia.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
