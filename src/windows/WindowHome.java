@@ -53,7 +53,8 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					new WindowHome(true);					
+					WindowLogin wl=new WindowLogin();	
+					wl.setVisible(true);
 				}
 			});
         }else {

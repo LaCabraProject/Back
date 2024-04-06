@@ -103,9 +103,8 @@ public class WindowLogin extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                if (username.equals("admin") && password.equals("password")) {
+                if (username.equals("admin") && password.equals("admin")) {
                     dispose();
-
                     WindowHome mainFrame = new WindowHome(true);
                     mainFrame.setVisible(true);
                 } else {
