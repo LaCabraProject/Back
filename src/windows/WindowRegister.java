@@ -23,7 +23,7 @@ public class WindowRegister extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(6, 1));
+        mainPanel.setLayout(new GridLayout(7, 1));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         mainPanel.add(createEmailLabelAndField());
@@ -31,6 +31,7 @@ public class WindowRegister extends JFrame {
         mainPanel.add(createPasswordLabelAndField());
         mainPanel.add(createNewsletterCheckbox());
         mainPanel.add(createRegisterButton());
+        mainPanel.add(createGoBackButton());
 
         add(mainPanel, BorderLayout.CENTER);
 
@@ -99,6 +100,22 @@ public class WindowRegister extends JFrame {
         });
 
         return registerButton;
+    }
+    
+    private JPanel createGoBackButton() {
+        JButton back = new JButton("Volver al inicio");
+        back.setPreferredSize(new Dimension(120, 20));
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                WindowHome mainFrame = new WindowHome(false);
+                mainFrame.setVisible(true);                
+            }
+        });
+        JPanel jp= new JPanel();
+        jp.add(back);
+        return jp;
     }
 
     public static void main(String[] args) {

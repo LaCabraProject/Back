@@ -57,14 +57,14 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					WindowLogin wl=new WindowLogin();
+					new WindowLogin();
 				}
 			});
             register.addActionListener(new ActionListener() {				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					WindowLogin wl=new WindowLogin();
+					new WindowRegister();
 				}
 			});
         }else {
@@ -76,6 +76,13 @@ public class WindowHome extends JFrame {
         	cuenta.add(cuentaCompras);
         	JMenuItem cuentaVentas = new JMenuItem("Mis ventas");
         	cuenta.add(cuentaVentas);
+        	cuentaVentas.addActionListener(new ActionListener() {				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					new WindowSalesStall();
+				}
+			});
         	JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
         	cuenta.add(signOut);
         	cuenta.setMnemonic(KeyEvent.VK_M);
@@ -185,8 +192,8 @@ public class WindowHome extends JFrame {
 
         // Create and add a panel for the main content
         carouselPanel = new JPanel();
-        carouselPanel.setLayout(new GridLayout(1, 1)); // Un solo componente visible a la vez
-        carouselPanel.setPreferredSize(new Dimension(200, 200)); // Ajusta el tamaño según tus necesidades
+        carouselPanel.setLayout(new GridLayout(1, 1)); 
+        carouselPanel.setPreferredSize(new Dimension(200, 200)); 
         scrollPane = new JScrollPane(carouselPanel);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -206,7 +213,6 @@ public class WindowHome extends JFrame {
         });
         timer.start();
 
-        // Create and add a panel for the footer
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new BorderLayout());
         add(footerPanel, BorderLayout.SOUTH);

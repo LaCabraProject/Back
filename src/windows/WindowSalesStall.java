@@ -58,8 +58,10 @@ public class WindowSalesStall extends JFrame {
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton btnRemoveItem = new JButton("Eliminar Artículo Seleccionado");
         JButton btnClearList = new JButton("Limpiar Lista");
+        JButton btnBack=new JButton("Volver");
         controlPanel.add(btnRemoveItem);
         controlPanel.add(btnClearList);
+        controlPanel.add(btnBack);
         bottomPanel.add(controlPanel);
 
         btnAddItem.addActionListener(e -> {
@@ -101,6 +103,13 @@ public class WindowSalesStall extends JFrame {
                 textArea.replaceRange("", selectedIndex, endIndex);
             }
         });
+        
+        btnBack.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new WindowHome(false);			
+			}
+		});
 
         btnClearList.addActionListener(e -> textArea.setText(""));
         add(panel);
