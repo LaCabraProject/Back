@@ -15,6 +15,7 @@ public class WindowHome extends JFrame {
         setTitle("RedBubble");
         setSize(800, 600);
         setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JMenuBar menuBar = new JMenuBar();
