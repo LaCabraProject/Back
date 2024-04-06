@@ -125,7 +125,7 @@ public class WindowLogin extends JFrame {
         signUpLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(WindowLogin.this, "Contacta connosotros para crear una cuenta.");
+                JOptionPane.showMessageDialog(WindowLogin.this, "Contacta con nosotros para crear una cuenta.");
             }
         });
 
