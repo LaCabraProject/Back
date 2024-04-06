@@ -35,7 +35,7 @@ public class WindowLogin extends JFrame {
 
     private JPanel createLoginPanel() {
         JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(new GridLayout(6, 1));
+        loginPanel.setLayout(new GridLayout(7, 1));
         loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         loginPanel.add(createUsernameLabelAndField());
@@ -44,6 +44,7 @@ public class WindowLogin extends JFrame {
         loginPanel.add(createRememberCheckbox());
         loginPanel.add(createLoginButton());
         loginPanel.add(createSignUpLabel());
+        loginPanel.add(createGoBackButton());
 
         return loginPanel;
     }
@@ -130,6 +131,22 @@ public class WindowLogin extends JFrame {
         });
 
         return signUpLabel;
+    }
+    
+    private JPanel createGoBackButton() {
+        JButton back = new JButton("Volver al inicio");
+        back.setPreferredSize(new Dimension(120, 20));
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                WindowHome mainFrame = new WindowHome(false);
+                mainFrame.setVisible(true);                
+            }
+        });
+        JPanel jp= new JPanel();
+        jp.add(back);
+        return jp;
     }
 
     private void setDefaultCloseOperation(String exitOnClose) {

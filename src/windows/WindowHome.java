@@ -43,16 +43,16 @@ public class WindowHome extends JFrame {
         menuBar.add(decoracion);
         JMenu accesorios = new JMenu("Accesorios");
         //accesorios.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        menuBar.add(accesorios);
-        JMenu cuenta = new JMenu("Cuenta");
-        //cuenta.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        menuBar.add(cuenta);
+        menuBar.add(accesorios);        
 
         //cuenta        
         if(autentification==false){
-        	JMenuItem signIn = new JMenuItem("Iniciar sesión", KeyEvent.VK_S);
-            cuenta.add(signIn);
-            cuenta.setMnemonic(KeyEvent.VK_M);
+        	JMenu iniciar = new JMenu("Iniciar sesión");
+            menuBar.add(iniciar); 
+            JMenuItem signIn = new JMenuItem("Iniciar sesión");
+            iniciar.add(signIn);
+            JMenuItem register = new JMenuItem("Crear cuenta");
+            iniciar.add(register);
             signIn.addActionListener(new ActionListener() {				
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -60,7 +60,16 @@ public class WindowHome extends JFrame {
 					WindowLogin wl=new WindowLogin();
 				}
 			});
+            register.addActionListener(new ActionListener() {				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					WindowLogin wl=new WindowLogin();
+				}
+			});
         }else {
+        	JMenu cuenta = new JMenu("Cuenta");            
+            menuBar.add(cuenta);
         	JMenuItem cuentaInfo = new JMenuItem("Ver perfil");
         	cuenta.add(cuentaInfo);
         	JMenuItem cuentaCompras = new JMenuItem("Mis compras");
