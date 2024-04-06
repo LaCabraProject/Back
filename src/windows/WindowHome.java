@@ -7,6 +7,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 public class WindowHome extends JFrame {
+	private JPanel carouselPanel;
+    private JScrollPane scrollPane;
+    private int currentIndex = 0;
+    private Timer timer;
+
     public WindowHome(boolean autentification) {
         initUI(autentification);
     }
@@ -54,6 +59,10 @@ public class WindowHome extends JFrame {
         }else {
         	JMenuItem cuentaInfo = new JMenuItem("Ver perfil");
         	cuenta.add(cuentaInfo);
+        	JMenuItem cuentaCompras = new JMenuItem("Mis compras");
+        	cuenta.add(cuentaCompras);
+        	JMenuItem cuentaVentas = new JMenuItem("Mis ventas");
+        	cuenta.add(cuentaVentas);
         	JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
         	cuenta.add(signOut);
         	cuenta.setMnemonic(KeyEvent.VK_M);
@@ -162,19 +171,27 @@ public class WindowHome extends JFrame {
         add(banner, BorderLayout.NORTH);
 
         // Create and add a panel for the main content
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new GridLayout(4, 2));
-        add(contentPanel, BorderLayout.CENTER);
+        carouselPanel = new JPanel();
+        carouselPanel.setLayout(new GridLayout(1, 1)); // Un solo componente visible a la vez
+        carouselPanel.setPreferredSize(new Dimension(800, 400)); // Ajusta el tamaño según tus necesidades
+        scrollPane = new JScrollPane(carouselPanel);
+        add(scrollPane, BorderLayout.CENTER);
 
-        // Add some example components to the content panel
-        contentPanel.add(new JLabel("Explore decoration that will blow your mind"));
-        contentPanel.add(new JButton("Shop now"));
-        contentPanel.add(new JLabel("Clothing"));
-        contentPanel.add(new JButton("Shop now"));
-        contentPanel.add(new JLabel("Stickers"));
-        contentPanel.add(new JButton("Shop now"));
-        contentPanel.add(new JLabel("Phone cases"));
-        contentPanel.add(new JButton("Shop now"));
+        // Agregar los elementos del carrusel
+        for (int i = 1; i <= 5; i++) {
+            JLabel label = new JLabel("Item " + i);
+            label.setHorizontalAlignment(JLabel.CENTER); // Centra el texto en el JLabel
+            carouselPanel.add(label);
+        }
+
+        // Inicializar el temporizador para el desplazamiento automático
+        timer = new Timer(3000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showNextCard();
+            }
+        });
+        timer.start();
 
         // Create and add a panel for the footer
         JPanel footerPanel = new JPanel();
@@ -199,8 +216,15 @@ public class WindowHome extends JFrame {
 
         setVisible(true);
     }
+    
+    private void showNextCard() {
+        int numCards = carouselPanel.getComponentCount();
+        currentIndex = (currentIndex + 1) % numCards;
+        scrollPane.getHorizontalScrollBar().setValue(currentIndex * scrollPane.getViewport().getViewSize().width / numCards);
+    }
+
 
     public static void main(String[] args) {
-        WindowHome w = new WindowHome(false);
+        new WindowHome(false);
     }
 }
