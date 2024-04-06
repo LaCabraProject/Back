@@ -39,7 +39,6 @@ public class WindowSalesStall extends JFrame {
         addPanel.add(btnAddItem);
         bottomPanel.add(addPanel);
 
-        // Panel para agregar descripción
         JPanel descriptionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JTextField descriptionField = new JTextField(20);
         JButton btnAddDescription = new JButton("Agregar Descripción");
@@ -48,7 +47,6 @@ public class WindowSalesStall extends JFrame {
         descriptionPanel.add(btnAddDescription);
         bottomPanel.add(descriptionPanel);
 
-        // Panel para agregar foto
         JPanel photoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JTextField photoField = new JTextField(20);
         JButton btnAddPhoto = new JButton("Agregar Foto");
@@ -57,7 +55,6 @@ public class WindowSalesStall extends JFrame {
         photoPanel.add(btnAddPhoto);
         bottomPanel.add(photoPanel);
 
-        // Panel de control
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton btnRemoveItem = new JButton("Eliminar Artículo Seleccionado");
         JButton btnClearList = new JButton("Limpiar Lista");
@@ -65,7 +62,6 @@ public class WindowSalesStall extends JFrame {
         controlPanel.add(btnClearList);
         bottomPanel.add(controlPanel);
 
-        // Acción para agregar artículo
         btnAddItem.addActionListener(e -> {
             String newItem = addItemField.getText();
             if (!newItem.isEmpty()) {
@@ -80,7 +76,6 @@ public class WindowSalesStall extends JFrame {
             }
         });
 
-        // Acción para agregar descripción
         btnAddDescription.addActionListener(e -> {
             String description = descriptionField.getText();
             if (!description.isEmpty()) {
@@ -89,7 +84,6 @@ public class WindowSalesStall extends JFrame {
             }
         });
 
-        // Acción para agregar foto
         btnAddPhoto.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showOpenDialog(null);
@@ -97,11 +91,9 @@ public class WindowSalesStall extends JFrame {
                 File selectedFile = fileChooser.getSelectedFile();
                 String filePath = selectedFile.getAbsolutePath();
                 photoField.setText(filePath);
-                // Aquí podrías guardar la ruta de la foto en una base de datos o hacer algo con ella
             }
         });
 
-        // Acción para eliminar artículo seleccionado
         btnRemoveItem.addActionListener(e -> {
             int selectedIndex = textArea.getSelectionStart();
             if (selectedIndex != -1) {
@@ -110,9 +102,7 @@ public class WindowSalesStall extends JFrame {
             }
         });
 
-        // Acción para limpiar lista
         btnClearList.addActionListener(e -> textArea.setText(""));
-
         add(panel);
         setVisible(true);
     }
