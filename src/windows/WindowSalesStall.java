@@ -12,10 +12,11 @@ public class WindowSalesStall extends JFrame {
     }
 
     private void initUI() {
-        setTitle("Vender Artículos");
+        setTitle("Artículos a la venta");
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -58,7 +59,7 @@ public class WindowSalesStall extends JFrame {
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton btnRemoveItem = new JButton("Eliminar Artículo Seleccionado");
         JButton btnClearList = new JButton("Limpiar Lista");
-        JButton btnBack=new JButton("Volver");
+        JButton btnBack=new JButton("Volver al inicio");
         controlPanel.add(btnRemoveItem);
         controlPanel.add(btnClearList);
         controlPanel.add(btnBack);
@@ -107,7 +108,7 @@ public class WindowSalesStall extends JFrame {
         btnBack.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new WindowHome(false);			
+				new WindowHome(true);			
 			}
 		});
 
