@@ -1,4 +1,5 @@
 package windows;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,14 +15,23 @@ public class WindowShoppingCart extends JFrame {
     private JButton botonRealizarPago;
 
     public WindowShoppingCart() {
-        
         setTitle("Carrito de Compra");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLayout(new BorderLayout());
 
-        
-        JPanel panelSuperior = new JPanel(new GridLayout(1, 2));
+        UIManager.put("ComboBox.selectionBackground", Color.LIGHT_GRAY);
+        UIManager.put("ComboBox.selectionForeground", Color.BLACK);
+        UIManager.put("TextField.background", Color.WHITE);
+        UIManager.put("TextField.foreground", Color.BLACK);
+
+        setTitle("Carrito de Compra");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLayout(new BorderLayout());
+
+        JPanel panelSuperior = new JPanel(new GridLayout(1, 2, 10, 0)); 
+        panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
 
         JPanel panelIzquierdoSuperior = new JPanel(new GridLayout(2, 1));
         JLabel etiquetaMetodoEnvio = new JLabel("Método de Envío:");
@@ -41,8 +51,8 @@ public class WindowShoppingCart extends JFrame {
 
         add(panelSuperior, BorderLayout.NORTH);
 
-       
         JPanel panelCentral = new JPanel(new BorderLayout());
+        panelCentral.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
         modeloListaProductos = new DefaultListModel<>();
         listaProductos = new JList<>(modeloListaProductos);
         listaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -50,8 +60,8 @@ public class WindowShoppingCart extends JFrame {
         panelCentral.add(panelDesplazableProductos, BorderLayout.CENTER);
         add(panelCentral, BorderLayout.CENTER);
 
-        
-        JPanel panelInferior = new JPanel(new GridLayout(1, 3));
+        JPanel panelInferior = new JPanel(new GridLayout(1, 3, 10, 0)); 
+        panelInferior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
         botonEliminarProducto = new JButton("Eliminar Producto");
         botonAplicarCupon = new JButton("Aplicar Cupón");
         botonRealizarPago = new JButton("Realizar Pago");
@@ -62,24 +72,21 @@ public class WindowShoppingCart extends JFrame {
 
         add(panelInferior, BorderLayout.SOUTH);
 
-        
         comboBoxMetodoEnvio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               
+              
             }
         });
 
         listaProductos.addListSelectionListener(e -> {
-            
+           
         });
-
-        
 
         botonEliminarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+               
             }
         });
 
@@ -93,16 +100,15 @@ public class WindowShoppingCart extends JFrame {
         botonRealizarPago.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              
+                
             }
         });
 
-      
         modeloListaProductos.addElement("Producto 1");
         modeloListaProductos.addElement("Producto 2");
         modeloListaProductos.addElement("Producto 3");
-        
-        campoCostoTotal.setText("$100.00"); 
+
+        campoCostoTotal.setText("$100.00");
     }
 
     public void ejecutar() {
@@ -111,13 +117,11 @@ public class WindowShoppingCart extends JFrame {
 
     private double calcularCostoTotal() {
         double costoTotal = 0.0;
-        
         return costoTotal;
     }
-    
-    
+
     public static void main(String[] args) {
-    	WindowShoppingCart app = new WindowShoppingCart();
+        WindowShoppingCart app = new WindowShoppingCart();
         app.ejecutar();
     }
 }
