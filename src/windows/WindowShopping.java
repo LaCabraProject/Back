@@ -13,28 +13,23 @@ public class WindowShopping {
     private DefaultTableModel tableModel;
     private JTable table;
 
-    public WindowShopping() {
-        // 1. Create a new JFrame for the window
+    public WindowShopping(boolean autentification) {
         frame = new JFrame("Buscador");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
-
-        // 2. Add components
+        
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout());
 
-        // ComboBox with options
         String[] searchOptions = {"Todos", "Ropa", "Hogar", "Oficina", "Decoración", "Accesorios"};
         JComboBox<String> searchComboBox = new JComboBox<>(searchOptions);
         topPanel.add(searchComboBox);
 
-        // Text field for search term
         searchField = new JTextField(20);
         topPanel.add(searchField);
 
-        // Search button
         JButton searchButton = new JButton("Buscar");
         topPanel.add(searchButton);
 
@@ -81,7 +76,7 @@ public class WindowShopping {
         });
         btnBack.addActionListener(e -> {
             frame.dispose();
-            new WindowHome(true);
+            new WindowHome(autentification);
         });
 
         frame.setVisible(true);
@@ -122,6 +117,6 @@ public class WindowShopping {
     }
 
     public static void main(String[] args) {
-        new WindowShopping();
+        new WindowShopping(false);
     }
 }
