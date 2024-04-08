@@ -1,105 +1,96 @@
 package windows;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class WindowShoppingCart extends JFrame {
-    private JComboBox<String> shippingMethodComboBox;
-    private JList<String> productList;
-    private DefaultListModel<String> productListModel;
-    private JTextField totalCostField;
-    private JButton addProductButton;
-    private JButton removeProductButton;
-    private JButton applyCouponButton;
-    private JButton checkoutButton;
+    private JComboBox<String> comboBoxMetodoEnvio;
+    private JList<String> listaProductos;
+    private DefaultListModel<String> modeloListaProductos;
+    private JTextField campoCostoTotal;
+    private JButton botonEliminarProducto;
+    private JButton botonAplicarCupon;
+    private JButton botonRealizarPago;
 
     public WindowShoppingCart() {
         
-        setTitle("Shopping Cart");
+        setTitle("Carrito de Compra");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLayout(new BorderLayout());
 
         
-        JPanel topPanel = new JPanel(new GridLayout(1, 2));
+        JPanel panelSuperior = new JPanel(new GridLayout(1, 2));
 
-        JPanel leftTopPanel = new JPanel(new GridLayout(2, 1));
-        JLabel shippingMethodLabel = new JLabel("Shipping Method:");
-        shippingMethodComboBox = new JComboBox<>(new String[]{"Standard", "Express", "Next Day"});
-        leftTopPanel.add(shippingMethodLabel);
-        leftTopPanel.add(shippingMethodComboBox);
-        topPanel.add(leftTopPanel);
+        JPanel panelIzquierdoSuperior = new JPanel(new GridLayout(2, 1));
+        JLabel etiquetaMetodoEnvio = new JLabel("Método de Envío:");
+        comboBoxMetodoEnvio = new JComboBox<>(new String[]{"Estándar", "Express", "Entrega al día siguiente"});
+        panelIzquierdoSuperior.add(etiquetaMetodoEnvio);
+        panelIzquierdoSuperior.add(comboBoxMetodoEnvio);
+        panelSuperior.add(panelIzquierdoSuperior);
 
-        JPanel rightTopPanel = new JPanel(new GridLayout(1, 2));
-        JLabel totalCostLabel = new JLabel("Total Cost:");
-        totalCostField = new JTextField();
-        totalCostField.setEditable(false);
-        totalCostField.setColumns(10);
-        rightTopPanel.add(totalCostLabel);
-        rightTopPanel.add(totalCostField);
-        topPanel.add(rightTopPanel);
+        JPanel panelDerechoSuperior = new JPanel(new GridLayout(1, 2));
+        JLabel etiquetaCostoTotal = new JLabel("Costo Total:");
+        campoCostoTotal = new JTextField();
+        campoCostoTotal.setEditable(false);
+        campoCostoTotal.setColumns(10);
+        panelDerechoSuperior.add(etiquetaCostoTotal);
+        panelDerechoSuperior.add(campoCostoTotal);
+        panelSuperior.add(panelDerechoSuperior);
 
-        add(topPanel, BorderLayout.NORTH);
+        add(panelSuperior, BorderLayout.NORTH);
 
        
-        JPanel centerPanel = new JPanel(new BorderLayout());
-        productListModel = new DefaultListModel<>();
-        productList = new JList<>(productListModel);
-        productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane productScrollPane = new JScrollPane(productList);
-        centerPanel.add(productScrollPane, BorderLayout.CENTER);
-        add(centerPanel, BorderLayout.CENTER);
+        JPanel panelCentral = new JPanel(new BorderLayout());
+        modeloListaProductos = new DefaultListModel<>();
+        listaProductos = new JList<>(modeloListaProductos);
+        listaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane panelDesplazableProductos = new JScrollPane(listaProductos);
+        panelCentral.add(panelDesplazableProductos, BorderLayout.CENTER);
+        add(panelCentral, BorderLayout.CENTER);
 
         
-        JPanel bottomPanel = new JPanel(new GridLayout(1, 4));
-        addProductButton = new JButton("Add Product");
-        removeProductButton = new JButton("Remove Product");
-        applyCouponButton = new JButton("Apply Coupon");
-        checkoutButton = new JButton("Checkout");
+        JPanel panelInferior = new JPanel(new GridLayout(1, 3));
+        botonEliminarProducto = new JButton("Eliminar Producto");
+        botonAplicarCupon = new JButton("Aplicar Cupón");
+        botonRealizarPago = new JButton("Realizar Pago");
 
-        bottomPanel.add(addProductButton);
-        bottomPanel.add(removeProductButton);
-        bottomPanel.add(applyCouponButton);
-        bottomPanel.add(checkoutButton);
+        panelInferior.add(botonEliminarProducto);
+        panelInferior.add(botonAplicarCupon);
+        panelInferior.add(botonRealizarPago);
 
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(panelInferior, BorderLayout.SOUTH);
 
         
-        shippingMethodComboBox.addActionListener(new ActionListener() {
+        comboBoxMetodoEnvio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                
             }
         });
 
-        productList.addListSelectionListener(e -> {
+        listaProductos.addListSelectionListener(e -> {
             
         });
 
-        addProductButton.addActionListener(new ActionListener() {
+        
+
+        botonEliminarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
             }
         });
 
-        removeProductButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-            }
-        });
-
-        applyCouponButton.addActionListener(new ActionListener() {
+        botonAplicarCupon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                
             }
         });
 
-        checkoutButton.addActionListener(new ActionListener() {
+        botonRealizarPago.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
               
@@ -107,26 +98,26 @@ public class WindowShoppingCart extends JFrame {
         });
 
       
-        productListModel.addElement("Product 1");
-        productListModel.addElement("Product 2");
-        productListModel.addElement("Product 3");
+        modeloListaProductos.addElement("Producto 1");
+        modeloListaProductos.addElement("Producto 2");
+        modeloListaProductos.addElement("Producto 3");
         
-        totalCostField.setText("$100.00"); 
+        campoCostoTotal.setText("$100.00"); 
     }
 
-    public void run() {
+    public void ejecutar() {
         setVisible(true);
     }
 
-    private double calculateTotalCost() {
-        double totalCost = 0.0;
+    private double calcularCostoTotal() {
+        double costoTotal = 0.0;
         
-        return totalCost;
+        return costoTotal;
     }
     
     
     public static void main(String[] args) {
-        WindowShoppingCart app = new WindowShoppingCart();
-        app.run();
+    	WindowShoppingCart app = new WindowShoppingCart();
+        app.ejecutar();
     }
 }
