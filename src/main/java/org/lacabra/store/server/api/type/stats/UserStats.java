@@ -40,13 +40,13 @@ public final class UserStats {
     public static BigInteger artists() {
         UserDAO dao = UserDAO.getInstance();
 
-        return true ? BigInteger.ZERO : dao.count(dao.getQuery("CountArtists"));
+        return dao.count(dao.getQuery("CountArtists"));
     }
 
     public static BigInteger admins() {
         UserDAO dao = UserDAO.getInstance();
 
-        return true ? BigInteger.ZERO : dao.count(dao.getQuery("CountAdmins"));
+        return dao.count(dao.getQuery("CountAdmins"));
     }
 
     public static BigInteger total() {

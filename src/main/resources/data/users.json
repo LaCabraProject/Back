@@ -1,0 +1,11 @@
+[
+  {
+    "id": "mikel",
+    "passwd": "1234",
+    "authorities": [
+      "admin",
+      "artist",
+      "client"
+    ]
+  }
+]

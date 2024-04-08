@@ -1,10 +1,13 @@
 package org.lacabra.store.server.api.type.user;
 
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.server.json.serializer.UserIdSerializer;
 
 import javax.jdo.annotations.*;
 import javax.validation.constraints.NotNull;
@@ -32,17 +35,22 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @PrimaryKey
+    @JsonProperty("id")
+    @JsonSerialize(using = UserIdSerializer.class)
     private UserId id;
 
+    @JsonProperty("passwd")
     @Persistent
     private String passwd;
 
+    @JsonProperty("authorities")
     @ElementCollection(targetClass = Authority.class, fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @NotNull
     @Persistent
     private Set<Authority> authorities;
 
+    @JsonUnwrapped
     @Embedded
     private UserData data;
 
@@ -76,12 +84,11 @@ public class User implements Serializable {
         this((User) null);
     }
 
-
     public Set<Authority> authorities() {
         return this.authorities;
     }
 
-    public String id() {
+    public UserId id() {
         return this.id;
     }
 

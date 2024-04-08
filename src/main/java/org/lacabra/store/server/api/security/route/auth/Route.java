@@ -1,5 +1,7 @@
 package org.lacabra.store.server.api.security.route.auth;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.inject.Inject;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.server.api.security.service.token.AuthTokenUtils;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
@@ -8,8 +10,6 @@ import org.lacabra.store.server.api.type.security.token.AuthToken;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 
-import jakarta.annotation.security.PermitAll;
-import jakarta.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -37,7 +37,7 @@ public class Route {
     @PermitAll
     public Response POST(Credentials creds) {
         User user = validator.validate(creds.id(), creds.passwd());
-        return Response.ok(new AuthToken(tokenUtils.issue(user.id(), user.authorities()))).build();
+        return Response.ok(new AuthToken(tokenUtils.issue(user.id().get(), user.authorities()))).build();
     }
 
     @POST

@@ -34,7 +34,7 @@ public final class AuthedUserDetails implements Principal {
     public AuthedUserDetails(Credentials creds) {
         switch (creds) {
             case Credentials c -> {
-                this.id = creds.id();
+                this.id = creds.id().get();
                 this.authorities = Set.copyOf(creds.authorities());
             }
 

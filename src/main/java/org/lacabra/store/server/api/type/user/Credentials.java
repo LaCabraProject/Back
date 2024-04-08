@@ -119,6 +119,6 @@ public final class Credentials implements Serializable {
 
     @Override
     public String toString() {
-        return this.id;
+        return this.id.get();
     }
 }
