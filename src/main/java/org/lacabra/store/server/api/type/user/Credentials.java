@@ -12,7 +12,7 @@ public final class Credentials implements Serializable {
 
     public EnumSet<Authority> authorities;
 
-    public String id;
+    public UserId id;
     public String passwd;
 
     public Credentials() {
@@ -50,7 +50,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(UserId id, String passwd) {
-        this.id = Objects.requireNonNull(id).get();
+        this.id = Objects.requireNonNull(id);
         this.passwd = passwd;
     }
 
@@ -67,7 +67,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(UserId id, Collection<Authority> authorities) {
-        this.id = Objects.requireNonNull(id).get();
+        this.id = Objects.requireNonNull(id);
         this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
     }
 
@@ -76,7 +76,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(UserId id, Collection<Authority> authorities, String passwd) {
-        this.id = Objects.requireNonNull(id).get();
+        this.id = Objects.requireNonNull(id);
         this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
         this.passwd = passwd;
     }
@@ -89,7 +89,7 @@ public final class Credentials implements Serializable {
         return this.authorities;
     }
 
-    public String id() {
+    public UserId id() {
         return this.id;
     }
 
@@ -102,7 +102,7 @@ public final class Credentials implements Serializable {
         return switch (o) {
             case Credentials u -> switch (u.id) {
                 case null -> false;
-                case String i -> this.id.equals(i);
+                case UserId i -> this.id.equals(i);
             } && switch (u.passwd) {
                 case null -> false;
                 case String p -> this.passwd.equals(p);

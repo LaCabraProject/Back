@@ -4,6 +4,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import org.lacabra.store.server.api.type.id.UserId;
 
 import javax.jdo.annotations.*;
 import javax.validation.constraints.NotNull;
@@ -12,13 +13,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-@Query(name = "FindUser", language = "JDOQL", value = "SELECT FROM User u WHERE u.id = :id")
-@Query(name = "FindClient", language = "JDOQL", value = "SELECT FROM User u WHERE 'client' IN (u" +
-        ".authorities) AND u.id = :id")
-@Query(name = "FindArtist", language = "JDOQL", value = "SELECT FROM User u WHERE \"artist\" IN (u" +
-        ".authorities) AND u.id = :id")
-@Query(name = "FindAdmin", language = "JDOQL", value = "SELECT FROM User u WHERE \"admin\" IN (u.authorities)" + " "
-        + "AND u.id = :id")
+@Query(name = "FindUser", language = "JDOQL", value = "SELECT FROM USER u WHERE u.id = :id")
 @Query(name = "FindClients", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities LIKE" +
         " '%client%'")
 @Query(name = "FindArtists", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities LIKE" +
@@ -37,15 +32,16 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @PrimaryKey
-    private String id;
+    private UserId id;
 
+    @Persistent
     private String passwd;
 
     @ElementCollection(targetClass = Authority.class, fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @NotNull
     @Persistent
-    public Set<Authority> authorities;
+    private Set<Authority> authorities;
 
     @Embedded
     private UserData data;

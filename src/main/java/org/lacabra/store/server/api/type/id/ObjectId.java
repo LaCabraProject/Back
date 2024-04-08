@@ -102,6 +102,35 @@ public final class ObjectId {
         return this.value;
     }
 
+    public static String normalize(Number id) {
+        var oid = ObjectId.from(id);
+        if (oid == null)
+            return null;
+
+        return oid.normalize();
+    }
+
+    public static String normalize(String id) {
+        var oid = ObjectId.from(id);
+        if (oid == null)
+            return null;
+
+        return oid.normalize();
+    }
+
+    public static String normalize(ObjectId id) {
+        if (id == null)
+            return null;
+
+        return id.normalize();
+    }
+
+    public String normalize() {
+        var str = this.toString();
+
+        return "0".repeat(24 - str.length()) + str;
+    }
+
     @Override
     public String toString() {
         return this.value.toString(16);
@@ -112,7 +141,7 @@ public final class ObjectId {
         return switch (o) {
             case String s -> this.equals(ObjectId.from(s));
             case Number n -> this.equals(ObjectId.from(n));
-            case ObjectId id -> this.value.equals(id.value);
+            case ObjectId id -> this.normalize().equals(id.value);
             case null, default -> false;
         };
     }

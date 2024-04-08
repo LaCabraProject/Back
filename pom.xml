@@ -44,6 +44,12 @@
             <artifactId>jakarta.el-api</artifactId>
             <version>6.0.0-RC1</version>
         </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>all</artifactId>
+            <version>3.1.0</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

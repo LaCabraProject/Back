@@ -50,7 +50,7 @@ public final class UserId {
 
     public static UserId from(String id) {
         if (UserId.is(id))
-            return new UserId(id);
+            return new UserId(id.trim());
 
         return null;
     }
@@ -66,7 +66,7 @@ public final class UserId {
         if (id == null)
             return false;
 
-        return regex.matcher(id).matches();
+        return regex.matcher(id.trim()).matches();
     }
 
     public static boolean is(UserId id) {
