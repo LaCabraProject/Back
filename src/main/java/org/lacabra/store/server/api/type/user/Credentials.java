@@ -1,35 +1,22 @@
 package org.lacabra.store.server.api.type.user;
 
-import jakarta.persistence.*;
 import org.lacabra.store.server.api.type.id.UserId;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-@Embeddable
 public final class Credentials implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @ElementCollection(targetClass = Authority.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user"))
-    @Column(name = "authority", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private Set<Authority> authorities;
+    public EnumSet<Authority> authorities;
 
-    @NotNull
-    @Column(name = "id")
-    private String id;
-    private String passwd;
+    public String id;
+    public String passwd;
 
     public Credentials() {
-        this.authorities = Collections.EMPTY_SET;
+        this.authorities = EnumSet.noneOf(Authority.class);
         this.id = null;
         this.passwd = null;
     }
@@ -39,7 +26,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(Collection<Authority> authorities) {
-        this.authorities = authorities == null ? Collections.EMPTY_SET : Set.copyOf(authorities);
+        this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
     }
 
     public Credentials(String id) {
@@ -81,7 +68,7 @@ public final class Credentials implements Serializable {
 
     public Credentials(UserId id, Collection<Authority> authorities) {
         this.id = Objects.requireNonNull(id).get();
-        this.authorities = authorities == null ? Collections.EMPTY_SET : Set.copyOf(authorities);
+        this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
     }
 
     public Credentials(UserId id, Authority authorities, String passwd) {
@@ -90,7 +77,7 @@ public final class Credentials implements Serializable {
 
     public Credentials(UserId id, Collection<Authority> authorities, String passwd) {
         this.id = Objects.requireNonNull(id).get();
-        this.authorities = authorities == null ? Collections.EMPTY_SET : Set.copyOf(authorities);
+        this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
         this.passwd = passwd;
     }
 
@@ -128,5 +115,10 @@ public final class Credentials implements Serializable {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return this.id;
     }
 }

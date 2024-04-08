@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jdoconfig xmlns="http://xmlns.jcp.org/xml/ns/jdo/jdoconfig"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/jdo/jdoconfig
+        http://xmlns.jcp.org/xml/ns/jdo/jdoconfig_3_2.xsd" version="3.2">
+
+    <!-- Tutorial "unit" -->
+    <persistence-manager-factory name="LaCabraProject">
+        <property name="javax.jdo.PersistenceManagerFactoryClass"
+                  value="org.datanucleus.api.jdo.JDOPersistenceManagerFactory"/>
+
+        <property name="javax.jdo.option.ConnectionURL"
+                  value="jdbc:mysql://127.0.0.1:3306/lacabradb?useServerPrepStmts=false&amp;createDatabaseIfNotExist=true&amp;verifyServerCertificate=false&amp;useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true"/>
+        <property name="javax.jdo.option.ConnectionUserName" value="lacabra"/>
+        <property name="javax.jdo.option.ConnectionPassword" value="lacabra"/>
+        <property name="datanucleus.schema.autoCreateAll" value="true"/>
+    </persistence-manager-factory>
+</jdoconfig>

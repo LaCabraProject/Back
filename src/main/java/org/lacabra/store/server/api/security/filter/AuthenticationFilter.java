@@ -5,7 +5,7 @@ import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
 import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.security.user.AuthedUserDetails;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.server.jpa.dao.UserDAO;
+import org.lacabra.store.server.jdo.dao.UserDAO;
 
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.Dependent;
@@ -36,7 +36,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private void handleTokenBasedAuthentication(String token, ContainerRequestContext requestContext) {
         AuthTokenDetails tokenDetails = tokenUtils.parse(token);
-        User user = UserDAO.getInstance().find(tokenDetails.username());
+        User user = UserDAO.getInstance().findOne(tokenDetails.username());
 
         requestContext.setSecurityContext(new TokenSecurityContext(new AuthedUserDetails(user.id(),
                 user.authorities()), tokenDetails, requestContext.getSecurityContext().isSecure()));

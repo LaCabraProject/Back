@@ -72,7 +72,7 @@ public final class Logger {
 
     public static Logger getLogger() {
         if (Logger.instance == null)
-            Logger.instance = new Logger("Strava");
+            Logger.instance = new Logger("LaCabra Project");
 
         return Logger.instance;
     }

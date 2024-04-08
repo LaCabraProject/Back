@@ -4,7 +4,7 @@ import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.security.exception.AuthenticationException;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.server.jpa.dao.UserDAO;
+import org.lacabra.store.server.jdo.dao.UserDAO;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,7 +24,7 @@ public class CredValidator {
     }
 
     public User validate(String id, String passwd) {
-        User user = UserDAO.getInstance().find(new User(new Credentials(id, passwd)));
+        User user = UserDAO.getInstance().findOne(new User(new Credentials(id, passwd)));
 
         if (user == null) {
             throw new AuthenticationException("Bad credentials.");

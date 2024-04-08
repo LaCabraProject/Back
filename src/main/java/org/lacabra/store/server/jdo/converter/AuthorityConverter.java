@@ -1,4 +1,4 @@
-package org.lacabra.store.server.jpa.converter;
+package org.lacabra.store.server.jdo.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

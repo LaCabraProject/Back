@@ -1,20 +1,21 @@
-package org.lacabra.store.server.jpa.dao;
+package org.lacabra.store.server.jdo.dao;
 
 import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class ItemDAO extends DAO<User> {
+public class ItemDAO extends DAO<Item> {
     private static ItemDAO instance;
 
     static {
-        DAO.instances.put(User.class, ItemDAO.getInstance());
+        DAO.instances.put(Item.class, ItemDAO.getInstance());
     }
 
     private ItemDAO() throws NoSuchMethodException {
-        super(User.class, "FindUserByCreds");
+        super(Item.class, "FindItem");
     }
 
     public static ItemDAO getInstance() {

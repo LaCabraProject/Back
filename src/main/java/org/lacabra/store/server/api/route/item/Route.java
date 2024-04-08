@@ -1,8 +1,8 @@
 package org.lacabra.store.server.api.route.item;
 
-import org.lacabra.store.server.jpa.dto.ItemDTO;
-
 import org.glassfish.jersey.process.internal.RequestScoped;
+import org.lacabra.store.server.api.type.item.Item;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -23,7 +23,7 @@ public final class Route {
     @Produces(MediaType.APPLICATION_JSON)
     public final static class All {
         @GET
-        public static List<ItemDTO> GET() {
+        public static List<Item> GET() {
             return new ArrayList<>();
         }
     }

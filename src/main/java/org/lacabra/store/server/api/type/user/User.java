@@ -1,27 +1,52 @@
 package org.lacabra.store.server.api.type.user;
 
-import jakarta.persistence.*;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 
+import javax.jdo.annotations.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-@NamedQuery(name = "FindUser", query = "SELECT u FROM User u WHERE u.creds.id = :id")
-@NamedNativeQuery(name = "FindClient", query =
-        "SELECT u FROM User u WHERE \"client\" IN (u.creds.authorities) AND u.creds.id = :id")
-@NamedNativeQuery(name = "FindArtist", query =
-        "SELECT u FROM User u WHERE \"artist\" IN (u.creds.authorities) AND u.creds.id = :id")
-@NamedNativeQuery(name = "FindAdmin", query =
-        "SELECT u FROM User u WHERE \"admin\" IN (u.creds.authorities) AND u.creds.id = :id")
-@Table(name = "user")
-@Entity
-public sealed class User implements Serializable permits Client, Artist, Admin {
+@Query(name = "FindUser", language = "JDOQL", value = "SELECT FROM User u WHERE u.id = :id")
+@Query(name = "FindClient", language = "JDOQL", value = "SELECT FROM User u WHERE 'client' IN (u" +
+        ".authorities) AND u.id = :id")
+@Query(name = "FindArtist", language = "JDOQL", value = "SELECT FROM User u WHERE \"artist\" IN (u" +
+        ".authorities) AND u.id = :id")
+@Query(name = "FindAdmin", language = "JDOQL", value = "SELECT FROM User u WHERE \"admin\" IN (u.authorities)" + " "
+        + "AND u.id = :id")
+@Query(name = "FindClients", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities LIKE" +
+        " '%client%'")
+@Query(name = "FindArtists", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities LIKE" +
+        " '%artist%'")
+@Query(name = "FindAdmins", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities LIKE " +
+        "'%admin%'")
+@Query(name = "CountClients", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities " +
+        "LIKE '%client%'")
+@Query(name = "CountArtists", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities " +
+        "LIKE '%artist%'")
+@Query(name = "CountAdmins", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities LIKE" +
+        " '%admin%'")
+@PersistenceCapable(table = "user")
+public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private Credentials creds;
+    @PrimaryKey
+    private String id;
+
+    private String passwd;
+
+    @ElementCollection(targetClass = Authority.class, fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Persistent
+    public Set<Authority> authorities;
+
     @Embedded
     private UserData data;
 
@@ -38,12 +63,17 @@ public sealed class User implements Serializable permits Client, Artist, Admin {
     }
 
     public User(Credentials creds, UserData data) {
-        this.creds = Objects.requireNonNull(creds);
+        Objects.requireNonNull(creds);
+
+        this.id = creds.id;
+        this.passwd = creds.passwd;
+        this.authorities = creds.authorities;
         this.data = data;
     }
 
     public User(User user) {
-        this(user == null ? null : user.creds, user == null ? null : user.data);
+        this(user == null ? null : new Credentials(user.id, user.authorities, user.passwd), user == null ? null :
+                user.data);
     }
 
     public User() {
@@ -52,15 +82,15 @@ public sealed class User implements Serializable permits Client, Artist, Admin {
 
 
     public Set<Authority> authorities() {
-        return creds == null ? null : creds.authorities();
+        return this.authorities;
     }
 
     public String id() {
-        return creds == null ? null : creds.id();
+        return this.id;
     }
 
     public String passwd() {
-        return creds == null ? null : creds.passwd();
+        return this.passwd;
     }
 
     public UserData data() {

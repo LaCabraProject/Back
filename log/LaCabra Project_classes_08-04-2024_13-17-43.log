@@ -1,0 +1,4 @@
+[08/04/2024 13:17:43] WARNING: There was an error trying to find users (SELECT FROM User u WHERE FIND_IN_SET('client', u.authorities)): Cannot call executeResultList method when query has result unset. Call executeList instead.
+[08/04/2024 13:17:43] WARNING: There was an error trying to count users (org.datanucleus.store.rdbms.query.SQLQuery@b6872e40): Error con la ejecucion de Query de SQL "SELECT COUNT(*) FROM User u WHERE "artist" IN u.authorities".
+[08/04/2024 13:17:43] WARNING: There was an error trying to count users (org.datanucleus.store.rdbms.query.SQLQuery@b2a3a3de): Error con la ejecucion de Query de SQL "SELECT COUNT(*) FROM User WHERE FIND_IN_SET('admin', authorities) > 0".
+[08/04/2024 13:17:43] WARNING: There was an error trying to count users (SELECT COUNT (*) INTO java.lang.Integer FROM User): Method/Identifier expected at character 8 in "COUNT (*)"

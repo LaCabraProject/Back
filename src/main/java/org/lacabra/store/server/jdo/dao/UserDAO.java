@@ -1,4 +1,4 @@
-package org.lacabra.store.server.jpa.dao;
+package org.lacabra.store.server.jdo.dao;
 
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.user.User;
@@ -14,7 +14,7 @@ public class UserDAO extends DAO<User> {
     }
 
     private UserDAO() throws NoSuchMethodException {
-        super(User.class, "FindUserByCreds");
+        super(User.class, "FindUser");
     }
 
     public static UserDAO getInstance() {

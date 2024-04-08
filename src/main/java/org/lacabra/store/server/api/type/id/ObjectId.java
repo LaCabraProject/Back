@@ -1,6 +1,5 @@
 package org.lacabra.store.server.api.type.id;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.*;
@@ -99,7 +98,7 @@ public final class ObjectId {
         return new ObjectId(id.value);
     }
 
-    public BigInteger toInteger(@NotNull ObjectId id) {
+    public BigInteger toInteger() {
         return this.value;
     }
 
