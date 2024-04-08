@@ -187,8 +187,14 @@ public class WindowHome extends JFrame {
 
 
         // Create and add a banner
+        //rgb(253,1,10) original
         JLabel banner = new JLabel(new ImageIcon("imagenes/logo.png"));
-        add(banner, BorderLayout.NORTH);
+        JPanel bannerPanel = new JPanel();
+        bannerPanel.setLayout(new BorderLayout());
+        bannerPanel.add(banner, BorderLayout.CENTER);
+        bannerPanel.setPreferredSize(new Dimension(getWidth(), banner.getPreferredSize().height));
+        bannerPanel.setBackground(new Color(253, 5, 20, 215));
+        add(bannerPanel, BorderLayout.NORTH);
 
         // Create and add a panel for the main content
         carouselPanel = new JPanel();
