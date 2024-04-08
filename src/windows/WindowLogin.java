@@ -1,6 +1,8 @@
 package windows;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class WindowLogin extends JFrame {
-	
     private static final String EXIT_ON_CLOSE = "EXIT_ON_CLOSE";
 
     private JTextField usernameField;
@@ -20,7 +21,7 @@ public class WindowLogin extends JFrame {
 
     private void initUI() {
         setTitle("Iniciar sesión");
-        setSize(400, 450);
+        setSize(400, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -30,33 +31,41 @@ public class WindowLogin extends JFrame {
         getContentPane().setBackground(Color.WHITE);
 
         setIconImage(new ImageIcon("icon.png").getImage());
-        setVisible(true); 
+        setVisible(true);
     }
 
     private JPanel createLoginPanel() {
         JPanel loginPanel = new JPanel();
-        loginPanel.setLayout(new GridLayout(7, 1));
+        loginPanel.setLayout(new GridBagLayout());
         loginPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        loginPanel.add(createUsernameLabelAndField());
-        loginPanel.add(createPasswordLabelAndField());
-        loginPanel.add(createForgotPasswordLabel());
-        loginPanel.add(createLoginButton());
-        loginPanel.add(createSignUpLabel());
-        loginPanel.add(createGoBackButton());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.insets = new Insets(5, 5, 5, 5);
+
+        loginPanel.add(createUsernameLabelAndField(), constraints);
+        constraints.gridy++;
+        loginPanel.add(createPasswordLabelAndField(), constraints);
+        constraints.gridy++;
+        loginPanel.add(createLoginButton(), constraints);
+        constraints.gridy++;
+        loginPanel.add(createSignUpLabel(), constraints);
+        constraints.gridy++;
+        loginPanel.add(createGoBackButton(), constraints);
 
         return loginPanel;
     }
 
     private JPanel createUsernameLabelAndField() {
-        JLabel usernameLabel = new JLabel("Nombre de usuario");
+        JLabel usernameLabel = new JLabel("Usuario");
         usernameField = new JTextField();
         usernameField.setPreferredSize(new Dimension(200, 30));
 
         JPanel panel = new JPanel();
         panel.add(usernameLabel);
         panel.add(usernameField);
-
+        panel.setBorder(new EmptyBorder(0, 22, 0, 0));
         return panel;
     }
 
@@ -68,25 +77,9 @@ public class WindowLogin extends JFrame {
         JPanel panel = new JPanel();
         panel.add(passwordLabel);
         panel.add(passwordField);
-
+        
         return panel;
     }
-
-    private JLabel createForgotPasswordLabel() {
-        JLabel forgotPasswordLabel = new JLabel("¿Has olvidado tu contraseña?");
-        forgotPasswordLabel.setForeground(Color.BLUE);
-        forgotPasswordLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        forgotPasswordLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(WindowLogin.this, "Contacta con nosotros para recuperar tu contraseña.");
-            }
-        });
-
-        return forgotPasswordLabel;
-    }
-
 
     private JButton createLoginButton() {
         JButton loginButton = new JButton("Iniciar sesión");
@@ -119,28 +112,30 @@ public class WindowLogin extends JFrame {
         signUpLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-            	dispose();
+                dispose();
                 new WindowRegister();
             }
         });
 
         return signUpLabel;
     }
-    
+
     private JPanel createGoBackButton() {
         JButton back = new JButton("Volver al inicio");
         back.setPreferredSize(new Dimension(120, 20));
+
         back.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 WindowHome mainFrame = new WindowHome(false);
-                mainFrame.setVisible(true);                
+                mainFrame.setVisible(true);
             }
         });
-        JPanel jp= new JPanel();
-        jp.add(back);
-        return jp;
+
+        JPanel panel = new JPanel();
+        panel.add(back);
+        return panel;
     }
 
     private void setDefaultCloseOperation(String exitOnClose) {
