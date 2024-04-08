@@ -29,6 +29,30 @@ public class WindowHome extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
+        JMenu searchIcon= new JMenu();
+        JMenuItem searchItem = new JMenuItem("Buscar");
+        searchItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	dispose();
+            	if(autentification==true) {
+            		new WindowShopping(true);
+            	}else {
+            		new WindowShopping(false);
+            	}
+                
+            }
+        });
+        searchIcon.add(searchItem);
+        BufferedImage image0 = null;
+        try {
+        	image0 = ImageIO.read(new File("imagenes/lupa.png"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+        Image SI = image0.getScaledInstance(10, 10, Image.SCALE_SMOOTH);
+        searchIcon.setIcon(new ImageIcon(SI));
+        menuBar.add(searchIcon);
         JMenu ropa = new JMenu("Ropa");
         //ropa.setPreferredSize(new Dimension(menuBar.getHeight(),(int) Math.floor(menuBar.getWidth()/6)));
         menuBar.add(ropa);        
