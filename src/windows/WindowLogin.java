@@ -41,7 +41,6 @@ public class WindowLogin extends JFrame {
         loginPanel.add(createUsernameLabelAndField());
         loginPanel.add(createPasswordLabelAndField());
         loginPanel.add(createForgotPasswordLabel());
-        loginPanel.add(createRememberCheckbox());
         loginPanel.add(createLoginButton());
         loginPanel.add(createSignUpLabel());
         loginPanel.add(createGoBackButton());
@@ -88,12 +87,6 @@ public class WindowLogin extends JFrame {
         return forgotPasswordLabel;
     }
 
-    private JCheckBox createRememberCheckbox() {
-        JCheckBox rememberCheckbox = new JCheckBox("Recordar");
-        rememberCheckbox.setPreferredSize(new Dimension(200, 30));
-
-        return rememberCheckbox;
-    }
 
     private JButton createLoginButton() {
         JButton loginButton = new JButton("Iniciar sesión");
