@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
@@ -28,17 +29,7 @@ public final class UserDeserializer extends JsonDeserializer<User> {
 
         JsonNode node2;
 
-        String id;
-        {
-            node2 = node.get("id");
-            if (node2 == null || node2.isNull())
-                throw new RuntimeException("\"id\" is null.");
-
-            if (!node2.isTextual())
-                throw new RuntimeException("\"id\" is not a string.");
-
-            id = node2.asText();
-        }
+        UserId id = new ObjectMapperProvider().getContext(UserId.class).treeToValue(node.get("id"), UserId.class);
 
         String passwd = null;
 

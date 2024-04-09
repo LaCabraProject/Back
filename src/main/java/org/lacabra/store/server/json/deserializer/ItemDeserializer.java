@@ -31,13 +31,6 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
         JsonNode node2;
 
         ObjectId id = new ObjectMapperProvider().getContext(ObjectId.class).treeToValue(node.get("id"), ObjectId.class);
-        {
-            if (node2 == null || node2.isNull())
-                throw new RuntimeException("\"id\" is null.");
-
-            if (!node2.isTextual())
-                throw new RuntimeException("\"id\" is not a string.");
-        }
 
         String passwd = null;
 
