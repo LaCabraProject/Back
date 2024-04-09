@@ -24,7 +24,7 @@ public class WindowHome extends JFrame {
     }
 
     private void initUI(User usuario) {
-        setTitle("RedBubble");
+        setTitle("GOAT");
         setSize(800, 600);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
