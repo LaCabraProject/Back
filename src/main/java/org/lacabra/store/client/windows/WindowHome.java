@@ -3,8 +3,6 @@ package org.lacabra.store.client.windows;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import org.lacabra.store.client.data.User;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

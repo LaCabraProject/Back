@@ -4,8 +4,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import org.lacabra.store.client.data.User;
-
 import java.awt.*;
 import java.io.File;
 

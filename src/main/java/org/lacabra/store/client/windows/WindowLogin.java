@@ -3,8 +3,6 @@ package org.lacabra.store.client.windows;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import org.lacabra.store.client.data.User;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

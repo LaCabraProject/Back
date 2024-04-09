@@ -1,10 +1,6 @@
 package org.lacabra.store.client.windows;
 
 import javax.swing.*;
-import org.lacabra.store.client.data.UserId;
-import org.lacabra.store.client.data.Credentials;
-import org.lacabra.store.client.data.Authority;
-import org.lacabra.store.client.data.User;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
