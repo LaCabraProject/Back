@@ -14,7 +14,7 @@ import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.converter.ObjectIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
-import org.lacabra.store.server.json.deserializer.UserDeserializer;
+import org.lacabra.store.server.json.deserializer.ItemDeserializer;
 import org.lacabra.store.server.json.serializer.ObjectIdSerializer;
 
 import javax.jdo.annotations.*;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@JsonDeserialize(using = UserDeserializer.class)
+@JsonDeserialize(using = ItemDeserializer.class)
 @PersistenceCapable(table = "item")
 @Query(name = "FindItem", value = "SELECT FROM Item WHERE id == :id")
 public class Item implements Serializable, Mergeable<Item> {
@@ -95,7 +95,7 @@ public class Item implements Serializable, Mergeable<Item> {
         this.name = name;
         this.description = description;
         this.keywords = keywords == null ? Collections.EMPTY_SET : new HashSet<>(keywords);
-        this.price = new BigDecimal(String.valueOf(price));
+        this.price = price == null ? BigDecimal.ZERO : new BigDecimal(String.valueOf(price));
         this.discount = discount == null ? 0 : discount;
         this.stock = stock == null ? BigInteger.ZERO : new BigDecimal(String.valueOf(stock)).toBigInteger();
     }

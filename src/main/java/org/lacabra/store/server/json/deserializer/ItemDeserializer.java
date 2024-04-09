@@ -73,7 +73,10 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
         if (!(node2 == null || node2.isNull()))
             price = node2.numberValue();
 
-        int discount = node.get("price").asInt(0);
+        Integer discount = null;
+        node2 = node.get("discount");
+        if (!(node2 == null || node2.isNull()))
+            discount = node2.intValue();
 
         BigInteger stock = null;
         node2 = node.get("stock");
