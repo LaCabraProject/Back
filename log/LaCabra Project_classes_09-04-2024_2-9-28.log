@@ -1,2 +1,0 @@
-[09/04/2024 2:9:28] WARNING: Could not store User org.lacabra.store.server.api.type.user.User@784d962e: Batched statement "INSERT INTO `USER` (`AUTHORITIES`,`PASSWD`,`ID`) VALUES (?,?,?)" failed. 
-Duplicate entry 'mikel' for key 'USER.PRIMARY' (java.sql.BatchUpdateException: Duplicate entry 'mikel' for key 'USER.PRIMARY')

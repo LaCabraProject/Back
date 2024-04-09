@@ -1,4 +1,0 @@
-[08/04/2024 12:24:40] WARNING: There was an error trying to count users (org.datanucleus.store.rdbms.query.SQLQuery@24a7f111): Error con la ejecucion de Query de SQL "SELECT COUNT(*) AS total FROM User u WHERE "client" IN (u.authorities)".
-[08/04/2024 12:24:40] WARNING: There was an error trying to count users (org.datanucleus.store.rdbms.query.SQLQuery@79bb2c8d): Error con la ejecucion de Query de SQL "SELECT COUNT(*) AS total FROM User u WHERE "artist" IN (u.authorities)".
-[08/04/2024 12:24:40] WARNING: There was an error trying to count users (org.datanucleus.store.rdbms.query.SQLQuery@a5483b83): Error con la ejecucion de Query de SQL "SELECT COUNT(*) AS total FROM User u WHERE "admin" IN (u.authorities)".
-[08/04/2024 12:24:40] WARNING: There was an error trying to count users (SELECT COUNT (*) INTO java.lang.Integer FROM User): Method/Identifier expected at character 8 in "COUNT (*)"

@@ -1,4 +1,0 @@
-[09/04/2024 0:25:28] WARNING: Could not store User org.lacabra.store.server.api.type.user.User@4d3c6ac5: Batched statement "INSERT INTO `USER` (`AUTHORITIES`,`PASSWD`,`ID`) VALUES (?,?,?)" failed. 
-Duplicate entry 'mikel' for key 'USER.PRIMARY' (java.sql.BatchUpdateException: Duplicate entry 'mikel' for key 'USER.PRIMARY')
-[09/04/2024 0:25:28] SEVERE: org.datanucleus.api.jdo.JDOQuery
-[09/04/2024 0:25:28] WARNING: There was an error trying to find users (SELECT DISTINCT this INTO org.lacabra.store.server.api.type.user.User FROM org.lacabra.store.server.api.type.user.User WHERE id == :id): Query result has been closed
