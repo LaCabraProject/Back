@@ -2,6 +2,7 @@ package org.lacabra.store.server.configuration;
 
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.inject.Qualifier;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

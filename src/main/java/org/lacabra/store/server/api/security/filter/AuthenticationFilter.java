@@ -36,7 +36,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         AuthTokenDetails tokenDetails = AuthTokenUtils.parse(token);
         User user = UserDAO.getInstance().findOne(new Credentials(tokenDetails.username()));
 
-        requestContext.setSecurityContext(new TokenSecurityContext(new AuthedUserDetails(user == null ? null : user.id(),
-        user == null ? Collections.EMPTY_SET : user.authorities()), tokenDetails, requestContext.getSecurityContext().isSecure()));
+        requestContext.setSecurityContext(new TokenSecurityContext(new AuthedUserDetails(user == null ? null :
+                user.id(),
+                user == null ? Collections.EMPTY_SET : user.authorities()), tokenDetails,
+                requestContext.getSecurityContext().isSecure()));
     }
 }

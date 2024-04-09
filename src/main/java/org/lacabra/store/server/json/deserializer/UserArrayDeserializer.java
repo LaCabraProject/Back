@@ -27,7 +27,7 @@ public final class UserArrayDeserializer extends JsonDeserializer<User[]> {
 
         var mapper = new ObjectMapperProvider().getContext(User.class);
         for (final JsonNode n : node) {
-            users.add(mapper.readValue(n.toString(), User.class));
+            users.add(mapper.treeToValue(n, User.class));
         }
 
         return users.toArray(new User[0]);

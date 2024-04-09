@@ -20,12 +20,11 @@ import java.util.regex.Pattern;
 @JsonSerialize(using = ObjectIdSerializer.class)
 @JsonDeserialize(using = ObjectIdDeserializer.class)
 public final class ObjectId implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     public final static Pattern regex = Pattern.compile("^[0-9a-f]{1,24}$");
     public final static ObjectId MIN = new ObjectId(0);
     public final static ObjectId MAX;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     static {
         final int bytes = 12;
@@ -115,10 +114,6 @@ public final class ObjectId implements Serializable {
         return new ObjectId(id.value);
     }
 
-    public BigInteger toInteger() {
-        return this.value;
-    }
-
     public static String normalize(Number id) {
         var oid = ObjectId.from(id);
         if (oid == null)
@@ -140,12 +135,6 @@ public final class ObjectId implements Serializable {
             return null;
 
         return id.normalize();
-    }
-
-    public String normalize() {
-        var str = this.toString();
-
-        return "0".repeat(24 - str.length()) + str;
     }
 
     public static ObjectId random(Class cls) {
@@ -189,6 +178,16 @@ public final class ObjectId implements Serializable {
         }
 
         return null;
+    }
+
+    public BigInteger toInteger() {
+        return this.value;
+    }
+
+    public String normalize() {
+        var str = this.toString();
+
+        return "0".repeat(24 - str.length()) + str;
     }
 
     @Override

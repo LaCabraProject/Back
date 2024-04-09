@@ -30,8 +30,8 @@ public class WindowShoppingCart extends JFrame {
         setSize(800, 600);
         setLayout(new BorderLayout());
 
-        JPanel panelSuperior = new JPanel(new GridLayout(1, 2, 10, 0)); 
-        panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
+        JPanel panelSuperior = new JPanel(new GridLayout(1, 2, 10, 0));
+        panelSuperior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel panelIzquierdoSuperior = new JPanel(new GridLayout(2, 1));
         JLabel etiquetaMetodoEnvio = new JLabel("Método de Envío:");
@@ -52,7 +52,7 @@ public class WindowShoppingCart extends JFrame {
         add(panelSuperior, BorderLayout.NORTH);
 
         JPanel panelCentral = new JPanel(new BorderLayout());
-        panelCentral.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
+        panelCentral.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         modeloListaProductos = new DefaultListModel<>();
         listaProductos = new JList<>(modeloListaProductos);
         listaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -60,8 +60,8 @@ public class WindowShoppingCart extends JFrame {
         panelCentral.add(panelDesplazableProductos, BorderLayout.CENTER);
         add(panelCentral, BorderLayout.CENTER);
 
-        JPanel panelInferior = new JPanel(new GridLayout(1, 3, 10, 0)); 
-        panelInferior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); 
+        JPanel panelInferior = new JPanel(new GridLayout(1, 3, 10, 0));
+        panelInferior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         botonEliminarProducto = new JButton("Eliminar Producto");
         botonAplicarCupon = new JButton("Aplicar Cupón");
         botonRealizarPago = new JButton("Realizar Pago");
@@ -75,32 +75,32 @@ public class WindowShoppingCart extends JFrame {
         comboBoxMetodoEnvio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              
+
             }
         });
 
         listaProductos.addListSelectionListener(e -> {
-           
+
         });
 
         botonEliminarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               
+
             }
         });
 
         botonAplicarCupon.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               
+
             }
         });
 
         botonRealizarPago.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+
             }
         });
 
@@ -111,6 +111,11 @@ public class WindowShoppingCart extends JFrame {
         campoCostoTotal.setText("$100.00");
     }
 
+    public static void main(String[] args) {
+        WindowShoppingCart app = new WindowShoppingCart();
+        app.ejecutar();
+    }
+
     public void ejecutar() {
         setVisible(true);
     }
@@ -118,10 +123,5 @@ public class WindowShoppingCart extends JFrame {
     private double calcularCostoTotal() {
         double costoTotal = 0.0;
         return costoTotal;
-    }
-
-    public static void main(String[] args) {
-        WindowShoppingCart app = new WindowShoppingCart();
-        app.ejecutar();
     }
 }

@@ -12,18 +12,28 @@ public interface IDAO<T> {
     public void delete(T object);
 
     public List<T> findAll();
+
     public List<T> find();
+
     public List<T> find(Object param);
+
     public List<T> find(Query<T> query);
+
     public List<T> find(Query<T> query, Object param);
 
     public T findOne();
+
     public T findOne(Object param);
+
     public T findOne(Query<T> query);
+
     public T findOne(Query<T> query, Object param);
 
     public BigInteger countAll();
+
     public BigInteger count();
+
     public BigInteger count(Query<T> query);
+
     public BigInteger count(Query<T> query, Object param);
 }

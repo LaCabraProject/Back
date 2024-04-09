@@ -22,11 +22,6 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
         mapper = createObjectMapper();
     }
 
-    @Override
-    public ObjectMapper getContext(Class<?> type) {
-        return mapper;
-    }
-
     private static ObjectMapper createObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -48,6 +43,11 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
+        return mapper;
+    }
+
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
         return mapper;
     }
 }

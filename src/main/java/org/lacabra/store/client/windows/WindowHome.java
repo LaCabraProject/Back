@@ -1,10 +1,9 @@
 package org.lacabra.store.client.windows;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
 import org.lacabra.store.client.data.User;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,13 +13,17 @@ import java.io.File;
 import java.io.IOException;
 
 public class WindowHome extends JFrame {
-	private JPanel carouselPanel;
+    private JPanel carouselPanel;
     private JScrollPane scrollPane;
     private int currentIndex = 0;
     private Timer timer;
 
     public WindowHome(User usuario) {
         initUI(usuario);
+    }
+
+    public static void main(String[] args) {
+        new WindowHome(null);
     }
 
     private void initUI(User usuario) {
@@ -32,33 +35,33 @@ public class WindowHome extends JFrame {
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
-        JMenu searchIcon= new JMenu();
+        JMenu searchIcon = new JMenu();
         JMenuItem searchItem = new JMenuItem("Buscar");
         searchItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	dispose();
-            	if(usuario!=null) {
-            		new WindowShopping(usuario);
-            	}else {
-            		new WindowShopping(null);
-            	}
-                
+                dispose();
+                if (usuario != null) {
+                    new WindowShopping(usuario);
+                } else {
+                    new WindowShopping(null);
+                }
+
             }
         });
         searchIcon.add(searchItem);
         BufferedImage image0 = null;
         try {
-        	image0 = ImageIO.read(new File("org/lacabra/store/client/img/lupa.png"));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+            image0 = ImageIO.read(new File("org/lacabra/store/client/img/lupa.png"));
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
         Image SI = image0.getScaledInstance(10, 10, Image.SCALE_SMOOTH);
         searchIcon.setIcon(new ImageIcon(SI));
         menuBar.add(searchIcon);
         JMenu ropa = new JMenu("Ropa");
         //ropa.setPreferredSize(new Dimension(menuBar.getHeight(),(int) Math.floor(menuBar.getWidth()/6)));
-        //menuBar.add(ropa);        
+        //menuBar.add(ropa);
         JMenu hogar = new JMenu("Hogar");
         //hogar.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
         //menuBar.add(hogar);
@@ -70,58 +73,58 @@ public class WindowHome extends JFrame {
         //menuBar.add(decoracion);
         JMenu accesorios = new JMenu("Accesorios");
         //accesorios.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        //menuBar.add(accesorios);        
+        //menuBar.add(accesorios);
 
-        //cuenta        
-        if(usuario==null){
-        	JMenu iniciar = new JMenu("Iniciar sesión");
-            menuBar.add(iniciar); 
+        //cuenta
+        if (usuario == null) {
+            JMenu iniciar = new JMenu("Iniciar sesión");
+            menuBar.add(iniciar);
             JMenuItem signIn = new JMenuItem("Iniciar sesión");
             iniciar.add(signIn);
             JMenuItem register = new JMenuItem("Crear cuenta");
             iniciar.add(register);
-            signIn.addActionListener(new ActionListener() {				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					new WindowLogin();
-				}
-			});
-            register.addActionListener(new ActionListener() {				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					new WindowRegister();
-				}
-			});
-        }else {
-        	JMenu cuenta = new JMenu("Cuenta");            
+            signIn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    new WindowLogin();
+                }
+            });
+            register.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    new WindowRegister();
+                }
+            });
+        } else {
+            JMenu cuenta = new JMenu("Cuenta");
             menuBar.add(cuenta);
-        	JMenuItem cuentaInfo = new JMenuItem("Ver perfil");
-        	cuenta.add(cuentaInfo);
-        	JMenuItem cuentaCompras = new JMenuItem("Mis compras");
-        	cuenta.add(cuentaCompras);
-        	JMenuItem cuentaVentas = new JMenuItem("Mis ventas");
-        	cuenta.add(cuentaVentas);
-        	cuentaVentas.addActionListener(new ActionListener() {				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					new WindowSalesStall(usuario);
-				}
-			});
-        	JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
-        	cuenta.add(signOut);
-        	cuenta.setMnemonic(KeyEvent.VK_M);
-        	signOut.addActionListener(new ActionListener() {				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					dispose();					
-					new WindowHome(null);
-				}
-			});
+            JMenuItem cuentaInfo = new JMenuItem("Ver perfil");
+            cuenta.add(cuentaInfo);
+            JMenuItem cuentaCompras = new JMenuItem("Mis compras");
+            cuenta.add(cuentaCompras);
+            JMenuItem cuentaVentas = new JMenuItem("Mis ventas");
+            cuenta.add(cuentaVentas);
+            cuentaVentas.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    new WindowSalesStall(usuario);
+                }
+            });
+            JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
+            cuenta.add(signOut);
+            cuenta.setMnemonic(KeyEvent.VK_M);
+            signOut.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dispose();
+                    new WindowHome(null);
+                }
+            });
         }
-        
+
         //ropa
         JMenuItem ropa0 = new JMenuItem("Todos");
         ropa.add(ropa0);
@@ -139,7 +142,7 @@ public class WindowHome extends JFrame {
         ropa.add(ropa6);
         JMenuItem ropa7 = new JMenuItem("Calcetines");
         ropa.add(ropa7);
-        
+
         //hogar
         JMenuItem hogar0 = new JMenuItem("Todos");
         hogar.add(hogar0);
@@ -157,7 +160,7 @@ public class WindowHome extends JFrame {
         hogar.add(hogar6);
         JMenuItem hogar7 = new JMenuItem("Imanes");
         hogar.add(hogar7);
-        
+
         //oficina
         JMenuItem oficina0 = new JMenuItem("Todos");
         oficina.add(oficina0);
@@ -193,7 +196,7 @@ public class WindowHome extends JFrame {
         decoracion.add(decoracion6);
         JMenuItem decoracion7 = new JMenuItem("Relojes de pared");
         decoracion.add(decoracion7);
-        
+
         //accesorios
         JMenuItem accesorios0 = new JMenuItem("Todos");
         accesorios.add(accesorios0);
@@ -225,8 +228,8 @@ public class WindowHome extends JFrame {
 
         // Create and add a panel for the main content
         carouselPanel = new JPanel();
-        carouselPanel.setLayout(new GridLayout(1, 1)); 
-        carouselPanel.setPreferredSize(new Dimension(200, 200)); 
+        carouselPanel.setLayout(new GridLayout(1, 1));
+        carouselPanel.setPreferredSize(new Dimension(200, 200));
         scrollPane = new JScrollPane(carouselPanel);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -252,41 +255,36 @@ public class WindowHome extends JFrame {
 
         // Add some example components to the footer panel
         footerPanel.add(new JLabel("Siguenos en Facebook"), BorderLayout.WEST);
-        JButton socialMedia= new JButton();
+        JButton socialMedia = new JButton();
         socialMedia.setPreferredSize(new Dimension(90, 30));
         BufferedImage image = null;
-		try {
-			image = ImageIO.read(new File("org/lacabra/store/client/img/facebook.png"));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+        try {
+            image = ImageIO.read(new File("org/lacabra/store/client/img/facebook.png"));
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         Image scaledImage = image.getScaledInstance(90, 30, Image.SCALE_SMOOTH);
         socialMedia.setIcon(new ImageIcon(scaledImage));
-        socialMedia.addActionListener(new ActionListener() {			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String url="https://www.facebook.com/Redbubble";
-				try {
-					java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
-					} catch (java.io.IOException ex) {
-						System.out.println(ex.getMessage());
-					}				
-			}
-		});
+        socialMedia.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String url = "https://www.facebook.com/Redbubble";
+                try {
+                    java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+                } catch (java.io.IOException ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }
+        });
         footerPanel.add(socialMedia, BorderLayout.EAST);
 
         setVisible(true);
     }
-    
+
     private void showNextCard() {
         int numCards = carouselPanel.getComponentCount();
         currentIndex = (currentIndex + 1) % numCards;
         scrollPane.getHorizontalScrollBar().setValue(currentIndex * scrollPane.getViewport().getViewSize().width / numCards);
-    }
-
-
-    public static void main(String[] args) {
-        new WindowHome(null);
     }
 }

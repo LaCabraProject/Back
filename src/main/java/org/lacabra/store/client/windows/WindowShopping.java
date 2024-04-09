@@ -1,12 +1,11 @@
 package org.lacabra.store.client.windows;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-
 import org.lacabra.store.client.data.ItemType;
 import org.lacabra.store.client.data.User;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,7 +22,7 @@ public class WindowShopping {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
-        
+
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout());
 
@@ -85,12 +84,17 @@ public class WindowShopping {
         frame.setVisible(true);
     }
 
+    public static void main(String[] args) {
+        new WindowShopping(null);
+    }
+
     private static class ImageRenderer extends DefaultTableCellRenderer {
         private static final int MAX_IMAGE_WIDTH = 100;
         private static final int MAX_IMAGE_HEIGHT = 100;
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
             JLabel label = new JLabel();
             if (value != null) {
                 String imagePath = (String) value;
@@ -117,9 +121,5 @@ public class WindowShopping {
             }
             return label;
         }
-    }
-
-    public static void main(String[] args) {
-        new WindowShopping(null);
     }
 }

@@ -1,10 +1,9 @@
 package org.lacabra.store.server.jdo.dao;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
-
-import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ItemDAO extends DAO<Item> {

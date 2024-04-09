@@ -1,10 +1,9 @@
 package org.lacabra.store.client.windows;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 import org.lacabra.store.client.data.User;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +18,11 @@ public class WindowLogin extends JFrame {
 
     public WindowLogin() {
         initUI();
+    }
+
+    public static void main(String[] args) {
+        WindowLogin loginFrame = new WindowLogin();
+        loginFrame.setVisible(true);
     }
 
     private void initUI() {
@@ -79,7 +83,7 @@ public class WindowLogin extends JFrame {
         JPanel panel = new JPanel();
         panel.add(passwordLabel);
         panel.add(passwordField);
-        
+
         return panel;
     }
 
@@ -95,12 +99,13 @@ public class WindowLogin extends JFrame {
 
                 if (username.equals("admin") && password.equals("admin")) {
                     dispose();
-                    User usuario=null;
-                    usuario=new User(username);
+                    User usuario = null;
+                    usuario = new User(username);
                     WindowHome mainFrame = new WindowHome(usuario);
                     mainFrame.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(WindowLogin.this, "Nombre de usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(WindowLogin.this, "Nombre de usuario o contraseña incorrectos.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -146,10 +151,5 @@ public class WindowLogin extends JFrame {
         if (exitOnClose.equals(EXIT_ON_CLOSE)) {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         }
-    }
-
-    public static void main(String[] args) {
-        WindowLogin loginFrame = new WindowLogin();
-        loginFrame.setVisible(true);
     }
 }

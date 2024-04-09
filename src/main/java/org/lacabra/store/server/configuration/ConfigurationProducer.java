@@ -3,6 +3,7 @@ package org.lacabra.store.server.configuration;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.spi.InjectionPoint;
+
 import javax.ws.rs.Produces;
 import java.io.IOException;
 import java.io.InputStream;

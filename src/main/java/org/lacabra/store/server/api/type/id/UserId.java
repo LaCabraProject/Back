@@ -16,10 +16,9 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = UserIdSerializer.class)
 @JsonDeserialize(using = UserIdDeserializer.class)
 public final class UserId implements Serializable {
+    public final static Pattern regex;
     @Serial
     private static final long serialVersionUID = 1L;
-
-    public final static Pattern regex;
 
     static {
         String[] invalid = {"all"};

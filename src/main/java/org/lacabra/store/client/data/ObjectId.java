@@ -1,4 +1,5 @@
 package org.lacabra.store.client.data;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.*;
@@ -97,10 +98,6 @@ public final class ObjectId {
         return new ObjectId(id.value);
     }
 
-    public BigInteger toInteger() {
-        return this.value;
-    }
-
     public static String normalize(Number id) {
         var oid = ObjectId.from(id);
         if (oid == null)
@@ -122,6 +119,10 @@ public final class ObjectId {
             return null;
 
         return id.normalize();
+    }
+
+    public BigInteger toInteger() {
+        return this.value;
     }
 
     public String normalize() {
