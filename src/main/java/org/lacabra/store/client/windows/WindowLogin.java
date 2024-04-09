@@ -1,10 +1,10 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,15 +13,16 @@ import java.awt.event.MouseEvent;
 
 public class WindowLogin extends JFrame {
     private static final String EXIT_ON_CLOSE = "EXIT_ON_CLOSE";
-
+    private MainController mc;
     private JTextField usernameField;
     private JPasswordField passwordField;
 
-    public WindowLogin() {
-        initUI();
+    public WindowLogin(MainController mc) {
+        initUI(mc);
+        this.mc=mc;
     }
 
-    private void initUI() {
+    private void initUI(MainController mc) {
         setTitle("Iniciar sesión");
         setSize(400, 400);
         setLocationRelativeTo(null);
@@ -97,7 +98,7 @@ public class WindowLogin extends JFrame {
                     dispose();
                     User usuario=null;
                     usuario=new User(username);
-                    WindowHome mainFrame = new WindowHome(usuario);
+                    WindowHome mainFrame = new WindowHome(usuario, mc);
                     mainFrame.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(WindowLogin.this, "Nombre de usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -117,7 +118,7 @@ public class WindowLogin extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 dispose();
-                new WindowRegister();
+                new WindowRegister(mc);
             }
         });
 
@@ -132,7 +133,7 @@ public class WindowLogin extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                WindowHome mainFrame = new WindowHome(null);
+                WindowHome mainFrame = new WindowHome(null, mc);
                 mainFrame.setVisible(true);
             }
         });
@@ -149,7 +150,8 @@ public class WindowLogin extends JFrame {
     }
 
     public static void main(String[] args) {
-        WindowLogin loginFrame = new WindowLogin();
+        MainController mc = new MainController();
+        WindowLogin loginFrame = new WindowLogin(mc);
         loginFrame.setVisible(true);
     }
 }

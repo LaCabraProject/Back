@@ -1,5 +1,7 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.client.Controller.MainController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,8 +15,10 @@ public class WindowShoppingCart extends JFrame {
     private JButton botonEliminarProducto;
     private JButton botonAplicarCupon;
     private JButton botonRealizarPago;
+    private MainController mc;
 
-    public WindowShoppingCart() {
+    public WindowShoppingCart(MainController mc) {
+        this.mc=mc;
         setTitle("Carrito de Compra");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -112,7 +116,7 @@ public class WindowShoppingCart extends JFrame {
     }
 
     public static void main(String[] args) {
-        WindowShoppingCart app = new WindowShoppingCart();
+        WindowShoppingCart app = new WindowShoppingCart(new MainController());
         app.ejecutar();
     }
 

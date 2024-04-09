@@ -1,5 +1,6 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.swing.table.DefaultTableCellRenderer;
@@ -13,11 +14,11 @@ public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
     private JTable table;
 
-    public WindowSalesStall(User usuario) {
-        initUI(usuario);
+    public WindowSalesStall(User usuario, MainController mc) {
+        initUI(usuario, mc);
     }
 
-    private void initUI(User usuario) {
+    private void initUI(User usuario, MainController mc) {
         setTitle("Artículos a la venta");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -118,7 +119,7 @@ public class WindowSalesStall extends JFrame {
 
         btnBack.addActionListener(e -> {
             dispose();
-            new WindowHome(usuario);
+            new WindowHome(usuario, mc);
         });
 
         btnClearList.addActionListener(e -> tableModel.setRowCount(0));
@@ -161,7 +162,7 @@ public class WindowSalesStall extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new WindowSalesStall(null));
+        SwingUtilities.invokeLater(() -> new WindowSalesStall(null,new MainController()));
     }
 }
 

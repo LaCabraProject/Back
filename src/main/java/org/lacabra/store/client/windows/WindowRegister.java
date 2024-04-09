@@ -1,5 +1,6 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
@@ -15,12 +16,14 @@ public class WindowRegister extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JComboBox<Authority> selectionComboBox;
+    private MainController mc;
 
-    public WindowRegister() {
-        initUI();
+    public WindowRegister(MainController mc) {
+        initUI(mc);
+        this.mc=mc;
     }
 
-    private void initUI() {
+    private void initUI(MainController mc) {
         setTitle("Crea una cuenta");
         setSize(400, 300);
         setLocationRelativeTo(null);
@@ -92,9 +95,10 @@ public class WindowRegister extends JFrame {
                 UserId userId=UserId.from(username);
                 Credentials cre=new Credentials(userId.get(),selected ,password);
                 User usuario=new User(cre);
+                mc.PutUser(usuario);
                 JOptionPane.showMessageDialog(WindowRegister.this, "¡Has sido registrado exitosamente! Revisa tu bandeja de entrada para encontrar el descuento en tu primer pedido.");
                 dispose();
-                new WindowHome(usuario);
+                new WindowHome(usuario,mc);
             }
         });
 
@@ -108,7 +112,7 @@ public class WindowRegister extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                WindowHome mainFrame = new WindowHome(null);
+                WindowHome mainFrame = new WindowHome(null, mc);
                 mainFrame.setVisible(true);                
             }
         });
@@ -118,7 +122,8 @@ public class WindowRegister extends JFrame {
     }
 
     public static void main(String[] args) {
-        WindowRegister registerWindow = new WindowRegister();
+        MainController mc = new MainController();
+        WindowRegister registerWindow = new WindowRegister(mc);
         registerWindow.setVisible(true);
     }
 }
