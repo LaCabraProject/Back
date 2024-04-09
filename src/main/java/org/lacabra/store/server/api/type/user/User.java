@@ -19,6 +19,7 @@ import javax.jdo.annotations.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 @Query(name = "FindUser", value = "SELECT FROM User WHERE id == :id")
@@ -93,7 +94,7 @@ public class User implements Serializable {
     }
 
     public Set<Authority> authorities() {
-        return this.authorities;
+        return new HashSet<>(this.authorities);
     }
 
     public UserId id() {

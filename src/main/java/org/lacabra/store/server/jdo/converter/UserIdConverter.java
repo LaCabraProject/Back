@@ -1,5 +1,6 @@
 package org.lacabra.store.server.jdo.converter;
 
+
 import jakarta.persistence.Converter;
 import org.lacabra.store.server.api.type.id.UserId;
 

@@ -1,24 +1,35 @@
 package org.lacabra.store.server.api.type.user;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.server.json.serializer.UserIdSerializer;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Objects;
 
 public final class Credentials implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public EnumSet<Authority> authorities;
+    @JsonProperty("id")
+    @JsonSerialize(using = UserIdSerializer.class)
+    private final UserId id;
 
-    public UserId id;
-    public String passwd;
+    @JsonProperty("passwd")
+    private final String passwd;
+
+    @JsonProperty("authorities")
+    private final EnumSet<Authority> authorities;
 
     public Credentials() {
-        this.authorities = EnumSet.noneOf(Authority.class);
         this.id = null;
         this.passwd = null;
+        this.authorities = EnumSet.noneOf(Authority.class);
     }
 
     public Credentials(Authority authorities) {
@@ -26,6 +37,8 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(Collection<Authority> authorities) {
+        this.id = null;
+        this.passwd = null;
         this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
     }
 
@@ -52,6 +65,7 @@ public final class Credentials implements Serializable {
     public Credentials(UserId id, String passwd) {
         this.id = Objects.requireNonNull(id);
         this.passwd = passwd;
+        this.authorities = EnumSet.noneOf(Authority.class);
     }
 
     public Credentials(String id, Authority authorities, String passwd) {
@@ -68,6 +82,7 @@ public final class Credentials implements Serializable {
 
     public Credentials(UserId id, Collection<Authority> authorities) {
         this.id = Objects.requireNonNull(id);
+        this.passwd = null;
         this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
     }
 
@@ -85,8 +100,8 @@ public final class Credentials implements Serializable {
         this(creds.id, creds.authorities, creds.passwd);
     }
 
-    public Set<Authority> authorities() {
-        return this.authorities;
+    public EnumSet<Authority> authorities() {
+        return EnumSet.copyOf(this.authorities);
     }
 
     public UserId id() {

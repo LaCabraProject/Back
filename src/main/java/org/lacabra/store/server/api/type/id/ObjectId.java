@@ -2,13 +2,18 @@ package org.lacabra.store.server.api.type.id;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.jdo.dao.DAO;
 import org.lacabra.store.server.json.deserializer.ObjectIdDeserializer;
 import org.lacabra.store.server.json.serializer.ObjectIdSerializer;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.*;
 import java.util.regex.Pattern;
 
@@ -55,7 +60,7 @@ public final class ObjectId implements Serializable {
             case DoubleAdder da -> NumberToBigInteger(BigDecimal.valueOf(da.sum()));
 
             case BigDecimal dec -> {
-                BigInteger i = dec.toBigIntegerExact();
+                BigInteger i = dec.toBigInteger();
 
                 if (dec.compareTo(new BigDecimal(i)) != 0)
                     yield null;
@@ -141,6 +146,49 @@ public final class ObjectId implements Serializable {
         var str = this.toString();
 
         return "0".repeat(24 - str.length()) + str;
+    }
+
+    public static ObjectId random(Class cls) {
+        var dao = DAO.getInstance(cls);
+        if (dao == null)
+            return null;
+
+        try {
+            var constructor = cls.getConstructor(ObjectId.class);
+
+            final int MAX_ITERS = 1_000_000;
+            final String hex = "0123456789abcdef";
+
+            final Set<ObjectId> tried = new HashSet<>();
+
+            for (int i = 0; i < MAX_ITERS; ) {
+                StringBuilder builder = new StringBuilder();
+                for (int j = 0; j < 24; j++) {
+                    builder.append(hex.charAt((int) (Math.random() * 100) % hex.length()));
+                }
+
+                String str = builder.toString();
+
+                ObjectId id = ObjectId.from(str);
+                if (id == null || tried.contains(id)) {
+                    continue;
+                }
+
+                tried.add(id);
+                i++;
+
+                Object o = constructor.newInstance(id);
+
+                if (dao.findOne(o) != null)
+                    return id;
+            }
+        } catch (NoSuchMethodException e) {
+            Logger.getLogger().warning("No ObjectId based constructor found for class " + cls.getName());
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            Logger.getLogger().severe(e);
+        }
+
+        return null;
     }
 
     @Override
