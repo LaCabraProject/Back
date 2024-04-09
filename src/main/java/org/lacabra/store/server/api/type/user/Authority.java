@@ -13,7 +13,11 @@ public enum Authority implements Serializable {
         this.authority = authority;
     }
 
-    static public Authority parse(String authority) {
+    public String value () {
+        return this.authority;
+    }
+
+    public static Authority parse(String authority) {
         return switch (authority) {
             case Constants.Client -> Client;
             case Constants.Artist -> Artist;

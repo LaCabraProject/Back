@@ -4,6 +4,7 @@ import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.dao.UserDAO;
@@ -55,6 +56,27 @@ public final class Route {
         @PUT
         public Response PUT(String json) {
             return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+        }
+    }
+
+    @Path("/user/register")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @PermitAll
+    public final static class Register {
+        @POST
+        public Response POST(@FormParam("id") String id,
+                             @FormParam("passwd") String passwd) {
+            if (!UserId.is(id))
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Invalid User ID.").build();
+
+            var dao = UserDAO.getInstance();
+
+            User u = new User(new Credentials(id, List.of(Authority.Client, Authority.Artist), passwd));
+            if (dao.findOne(u) != null)
+                return Response.status(Response.Status.CONFLICT.getStatusCode(), "User already exists.").build();
+
+            dao.store(u);
+            return Response.ok().build();
         }
     }
 }

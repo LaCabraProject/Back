@@ -63,7 +63,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(UserId id, String passwd) {
-        this.id = Objects.requireNonNull(id);
+        this.id = id;
         this.passwd = passwd;
         this.authorities = EnumSet.noneOf(Authority.class);
     }
@@ -83,7 +83,8 @@ public final class Credentials implements Serializable {
     public Credentials(UserId id, Collection<Authority> authorities) {
         this.id = Objects.requireNonNull(id);
         this.passwd = null;
-        this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
+        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(authorities);
     }
 
     public Credentials(UserId id, Authority authorities, String passwd) {
@@ -92,7 +93,8 @@ public final class Credentials implements Serializable {
 
     public Credentials(UserId id, Collection<Authority> authorities, String passwd) {
         this.id = id;
-        this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
+        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(authorities);
         this.passwd = passwd;
     }
 

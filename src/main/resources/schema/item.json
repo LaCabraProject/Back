@@ -2,9 +2,7 @@
   "$id": "item",
   "type": "object",
   "required": [
-    "id",
-    "type",
-    "name"
+    "id"
   ],
   "additionalProperties": false,
   "properties": {

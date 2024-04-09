@@ -13,6 +13,7 @@ import org.lacabra.store.server.api.type.id.ObjectId;
 import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.converter.ObjectIdConverter;
+import org.lacabra.store.server.jdo.dao.Mergeable;
 import org.lacabra.store.server.json.deserializer.UserDeserializer;
 import org.lacabra.store.server.json.serializer.ObjectIdSerializer;
 
@@ -30,7 +31,8 @@ import java.util.Set;
 
 @JsonDeserialize(using = UserDeserializer.class)
 @PersistenceCapable(table = "item")
-public class Item implements Serializable {
+@Query(name = "FindItem", value = "SELECT FROM Item WHERE id == :id")
+public class Item implements Serializable, Mergeable<Item> {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +61,7 @@ public class Item implements Serializable {
     private Set<String> keywords;
 
     @JsonProperty("price")
-    @Column(jdbcType = "REAL")
+    @Column(jdbcType = "DECIMAL")
     private BigDecimal price;
 
     @JsonProperty("discount")
@@ -141,11 +143,47 @@ public class Item implements Serializable {
     public BigInteger stock() {
         return this.stock;
     }
+
     public Integer discount() {
         return this.discount;
     }
 
     public User parent() {
         return this.parent;
+    }
+
+    @Override
+    public Item merge(Item override) {
+        if (override == null)
+            return this;
+
+        if (override.id != null)
+            this.id = override.id;
+
+        if (override.type != null)
+            this.type = override.type;
+
+        if (override.name != null)
+            this.name = override.name;
+
+        if (override.description != null)
+            this.description = override.description;
+
+        if (override.keywords != null)
+            this.keywords = override.keywords;
+
+        if (override.price != null)
+            this.price = override.price;
+
+        if (override.stock != null)
+            this.stock = override.stock;
+
+        if (override.discount != null)
+            this.discount = override.discount;
+
+        if (override.parent != null)
+            this.parent = override.parent;
+
+        return this;
     }
 }

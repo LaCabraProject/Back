@@ -8,18 +8,24 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
+import org.lacabra.store.server.json.deserializer.ItemArrayDeserializer;
+import org.lacabra.store.server.json.deserializer.ItemDeserializer;
 import org.lacabra.store.server.json.deserializer.UserArrayDeserializer;
+import org.lacabra.store.server.json.deserializer.UserDeserializer;
 
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import java.util.HashMap;
+import java.util.Map;
 
 @Provider
 public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
-    private final ObjectMapper mapper;
+    private final Map<Class<?>, ObjectMapper> mappers = new HashMap<>();
 
     public ObjectMapperProvider() {
-        mapper = createObjectMapper();
     }
 
     private static ObjectMapper createObjectMapper() {
@@ -27,6 +33,9 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
         SimpleModule mod = new SimpleModule();
         mod.addDeserializer(User[].class, new UserArrayDeserializer());
+        mod.addDeserializer(User.class, new UserDeserializer());
+        mod.addDeserializer(Item[].class, new ItemArrayDeserializer());
+        mod.addDeserializer(Item.class, new ItemDeserializer());
 
         mapper.registerModule(mod);
         mapper.registerModule(new Jdk8Module());
@@ -47,7 +56,16 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     }
 
     @Override
-    public ObjectMapper getContext(Class<?> type) {
-        return mapper;
+    public ObjectMapper getContext(@NotNull Class<?> type) {
+        if (type == null)
+            return null;
+
+        if (mappers.containsKey(type))
+            return mappers.get(type);
+
+        final ObjectMapper m = createObjectMapper();
+        mappers.put(type, m);
+
+        return m;
     }
 }
