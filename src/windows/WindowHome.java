@@ -2,6 +2,9 @@ package windows;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import data.User;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,11 +19,11 @@ public class WindowHome extends JFrame {
     private int currentIndex = 0;
     private Timer timer;
 
-    public WindowHome(boolean autentification) {
-        initUI(autentification);
+    public WindowHome(User usuario) {
+        initUI(usuario);
     }
 
-    private void initUI(boolean autentification) {
+    private void initUI(User usuario) {
         setTitle("RedBubble");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -35,10 +38,10 @@ public class WindowHome extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
             	dispose();
-            	if(autentification==true) {
-            		new WindowShopping(true);
+            	if(usuario!=null) {
+            		new WindowShopping(usuario);
             	}else {
-            		new WindowShopping(false);
+            		new WindowShopping(null);
             	}
                 
             }
@@ -55,22 +58,22 @@ public class WindowHome extends JFrame {
         menuBar.add(searchIcon);
         JMenu ropa = new JMenu("Ropa");
         //ropa.setPreferredSize(new Dimension(menuBar.getHeight(),(int) Math.floor(menuBar.getWidth()/6)));
-        menuBar.add(ropa);        
+        //menuBar.add(ropa);        
         JMenu hogar = new JMenu("Hogar");
         //hogar.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        menuBar.add(hogar);
+        //menuBar.add(hogar);
         JMenu oficina = new JMenu("Oficina");
         //oficina.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        menuBar.add(oficina);
+        //menuBar.add(oficina);
         JMenu decoracion = new JMenu("Decoración");
         //decoracion.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        menuBar.add(decoracion);
+        //menuBar.add(decoracion);
         JMenu accesorios = new JMenu("Accesorios");
         //accesorios.setPreferredSize(new Dimension(menuBar.getHeight(),(int)menuBar.getWidth()/6));
-        menuBar.add(accesorios);        
+        //menuBar.add(accesorios);        
 
         //cuenta        
-        if(autentification==false){
+        if(usuario==null){
         	JMenu iniciar = new JMenu("Iniciar sesión");
             menuBar.add(iniciar); 
             JMenuItem signIn = new JMenuItem("Iniciar sesión");
@@ -104,7 +107,7 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					new WindowSalesStall();
+					new WindowSalesStall(usuario);
 				}
 			});
         	JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
@@ -114,7 +117,7 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();					
-					new WindowHome(false);
+					new WindowHome(null);
 				}
 			});
         }
@@ -284,6 +287,6 @@ public class WindowHome extends JFrame {
 
 
     public static void main(String[] args) {
-        new WindowHome(false);
+        new WindowHome(null);
     }
 }

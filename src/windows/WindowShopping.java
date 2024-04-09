@@ -3,6 +3,9 @@ package windows;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import data.User;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +16,7 @@ public class WindowShopping {
     private DefaultTableModel tableModel;
     private JTable table;
 
-    public WindowShopping(boolean autentification) {
+    public WindowShopping(User usuario) {
         frame = new JFrame("Buscador");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -76,7 +79,7 @@ public class WindowShopping {
         });
         btnBack.addActionListener(e -> {
             frame.dispose();
-            new WindowHome(autentification);
+            new WindowHome(usuario);
         });
 
         frame.setVisible(true);
@@ -117,6 +120,6 @@ public class WindowShopping {
     }
 
     public static void main(String[] args) {
-        new WindowShopping(false);
+        new WindowShopping(null);
     }
 }
