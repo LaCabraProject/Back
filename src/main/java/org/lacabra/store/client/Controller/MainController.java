@@ -1,5 +1,6 @@
 package org.lacabra.store.client.Controller;
 
+import org.lacabra.store.server.api.route.stats.Route;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
@@ -18,8 +19,8 @@ import java.util.List;
 public class MainController {
     private static String ServerName = "http://localhost:8080";
 
-    public ArrayList<Item> ReceiveItems() {
-        ArrayList<Item> items = new ArrayList<>();
+    public List<Item> ReceiveItems() {
+        List<Item> items = new ArrayList<>();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ServerName.concat("/items"))).GET().build();
 
@@ -28,7 +29,8 @@ public class MainController {
             System.out.println(respuesta.body());
 
             // deserializar un json y devolver array de Items
-            //
+            items =
+                    Collections.arrayToList(new ObjectMapperProvider().getContext(Item[].class).readValue(respuesta.body(), Item[].class));
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }

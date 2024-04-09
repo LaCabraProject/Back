@@ -1,5 +1,7 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.server.api.type.user.User;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
