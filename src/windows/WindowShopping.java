@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import data.ItemType;
 import data.User;
 
 import java.awt.*;
@@ -26,8 +27,7 @@ public class WindowShopping {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout());
 
-        String[] searchOptions = {"Todos", "Ropa", "Hogar", "Oficina", "Decoración", "Accesorios"};
-        JComboBox<String> searchComboBox = new JComboBox<>(searchOptions);
+        JComboBox<ItemType> searchComboBox = new JComboBox<>(ItemType.values());
         topPanel.add(searchComboBox);
 
         searchField = new JTextField(20);

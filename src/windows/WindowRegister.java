@@ -90,9 +90,10 @@ public class WindowRegister extends JFrame {
                 Authority selected = (Authority) selectionComboBox.getSelectedItem();
                 UserId userId=UserId.from(username);
                 Credentials cre=new Credentials(userId.get(),selected ,password);                
-                User usuario=new User(cre);
-                
+                User usuario=new User(cre);                
                 JOptionPane.showMessageDialog(WindowRegister.this, "¡Has sido registrado exitosamente! Revisa tu bandeja de entrada para encontrar el descuento en tu primer pedido.");
+                dispose();
+                new WindowHome(usuario);
             }
         });
 

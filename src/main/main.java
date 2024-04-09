@@ -1,11 +1,13 @@
 package main;
 
+import data.MainController;
 import windows.WindowHome;
 
 public class main {
 
 	public static void main(String[] args) {
-		new WindowHome(false);
+		MainController mc=new MainController();
+		new WindowHome(null);
 	}
 
 }
