@@ -1,12 +1,14 @@
 package org.lacabra.store.server.jdo.dao;
 
 import jakarta.el.MethodNotFoundException;
+import org.datanucleus.api.jdo.JDOQuery;
 import org.lacabra.store.internals.logging.Logger;
 
 import javax.jdo.*;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -82,6 +84,12 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     }
 
     public void store(T object) {
+        if (object == null) {
+            Logger.getLogger().warning("tried to store null object.");
+
+            return;
+        }
+
         Transaction tx = pm.currentTransaction();
 
         try {
@@ -90,11 +98,11 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
             pm.makePersistent(object);
             tx.commit();
 
-            Logger.getLogger().info(String.format("%s stored successfully.", object.toString()));
+            Logger.getLogger().info(String.format("%s stored successfully.", object));
         } catch (Exception e) {
             Logger.getLogger().warning(String.format("Could not store %s %s: %s (%s)",
                     Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
-                            + "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + "" + str).toLowerCase()).replaceFirst(m -> m.group().toUpperCase()), object.toString(), e.getMessage(), e.getCause()));
+                            + "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + str.toLowerCase()).toLowerCase()).replaceFirst(m -> m.group().toUpperCase()), object.toString(), e.getMessage(), e.getCause()));
         } finally {
             if (tx != null && tx.isActive()) tx.rollback();
         }
@@ -114,8 +122,10 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public final List<T> find() {
-        return this.find(pm.newQuery(String.format("SELECT b FROM %s b", this.instance().objClass.getSimpleName())));
+        return this.find((Query<T>) pm.newQuery(String.format("SELECT b FROM %s b",
+                this.instance().objClass.getSimpleName())));
     }
 
     @Override
@@ -154,33 +164,41 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
             } else {
                 if (param != null) {
                     Map<String, Object> params = new HashMap<>();
-                    for (Field f : param.getClass().getFields()) {
+                    for (Field f : param.getClass().getDeclaredFields()) {
+                        if (Modifier.isStatic(f.getModifiers())) continue;
+
+                        params.put(f.getName(), null);
+
                         if (f.canAccess(param)) params.put(f.getName(), f.get(param));
                     }
 
-                    for (Method m : param.getClass().getMethods()) {
-                        if (params.containsKey(m.getName())) continue;
+                    for (Method m : param.getClass().getDeclaredMethods()) {
+                        if (!params.containsKey(m.getName())) continue;
 
-                        if (m.canAccess(param)) params.put(m.getName(), m.invoke(param));
+                        if (!Modifier.isStatic(m.getModifiers()) && m.canAccess(param))
+                            params.putIfAbsent(m.getName(), m.invoke(param));
                     }
 
-                    query.setNamedParameters(params);
+                    query.setNamedParameters(Map.ofEntries(params.entrySet().stream().filter(x -> x.getValue() != null).toArray(Map.Entry[]::new)));
                 }
 
                 if (count) {
-                    query.setResultClass(Integer.class);
+                    query.setResultClass(BigInteger.class);
                     Iterator<?> it = query.executeList().iterator();
-                    Object r = BigInteger.ZERO;
                     if (it.hasNext()) {
-                        r = it.next();
-                        if (!(r instanceof Number)) throw new Exception("result of count query is not a number: " + r);
-
-                        ret = new BigInteger(String.valueOf(r));
+                        ret = it.next();
                     }
                 } else {
-                    query.setResultClass(this.objClass);
-                    var rl = query.executeList();
-                    if (!(rl == null || rl.isEmpty())) ret = rl;
+                    List<T> rl;
+
+                    if (query instanceof JDOQuery<T> q) {
+                        rl = q.executeResultList(this.objClass);
+                    } else {
+                        query.setResultClass(this.objClass);
+                        rl = query.executeList();
+                    }
+
+                    if (!(rl == null || rl.isEmpty())) ret = new ArrayList<>(rl);
                 }
             }
 
@@ -189,20 +207,23 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
             Logger.getLogger().info(!count && ((List<?>) ret).isEmpty() ? String.format("%s not found (param: %s).",
                     Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
                             + "-Z][^A-Z])")).reduce("", (total, str) -> total + "" + str).toLowerCase()).replaceFirst(m -> m.group().toUpperCase()), param) : String.format("%s found.", ret));
+
+            return ret;
         } catch (Exception e) {
-            Logger.getLogger().warning(String.format("There was an error trying to %s %ss %s: %s", count ? "count" :
-                    "find", Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A-Z][^A-Z])")).reduce(
-                    "", (total, str) -> total + str).toLowerCase(), query != null ? "(" + query.toString() +
-                    ")" : this.pkQuery != null ? "(" + this.pkQuery.toString() + ")" :
-                    this.instance().pkGetter.getName().startsWith("get") ?
-                            ("by " + this.instance().pkGetter.getName().substring("get".length()).toLowerCase()) : (
-                            "using method" + this.instance().pkGetter.getName()), (e.getCause() == null ?
-                    e.getMessage() : e.getCause()).toString()));
+            Logger.getLogger().warning(String.format("There was an error trying to %s %ss %s: %s%s", count ? "count"
+                            : "find",
+                    Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A-Z][^A-Z])")).reduce("",
+                            (total, str) -> total + str).toLowerCase(), query != null ? "(" + query.toString() + ")"
+                            : this.pkQuery != null ? "(" + this.pkQuery.toString() + ")" :
+                            this.instance().pkGetter.getName().startsWith("get") ?
+                                    ("by " + this.instance().pkGetter.getName().substring("get".length()).toLowerCase()) : ("using method" + this.instance().pkGetter.getName()), e.getMessage(), e.getCause() == null ? "" : ("(" + e.getCause() + ")")));
+
+            return ret;
         } finally {
             if (tx != null && tx.isActive()) tx.rollback();
+            if (query != null)
+                query.closeAll();
         }
-
-        return ret;
     }
 
     @Override
@@ -212,17 +233,29 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
 
     @Override
     public final T findOne(Object param) {
-        return this.find(param).getFirst();
+        try {
+            return this.find(param).getFirst();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
     public final T findOne(Query<T> query) {
-        return this.find(query).getFirst();
+        try {
+            return this.find(query).getFirst();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override
     public final T findOne(Query<T> query, Object param) {
-        return this.find(query, param).getFirst();
+        try {
+            return this.find(query, param).getFirst();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
     }
 
     @Override

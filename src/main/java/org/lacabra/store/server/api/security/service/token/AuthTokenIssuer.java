@@ -1,32 +1,30 @@
 package org.lacabra.store.server.api.security.service.token;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.enterprise.context.Dependent;
 import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.security.token.AuthTokenSettings;
 
-import jakarta.enterprise.context.Dependent;
-import jakarta.inject.Inject;
 import java.util.Date;
 
 @Dependent
 public class AuthTokenIssuer {
-    @Inject
-    private AuthTokenSettings settings;
-
-    public String issue(AuthTokenDetails details) {
+    public static String issue(AuthTokenDetails details) {
         return Jwts.builder()
                 .id(details.id())
                 .subject(details.username())
-                .issuer(settings.issuer())
-                .setAudience(settings.audience())
+                .issuer(AuthTokenSettings.issuer())
+                .setAudience(AuthTokenSettings.audience())
                 .issuedAt(Date.from(details.issuedDate().toInstant()))
                 .expiration(Date.from(details.expirationDate().toInstant()))
-                .claim(settings.authoritiesClaimName(), details.authorities())
-                .claim(settings.refreshCountClaimName(), details.refreshCount())
-                .claim(settings.refreshLimitClaimName(), details.refreshLimit())
-                .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(settings.secret())))
+                .claim(AuthTokenSettings.authoritiesClaimName(), details.authorities())
+                .claim(AuthTokenSettings.refreshCountClaimName(), details.refreshCount())
+                .claim(AuthTokenSettings.refreshLimitClaimName(), details.refreshLimit())
+                .signWith(SignatureAlgorithm.HS256,
+                        Keys.hmacShaKeyFor(Decoders.BASE64.decode(AuthTokenSettings.secret())))
                 .compact();
     }
 }

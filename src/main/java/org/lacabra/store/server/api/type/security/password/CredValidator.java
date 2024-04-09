@@ -6,31 +6,27 @@ import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.dao.UserDAO;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import java.util.Optional;
 
-@ApplicationScoped
 public class CredValidator {
-    @Inject
-    private PasswordHasher hasher;
-
-    public User validate(Credentials creds) {
+    public static User validate(Credentials creds) {
         return validate(creds.id(), creds.passwd());
     }
 
-    public User validate(UserId id, String passwd) {
+    public static User validate(UserId id, String passwd) {
         return validate(Optional.of(id).get().get(), passwd);
     }
 
-    public User validate(String id, String passwd) {
-        User user = UserDAO.getInstance().findOne(new User(new Credentials(id, passwd)));
+    public static User validate(String id, String passwd) {
+        var dao = UserDAO.getInstance();
+
+        User user = dao.findOne(dao.getQuery("FindUser"), new User(new Credentials(id)));
 
         if (user == null) {
-            throw new AuthenticationException("Bad credentials.");
+            throw new AuthenticationException("User not found.");
         }
 
-        if (!hasher.check(passwd, user.passwd())) {
+        if (!PasswordHasher.check(passwd, user.passwd())) {
             throw new AuthenticationException("Bad credentials.");
         }
 

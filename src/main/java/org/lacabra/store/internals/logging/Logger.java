@@ -6,8 +6,10 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
 
 public final class Logger {
     private static final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy H:m:s");
@@ -18,17 +20,18 @@ public final class Logger {
     private Logger(String name) {
         super();
 
-        Objects.requireNonNull(name);
+        if (name == null)
+            name = "LaCabraProject";
 
-        java.util.logging.SimpleFormatter fm = new java.util.logging.SimpleFormatter() {
+        this.logger = java.util.logging.Logger.getLogger(name);
+
+        SimpleFormatter fm = new SimpleFormatter() {
             @Override
             public synchronized String format(LogRecord lr) {
                 return String.format("[%s] %s: %s\n", df.format(new Date(lr.getMillis())),
                         lr.getLevel().getName(), lr.getMessage());
             }
         };
-
-        this.logger = java.util.logging.Logger.getLogger(name);
 
         java.util.logging.ConsoleHandler ch = new java.util.logging.ConsoleHandler();
         ch.setFormatter(fm);
@@ -47,7 +50,7 @@ public final class Logger {
                  i[0] < i[1]; Objects.requireNonNull(ff)[i[0]++].delete())
                 ;
 
-            String jar = "";
+            String jar;
 
             try {
                 jar = "_" + Paths.get(
@@ -59,7 +62,7 @@ public final class Logger {
                 jar = "";
             }
 
-            java.util.logging.FileHandler fh = new java.util.logging.FileHandler(
+            FileHandler fh = new FileHandler(
                     "log/" + name + jar + new SimpleDateFormat("_dd-MM-yyyy_H-m-s").format(
                             new Date(System.currentTimeMillis())) + ".log");
             fh.setFormatter(fm);

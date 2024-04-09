@@ -9,8 +9,8 @@ import java.security.Principal;
 
 public class TokenSecurityContext implements SecurityContext {
     private final boolean secure;
-    private final AuthedUserDetails user;
-    private final AuthTokenDetails token;
+    private AuthedUserDetails user;
+    private AuthTokenDetails token;
 
     public TokenSecurityContext(AuthedUserDetails user, AuthTokenDetails token, boolean secure) {
         this.user = user;

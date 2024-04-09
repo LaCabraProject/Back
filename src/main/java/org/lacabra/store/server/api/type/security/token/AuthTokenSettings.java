@@ -1,63 +1,74 @@
 package org.lacabra.store.server.api.type.security.token;
 
-import org.lacabra.store.server.configuration.Configurable;
-
 import jakarta.enterprise.context.Dependent;
-import jakarta.inject.Inject;
+import org.lacabra.store.server.api.security.service.token.AuthTokenUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 @Dependent
 public class AuthTokenSettings {
-    @Inject
-    @Configurable("authentication.jwt.secret")
-    private String secret;
+    private static String secret;
 
-    @Inject
-    @Configurable("authentication.jwt.clockSkew")
-    private Long clockSkew;
+    private static Long clockSkew;
 
-    @Inject
-    @Configurable("authentication.jwt.audience")
-    private String audience;
+    private static String audience;
 
-    @Inject
-    @Configurable("authentication.jwt.issuer")
-    private String issuer;
+    private static String issuer;
 
-    @Inject
-    @Configurable("authentication.jwt.claimNames.authorities")
-    private String authoritiesClaimName;
+    private static String authoritiesClaimName;
 
-    @Inject
-    @Configurable("authentication.jwt.claimNames.refreshCount")
-    private String refreshCountClaimName;
+    private static String refreshCountClaimName;
 
-    @Inject
-    @Configurable("authentication.jwt.claimNames.refreshLimit")
-    private String refreshLimitClaimName;
+    private static String refreshLimitClaimName;
 
-    public String secret() {
-        return this.secret;
+    static {
+        Properties properties = new Properties();
+        try (InputStream is = AuthTokenUtils.class.getResourceAsStream("/application.properties")) {
+            properties.load(is);
+
+            AuthTokenSettings.secret = String.valueOf(properties.get("authentication.jwt.secret"));
+            AuthTokenSettings.clockSkew =
+                    Long.valueOf(String.valueOf(properties.get("authentication.jwt.clockSkew")));
+            AuthTokenSettings.audience = String.valueOf(properties.get("authentication.jwt.audience"));
+            AuthTokenSettings.issuer = String.valueOf(properties.get("authentication.jwt.issuer"));
+            AuthTokenSettings.authoritiesClaimName = String.valueOf(properties.get("authentication.jwt.claimNames" +
+                    ".authorities"));
+            AuthTokenSettings.refreshCountClaimName = String.valueOf(properties.get("authentication.jwt.claimNames" +
+                    ".refreshCount"));
+            AuthTokenSettings.refreshLimitClaimName = String.valueOf(properties.get("authentication.jwt.claimNames" +
+                    ".refreshLimit"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Long clockSkew() {return this.clockSkew;}
-
-    public String audience() {
-        return this.audience;
+    public static String secret() {
+        return AuthTokenSettings.secret;
     }
 
-    public String issuer() {
-        return this.issuer;
+    public static Long clockSkew() {
+        return AuthTokenSettings.clockSkew;
     }
 
-    public String authoritiesClaimName() {
-        return this.authoritiesClaimName;
+    public static String audience() {
+        return AuthTokenSettings.audience;
     }
 
-    public String refreshCountClaimName() {
-        return this.refreshCountClaimName;
+    public static String issuer() {
+        return AuthTokenSettings.issuer;
     }
 
-    public String refreshLimitClaimName() {
-        return this.refreshLimitClaimName;
+    public static String authoritiesClaimName() {
+        return AuthTokenSettings.authoritiesClaimName;
+    }
+
+    public static String refreshCountClaimName() {
+        return AuthTokenSettings.refreshCountClaimName;
+    }
+
+    public static String refreshLimitClaimName() {
+        return AuthTokenSettings.refreshLimitClaimName;
     }
 }

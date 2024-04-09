@@ -1,16 +1,28 @@
 package org.lacabra.store.server.api.type.id;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.server.json.deserializer.UserIdDeserializer;
+import org.lacabra.store.server.json.serializer.UserIdSerializer;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public final class UserId {
+@JsonSerialize(using = UserIdSerializer.class)
+@JsonDeserialize(using = UserIdDeserializer.class)
+public final class UserId implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public final static Pattern regex;
 
     static {
-        String invalid[] = {"all"};
+        String[] invalid = {"all"};
 
         String[] chars = {"a-zA-Z0-9", // ascii
                 "\\u00c0-\\u00d6\\u00d8-\\u00f6\\u0080-\\u00ff\\u0100-\\u017f\\u0180-\\u024f\\u1e00-\\u1eff", // latin

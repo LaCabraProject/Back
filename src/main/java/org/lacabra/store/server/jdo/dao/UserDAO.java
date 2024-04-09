@@ -1,16 +1,32 @@
 package org.lacabra.store.server.jdo.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.server.api.type.security.password.PasswordHasher;
+import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import java.io.IOException;
+import java.io.InputStream;
 
 @ApplicationScoped
 public class UserDAO extends DAO<User> {
     private static UserDAO instance;
 
     static {
-        DAO.instances.put(User.class, UserDAO.getInstance());
+        var dao = UserDAO.getInstance();
+        DAO.instances.put(User.class, dao);
+
+        try (InputStream in = UserDAO.class.getClassLoader().getResourceAsStream("data/users.json")) {
+            if (in != null) {
+                ObjectMapper mapper = new ObjectMapperProvider().getContext(User[].class);
+                dao.store(mapper.readValue(in, User[].class));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private UserDAO() throws NoSuchMethodException {
@@ -33,5 +49,11 @@ public class UserDAO extends DAO<User> {
     @Override
     protected UserDAO instance() {
         return UserDAO.instance;
+    }
+
+    @Override
+    public void store(User user) {
+        super.store(new User(new Credentials(user.id(), user.authorities(), PasswordHasher.hash(user.passwd())),
+                user.data()));
     }
 }

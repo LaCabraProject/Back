@@ -1,13 +1,14 @@
 package org.lacabra.store.server.jdo.converter;
 
-import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import org.lacabra.store.server.api.type.id.UserId;
+
+import javax.jdo.AttributeConverter;
 
 @Converter(autoApply = true)
 public final class UserIdConverter implements AttributeConverter<UserId, String> {
     @Override
-    public String convertToDatabaseColumn(UserId id) {
+    public String convertToDatastore(UserId id) {
         if (id == null) {
             return null;
         }
@@ -16,7 +17,7 @@ public final class UserIdConverter implements AttributeConverter<UserId, String>
     }
 
     @Override
-    public UserId convertToEntityAttribute(String id) {
+    public UserId convertToAttribute(String id) {
         if (id == null) {
             return null;
         }

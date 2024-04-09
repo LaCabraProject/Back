@@ -1,11 +1,23 @@
 package org.lacabra.store.server.api.type.id;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.server.json.deserializer.ObjectIdDeserializer;
+import org.lacabra.store.server.json.serializer.ObjectIdSerializer;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.*;
 import java.util.regex.Pattern;
 
-public final class ObjectId {
+@JsonSerialize(using = ObjectIdSerializer.class)
+@JsonDeserialize(using = ObjectIdDeserializer.class)
+public final class ObjectId implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public final static Pattern regex = Pattern.compile("^[0-9a-f]{1,24}$");
     public final static ObjectId MIN = new ObjectId(0);
     public final static ObjectId MAX;

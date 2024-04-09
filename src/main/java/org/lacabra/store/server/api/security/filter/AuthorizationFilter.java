@@ -38,7 +38,6 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         }
 
         if (method.isAnnotationPresent(PermitAll.class)) {
-            // Do nothing
             return;
         }
 
