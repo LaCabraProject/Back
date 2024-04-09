@@ -5,7 +5,7 @@ import org.lacabra.store.server.api.type.id.ObjectId;
 import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
-import org.lacabra.store.server.api.type.user.User;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -50,4 +50,40 @@ public class ItemDTO implements Serializable {
         this.discount = discount;
         this.stock = new BigDecimal(String.valueOf(stock)).toBigInteger();
     }
+
+    public ObjectId id() {
+        return this.id;
+    }
+
+    public ItemType type() {
+        return this.type;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public String description() {
+        return this.description;
+    }
+
+    public Set<String> keywords() {
+        return this.keywords;
+    }
+
+    public BigDecimal price() {
+        return this.price;
+    }
+
+    public BigInteger stock() {
+        return this.stock;
+    }
+    public Integer discount() {
+        return this.discount;
+    }
+
+    public UserId parent() {
+        return this.parent;
+    }
 }
+

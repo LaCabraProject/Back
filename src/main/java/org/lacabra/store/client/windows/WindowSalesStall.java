@@ -1,6 +1,7 @@
 package org.lacabra.store.client.windows;
 
 import org.lacabra.store.client.Controller.MainController;
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.server.api.type.id.ObjectId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
@@ -15,10 +16,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
     private JTable table;
+    private List<Item> lista=new ArrayList<>();
 
     public WindowSalesStall(User usuario, MainController mc) {
         initUI(usuario, mc);
@@ -30,6 +33,20 @@ public class WindowSalesStall extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        List<ItemDTO> itemDTOs=null;
+        for (int i = 0; i < 5; i++){
+            String[] words = {"cabra", "goat", "beast"};
+            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+            Item item=new Item(ObjectId.from(i+220),ItemType.Decoration,"chair"+i,"a goated chair",keywords,20,0,new BigInteger("2"),new User("mikel"));
+            lista.add(item);
+        }
+        //itemDTOs=mc.ReceiveItems();
+        if(itemDTOs!=null){
+            for(ItemDTO i:itemDTOs){
+                Item item=new Item(i.type(),i.name(),i.description(),i.keywords(),i.price(),i.discount(),i.stock(),new User(i.parent()));
+                lista.add(item);
+            }
+        }
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -39,24 +56,34 @@ public class WindowSalesStall extends JFrame {
         panel.add(label, BorderLayout.NORTH);
 
         tableModel = new DefaultTableModel();
-        tableModel.addColumn("Artículo");
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Tipo");
+        tableModel.addColumn("Nombre");
         tableModel.addColumn("Descripción");
-        tableModel.addColumn("Foto");
-        table = new JTable(tableModel) {
-            @Override
-            public Class<?> getColumnClass(int column) {
-                return column == 2 ? ImageIcon.class : Object.class;
-            }
-        };
-        table.setRowHeight(100); // Altura predeterminada de las filas
-        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.getColumn("Foto").setCellRenderer(new ImageRenderer());
+        tableModel.addColumn("Palabras Clave");
+        tableModel.addColumn("Precio");
+        tableModel.addColumn("Descuento");
+        tableModel.addColumn("Stock");
+        tableModel.addColumn("Propietario");
 
+        table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new GridLayout(8, 1));
+        // Agregar los datos de los objetos Item a la tabla
+        for (Item item : lista) {
+            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), "mikel.mason"};
+            tableModel.addRow(rowData);
+        }
+
+        JPanel bottomPanel = new JPanel(new GridLayout(9, 1));
         panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JTextField nameField = new JTextField(20);
+        namePanel.add(new JLabel("Nombre:"));
+        namePanel.add(nameField);
+        bottomPanel.add(namePanel);
 
         JPanel addPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JTextField addItemField = new JTextField(20);
@@ -115,21 +142,26 @@ public class WindowSalesStall extends JFrame {
 
         btnAddItem.addActionListener(e -> {
             String itemName = addItemField.getText();
-            String[] words = itemName.split("[,\\s]+");
+            String[] words = itemName.split("\\s*,\\s*");
             Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
             String itemDescription = descriptionField.getText();
             String itemPhotoPath = photoField.getText();
             ObjectId objId=ObjectId.from(itemName);
-            Number numero=Double.parseDouble(precioField.getText());
+            int numero=Integer.parseInt(precioField.getText());
             BigInteger cantidad=new BigInteger(cantidadField.getText());
-            Item item= new Item((ItemType) tipoField.getSelectedItem(), itemName,itemDescription,keywords,numero,0,cantidad, usuario);
-            mc.PutItem(item);
-            if (!itemName.isEmpty()) {
-                String[] rowData = {itemName, itemDescription, itemPhotoPath};
+            Item item= new Item(ObjectId.from(nameField.getText()),(ItemType) tipoField.getSelectedItem(), nameField.getText(),itemDescription,keywords,numero,0,cantidad, usuario);
+            //mc.PutItem(item);
+            lista.add(item);
+            if (!itemName.isEmpty()&&cantidadField.getText()!=""&&precioField.getText()!="") {
+                Item item1=lista.get(lista.size()-1);
+                Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(), item1.price(), item1.discount()+"%", item1.stock(), "mikel.mason"};
                 tableModel.addRow(rowData);
                 addItemField.setText("");
                 descriptionField.setText("");
                 photoField.setText("");
+                nameField.setText("");
+                cantidadField.setText("");
+                precioField.setText("");
             }
         });
 

@@ -48,9 +48,9 @@ public class WindowHome extends JFrame {
             }
         });
         searchIcon.add(searchItem);
-        BufferedImage image0 = null;
+        BufferedImage image0=null;
         try {
-        	image0 = ImageIO.read(new File("org/lacabra/store/client/img/lupa.png"));
+        	image0 = ImageIO.read(new File("src/main/java/org/lacabra/store/client/img/lupa.png"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -216,7 +216,7 @@ public class WindowHome extends JFrame {
 
         // Create and add a banner
         //rgb(253,1,10) original
-        JLabel banner = new JLabel(new ImageIcon("org/lacabra/store/client/img/logo.png"));
+        JLabel banner = new JLabel(new ImageIcon("src/main/java/org/lacabra/store/client/img/logo.png"));
         JPanel bannerPanel = new JPanel();
         bannerPanel.setLayout(new BorderLayout());
         bannerPanel.add(banner, BorderLayout.CENTER);
@@ -257,7 +257,7 @@ public class WindowHome extends JFrame {
         socialMedia.setPreferredSize(new Dimension(90, 30));
         BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File("org/lacabra/store/client/img/facebook.png"));
+			image = ImageIO.read(new File("src/main/java/org/lacabra/store/client/img/facebook.png"));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
