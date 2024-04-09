@@ -1,5 +1,9 @@
 package org.lacabra.store.client.Controller;
 
+import org.lacabra.store.client.dto.ItemAssembler;
+import org.lacabra.store.client.dto.ItemDTO;
+import org.lacabra.store.client.dto.UserAssembler;
+import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.server.api.route.stats.Route;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
@@ -19,8 +23,9 @@ import java.util.List;
 public class MainController {
     private static String ServerName = "http://localhost:8080";
 
-    public List<Item> ReceiveItems() {
+    public List<ItemDTO> ReceiveItems() {
         List<Item> items = new ArrayList<>();
+        List<ItemDTO> itemDTOs = new ArrayList<>();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ServerName.concat("/items"))).GET().build();
 
@@ -31,14 +36,17 @@ public class MainController {
             // deserializar un json y devolver array de Items
             items =
                     Collections.arrayToList(new ObjectMapperProvider().getContext(Item[].class).readValue(respuesta.body(), Item[].class));
+            itemDTOs = ItemAssembler.getInstance().ItemsToDTO(items);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-        return items;
+
+        return itemDTOs;
     }
 
-    public List<User> ReceiveUsers() {
+    public List<UserDTO> ReceiveUsers() {
         List<User> users = new ArrayList<>();
+        List<UserDTO> userDTOs = new ArrayList<>();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ServerName.concat("/users"))).GET().build();
         try {
@@ -48,11 +56,12 @@ public class MainController {
             // deserializar un json y devolver array de Usuarios
             users =
                     Collections.arrayToList(new ObjectMapperProvider().getContext(User[].class).readValue(respuesta.body(), User[].class));
+            userDTOs = UserAssembler.getInstance().UsersToDTO(users);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
-        return users;
+        return userDTOs;
     }
 
     public void PutItem(Item item) {

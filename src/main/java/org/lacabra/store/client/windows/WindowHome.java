@@ -1,5 +1,6 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.imageio.ImageIO;
@@ -19,11 +20,11 @@ public class WindowHome extends JFrame {
     private int currentIndex = 0;
     private Timer timer;
 
-    public WindowHome(User usuario) {
-        initUI(usuario);
+    public WindowHome(User usuario, MainController mc) {
+        initUI(usuario, mc);
     }
 
-    private void initUI(User usuario) {
+    private void initUI(User usuario, MainController mc) {
         setTitle("GOAT");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -39,9 +40,9 @@ public class WindowHome extends JFrame {
             public void actionPerformed(ActionEvent e) {
             	dispose();
             	if(usuario!=null) {
-            		new WindowShopping(usuario);
+            		new WindowShopping(usuario,mc);
             	}else {
-            		new WindowShopping(null);
+            		new WindowShopping(null, mc);
             	}
                 
             }
@@ -84,14 +85,14 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					new WindowLogin();
+					new WindowLogin(mc);
 				}
 			});
             register.addActionListener(new ActionListener() {				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					new WindowRegister();
+					new WindowRegister(mc);
 				}
 			});
         }else {
@@ -107,7 +108,7 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();
-					new WindowSalesStall(usuario);
+					new WindowSalesStall(usuario,mc);
 				}
 			});
         	JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
@@ -117,7 +118,7 @@ public class WindowHome extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					dispose();					
-					new WindowHome(null);
+					new WindowHome(null, mc);
 				}
 			});
         }
@@ -287,6 +288,7 @@ public class WindowHome extends JFrame {
 
 
     public static void main(String[] args) {
-        new WindowHome(null);
+        MainController mc = new MainController();
+        new WindowHome(null, mc);
     }
 }

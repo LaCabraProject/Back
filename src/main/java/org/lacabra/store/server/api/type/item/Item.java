@@ -141,6 +141,9 @@ public class Item implements Serializable {
     public BigInteger stock() {
         return this.stock;
     }
+    public Integer discount() {
+        return this.discount;
+    }
 
     public User parent() {
         return this.parent;

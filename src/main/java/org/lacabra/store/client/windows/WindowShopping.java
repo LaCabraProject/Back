@@ -1,5 +1,6 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
 
@@ -17,7 +18,7 @@ public class WindowShopping {
     private DefaultTableModel tableModel;
     private JTable table;
 
-    public WindowShopping(User usuario) {
+    public WindowShopping(User usuario, MainController mc) {
         frame = new JFrame("Buscador");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -79,7 +80,7 @@ public class WindowShopping {
         });
         btnBack.addActionListener(e -> {
             frame.dispose();
-            new WindowHome(usuario);
+            new WindowHome(usuario, mc);
         });
 
         frame.setVisible(true);
@@ -120,6 +121,6 @@ public class WindowShopping {
     }
 
     public static void main(String[] args) {
-        new WindowShopping(null);
+        new WindowShopping(null, new MainController());
     }
 }
