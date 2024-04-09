@@ -1,10 +1,9 @@
 package org.lacabra.store.client.windows;
 
-import org.lacabra.store.client.data.User;
-
-import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.io.File;
 
@@ -14,10 +13,6 @@ public class WindowSalesStall extends JFrame {
 
     public WindowSalesStall(User usuario) {
         initUI(usuario);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new WindowSalesStall(null));
     }
 
     private void initUI(User usuario) {
@@ -134,8 +129,7 @@ public class WindowSalesStall extends JFrame {
         private static final int MAX_IMAGE_HEIGHT = 100;
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel label = new JLabel();
             if (value != null) {
                 String imagePath = (String) value;
@@ -162,6 +156,10 @@ public class WindowSalesStall extends JFrame {
             }
             return label;
         }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new WindowSalesStall(null));
     }
 }
 

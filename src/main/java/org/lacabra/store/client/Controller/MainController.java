@@ -1,4 +1,7 @@
-package org.lacabra.store.client.data;
+package org.lacabra.store.client.Controller;
+
+import org.lacabra.store.server.api.type.item.Item;
+import org.lacabra.store.server.api.type.user.User;
 
 import io.jsonwebtoken.lang.Collections;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
