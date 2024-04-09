@@ -1,5 +1,10 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.server.api.type.user.Authority;
+import org.lacabra.store.server.api.type.user.Credentials;
+import org.lacabra.store.server.api.type.user.User;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -85,7 +90,7 @@ public class WindowRegister extends JFrame {
                 String password = new String(passwordField.getPassword());
                 Authority selected = (Authority) selectionComboBox.getSelectedItem();
                 UserId userId=UserId.from(username);
-                Credentials cre=new Credentials(userId.get(),selected ,password);                
+                Credentials cre=new Credentials(userId.get(),selected ,password);
                 User usuario=new User(cre);
                 JOptionPane.showMessageDialog(WindowRegister.this, "¡Has sido registrado exitosamente! Revisa tu bandeja de entrada para encontrar el descuento en tu primer pedido.");
                 dispose();

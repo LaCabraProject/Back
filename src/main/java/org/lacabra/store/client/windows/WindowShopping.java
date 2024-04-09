@@ -1,5 +1,8 @@
 package org.lacabra.store.client.windows;
 
+import org.lacabra.store.server.api.type.item.ItemType;
+import org.lacabra.store.server.api.type.user.User;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
