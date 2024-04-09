@@ -1,14 +1,17 @@
 package org.lacabra.store.client.windows;
 
 import org.lacabra.store.client.Controller.MainController;
+import org.lacabra.store.server.api.type.id.ObjectId;
+import org.lacabra.store.server.api.type.item.Item;
+import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
 
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import java.io.File;
+import java.math.BigInteger;
 
 public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
@@ -49,7 +52,7 @@ public class WindowSalesStall extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new GridLayout(5, 1));
+        JPanel bottomPanel = new JPanel(new GridLayout(8, 1));
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
         JPanel addPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -73,6 +76,27 @@ public class WindowSalesStall extends JFrame {
         photoPanel.add(btnAddPhoto);
         bottomPanel.add(photoPanel);
 
+        JPanel panelPrecio=new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelPrecio= new JLabel("Coste del producto:");
+        JTextField precioField = new JTextField(20);
+        panelPrecio.add(labelPrecio);
+        panelPrecio.add(precioField);
+        bottomPanel.add(panelPrecio);
+
+        JPanel panelCantidad=new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelCantidad= new JLabel("Cantidad del producto:");
+        JTextField cantidadField = new JTextField(20);
+        panelPrecio.add(labelCantidad);
+        panelPrecio.add(cantidadField);
+        bottomPanel.add(panelCantidad);
+
+        JPanel panelTipo =new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelTipo= new JLabel("Tipo de producto:");
+        JComboBox tipoField = new JComboBox(ItemType.values());
+        panelTipo.add(labelTipo);
+        panelTipo.add(tipoField);
+        bottomPanel.add(panelTipo);
+
         JPanel panelCrearProducto = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelCrearProducto.add(btnAddItem);
         bottomPanel.add(panelCrearProducto);
@@ -90,7 +114,11 @@ public class WindowSalesStall extends JFrame {
             String itemName = addItemField.getText();
             String itemDescription = descriptionField.getText();
             String itemPhotoPath = photoField.getText();
-
+            ObjectId objId=ObjectId.from(itemName);
+            Number numero=Double.parseDouble(precioField.getText());
+            BigInteger cantidad=new BigInteger(cantidadField.getText());
+            Item item= new Item((ItemType) tipoField.getSelectedItem(), itemName,itemDescription,null,numero,0,cantidad, usuario);
+            mc.PutItem(item);
             if (!itemName.isEmpty()) {
                 String[] rowData = {itemName, itemDescription, itemPhotoPath};
                 tableModel.addRow(rowData);
