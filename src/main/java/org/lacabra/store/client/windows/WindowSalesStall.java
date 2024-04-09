@@ -74,7 +74,7 @@ public class WindowSalesStall extends JFrame {
 
         // Agregar los datos de los objetos Item a la tabla
         for (Item item : lista) {
-            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), "mikel.mason"};
+            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), "mikel"};
             tableModel.addRow(rowData);
         }
 
@@ -135,8 +135,8 @@ public class WindowSalesStall extends JFrame {
 
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton modificar = new JButton("Modificar seleccionado");
-        JButton btnRemoveItem = new JButton("Eliminar Artículo Seleccionado");
-        JButton btnClearList = new JButton("Limpiar Lista");
+        JButton btnRemoveItem = new JButton("Eliminar artículo seleccionado");
+        JButton btnClearList = new JButton("Borrar lista");
         JButton btnBack = new JButton("Volver al inicio");
         controlPanel.add(modificar);
         controlPanel.add(btnRemoveItem);
@@ -168,7 +168,7 @@ public class WindowSalesStall extends JFrame {
                         list.add(t);
                     }
                     lista=new ArrayList<>(list);
-                    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), "mikel.mason"};
+                    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), usuario.id().get()};
                     tableModel.removeRow(selectedRowIndex);
                     tableModel.insertRow(selectedRowIndex, rowData);
 
@@ -190,7 +190,7 @@ public class WindowSalesStall extends JFrame {
             lista.add(item);
             if (!itemName.isEmpty()&&cantidadField.getText()!=""&&precioField.getText()!="") {
                 Item item1=lista.get(lista.size()-1);
-                Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(), item1.price(), item1.discount()+"%", item1.stock(), "mikel.mason"};
+                Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(), item1.price(), item1.discount()+"%", item1.stock(), usuario.id().get()};
                 tableModel.addRow(rowData);
                 addItemField.setText("");
                 descriptionField.setText("");

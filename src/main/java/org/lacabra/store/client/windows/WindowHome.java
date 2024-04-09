@@ -1,6 +1,7 @@
 package org.lacabra.store.client.windows;
 
 import org.lacabra.store.client.Controller.MainController;
+import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.imageio.ImageIO;
@@ -103,14 +104,16 @@ public class WindowHome extends JFrame {
         	JMenuItem cuentaCompras = new JMenuItem("Mis compras");
         	cuenta.add(cuentaCompras);
         	JMenuItem cuentaVentas = new JMenuItem("Mis ventas");
-        	cuenta.add(cuentaVentas);
-        	cuentaVentas.addActionListener(new ActionListener() {				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-					new WindowSalesStall(usuario,mc);
-				}
-			});
+            if(usuario.authorities().contains(Authority.Artist)||usuario.authorities().contains(Authority.Admin)||usuario.authorities().contains(Authority.Artist)) {
+                cuenta.add(cuentaVentas);
+                cuentaVentas.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dispose();
+                        new WindowSalesStall(usuario, mc);
+                    }
+                });
+            }
         	JMenuItem signOut = new JMenuItem("Cerrar sesión", KeyEvent.VK_S);
         	cuenta.add(signOut);
         	cuenta.setMnemonic(KeyEvent.VK_M);

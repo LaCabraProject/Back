@@ -1,6 +1,8 @@
 package org.lacabra.store.client.windows;
 
 import org.lacabra.store.client.Controller.MainController;
+import org.lacabra.store.server.api.type.user.Authority;
+import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.swing.*;
@@ -97,7 +99,7 @@ public class WindowLogin extends JFrame {
                 if (username.equals("admin") && password.equals("admin")) {
                     dispose();
                     User usuario=null;
-                    usuario=new User(username);
+                    usuario=new User(new Credentials(username, Authority.Admin,password));
                     WindowHome mainFrame = new WindowHome(usuario, mc);
                     mainFrame.setVisible(true);
                 } else {
