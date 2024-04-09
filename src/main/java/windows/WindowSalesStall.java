@@ -3,11 +3,8 @@ package windows;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.imageio.ImageIO;
 
 public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
