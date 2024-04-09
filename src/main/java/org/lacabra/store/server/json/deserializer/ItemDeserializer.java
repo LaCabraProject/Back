@@ -8,15 +8,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.ObjectId;
+import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.item.Item;
-import org.lacabra.store.server.api.type.user.Authority;
-import org.lacabra.store.server.api.type.user.Credentials;
+import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashSet;
-import java.util.List;
 
 public final class ItemDeserializer extends JsonDeserializer<Item> {
     private static final ObjectMapper mapper = new ObjectMapperProvider().getContext(Item.class);
@@ -32,46 +32,59 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
 
         ObjectId id = new ObjectMapperProvider().getContext(ObjectId.class).treeToValue(node.get("id"), ObjectId.class);
 
-        String passwd = null;
+        ItemType type = null;
 
-        node2 = node.get("passwd");
+        node2 = node.get("type");
         if (!(node2 == null || node2.isNull())) {
             if (!node2.isTextual())
-                throw new RuntimeException("\"passwd\" is not a string.");
+                throw new RuntimeException("\"type\" is not a string.");
 
-            passwd = node2.asText();
+            type = ItemType.parse(node2.asText());
+            if (type == null)
+                throw new RuntimeException(String.format("not a valid item type: %s", node2.asText()));
         }
 
-        var authorities = new HashSet<Authority>();
+        String name = null;
 
-        node2 = node.get("authorities");
+        node2 = node.get("name");
         if (!(node2 == null || node2.isNull())) {
-            List<String> strs = new ArrayList<>();
+            if (!node2.isTextual())
+                throw new RuntimeException("\"name\" is not a string.");
 
+            name = node2.asText();
+        }
+
+        String description = null;
+
+        var keywords = new HashSet<String>();
+
+        node2 = node.get("keywords");
+        if (!(node2 == null || node2.isNull())) {
             if (node2.isTextual())
-                strs.add(node2.asText());
+                keywords.add(node2.asText());
 
             else {
                 if (!node2.isArray())
-                    throw new RuntimeException("\"authorities\" is not an array.");
+                    throw new RuntimeException("\"keywords\" is not an array.");
 
                 for (final JsonNode n : node2) {
                     if (!n.isTextual())
-                        throw new RuntimeException("Authority is not a string.");
+                        throw new RuntimeException(String.format ("Keyword is not a string: %s", n.toPrettyString()));
 
-                    strs.add(n.asText());
+                    keywords.add(n.asText());
                 }
-            }
-
-            for (final String str : strs) {
-                var auth = Authority.parse(str);
-                if (auth == null)
-                    throw new RuntimeException("Not a valid authority.");
-
-                authorities.add(auth);
             }
         }
 
-        return new User(new Credentials(id, authorities, passwd));
+        Integer discount = null;
+        node2 = node.get()
+
+        BigDecimal price = null;
+        BigInteger stock = null;
+
+        UserId parent = new ObjectMapperProvider().getContext(UserId.class).treeToValue(node.get("parent"),
+                UserId.class);
+
+        return new Item(id, type, name, description, keywords ,price, discount, stock, new User(parent));
     }
 }

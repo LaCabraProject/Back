@@ -70,9 +70,15 @@ public class User implements Serializable {
         this(id, null);
     }
 
+    public User(UserId id) {
+        this(id, null);
+    }
+
     public User(String id, String passwd) {
         this(new Credentials(id, passwd));
     }
+
+    public User(UserId id, String passwd) {this(new Credentials(id, passwd));}
 
     public User(Credentials creds) {
         this(creds, null);
@@ -80,9 +86,9 @@ public class User implements Serializable {
 
     public User(Credentials creds, UserData data) {
         if (creds != null) {
-            this.id = creds.id;
-            this.passwd = creds.passwd;
-            this.authorities = creds.authorities;
+            this.id = creds.id();
+            this.passwd = creds.passwd();
+            this.authorities = creds.authorities();
         }
 
         this.data = data;

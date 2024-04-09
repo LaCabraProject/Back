@@ -64,7 +64,7 @@ public class Item implements Serializable {
 
     @JsonProperty("discount")
     @Persistent
-    private int discount;
+    private Integer discount;
 
     @Persistent
     @Column(jdbcType = "BIGINT")
@@ -94,13 +94,17 @@ public class Item implements Serializable {
         this.description = description;
         this.keywords = keywords == null ? Collections.EMPTY_SET : new HashSet<>(keywords);
         this.price = new BigDecimal(String.valueOf(price));
-        this.discount = discount;
-        this.stock = new BigDecimal(String.valueOf(stock)).toBigInteger();
+        this.discount = discount == null ? 0 : discount;
+        this.stock = stock == null ? BigInteger.ZERO : new BigDecimal(String.valueOf(stock)).toBigInteger();
+    }
+
+    public Item(ObjectId id, Item item) {
+        this(id, item.type, item.name, item.description, item.keywords, item.price, item.discount, item.stock,
+                item.parent);
     }
 
     public Item(Item item) {
-        this(item.id, item.type, item.name, item.description, item.keywords, item.price, item.discount, item.stock,
-                item.parent);
+        this(item.id, item);
     }
 
     public final class UserToIdSerializer extends JsonSerializer<User> {
@@ -110,4 +114,35 @@ public class Item implements Serializable {
         }
     }
 
+    public ObjectId id() {
+        return this.id;
+    }
+
+    public ItemType type() {
+        return this.type;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    public String description() {
+        return this.description;
+    }
+
+    public Set<String> keywords() {
+        return this.keywords;
+    }
+
+    public BigDecimal price() {
+        return this.price;
+    }
+
+    public BigInteger stock() {
+        return this.stock;
+    }
+
+    public User parent() {
+        return this.parent;
+    }
 }
