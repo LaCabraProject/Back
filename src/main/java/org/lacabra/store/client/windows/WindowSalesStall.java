@@ -11,6 +11,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -132,13 +134,47 @@ public class WindowSalesStall extends JFrame {
         bottomPanel.add(panelCrearProducto);
 
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton modificar = new JButton("Modificar seleccionado");
         JButton btnRemoveItem = new JButton("Eliminar Artículo Seleccionado");
         JButton btnClearList = new JButton("Limpiar Lista");
         JButton btnBack = new JButton("Volver al inicio");
+        controlPanel.add(modificar);
         controlPanel.add(btnRemoveItem);
         controlPanel.add(btnClearList);
         controlPanel.add(btnBack);
         bottomPanel.add(controlPanel);
+
+        modificar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRowIndex = table.getSelectedRow();
+                if (selectedRowIndex != -1) {
+                    System.out.println(selectedRowIndex);
+                    String itemName = addItemField.getText();
+                    String[] words = itemName.split("\\s*,\\s*");
+                    Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+                    String itemDescription = descriptionField.getText();
+                    String itemPhotoPath = photoField.getText();
+                    ObjectId objId=ObjectId.from(itemName);
+                    int numero=Integer.parseInt(precioField.getText());
+                    BigInteger cantidad=new BigInteger(cantidadField.getText());
+                    Item item= new Item(ObjectId.from(nameField.getText()),(ItemType) tipoField.getSelectedItem(), nameField.getText(),itemDescription,keywords,numero,0,cantidad, usuario);
+                    //mc.PutItem(item);
+                    List<Item>list= new ArrayList<>();
+                    for(Item t:lista){
+                        if(t.equals(lista.get(selectedRowIndex))){
+                            list.add(item);
+                        }
+                        list.add(t);
+                    }
+                    lista=new ArrayList<>(list);
+                    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), "mikel.mason"};
+                    tableModel.removeRow(selectedRowIndex);
+                    tableModel.insertRow(selectedRowIndex, rowData);
+
+                }
+            }
+        });
 
         btnAddItem.addActionListener(e -> {
             String itemName = addItemField.getText();
@@ -179,6 +215,7 @@ public class WindowSalesStall extends JFrame {
             int selectedRowIndex = table.getSelectedRow();
             if (selectedRowIndex != -1) {
                 tableModel.removeRow(selectedRowIndex);
+                lista.remove(selectedRowIndex-1);
             }
         });
 
@@ -187,7 +224,7 @@ public class WindowSalesStall extends JFrame {
             new WindowHome(usuario, mc);
         });
 
-        btnClearList.addActionListener(e -> tableModel.setRowCount(0));
+        btnClearList.addActionListener(e -> tableModel.setRowCount(0));lista=new ArrayList<>();
         add(panel);
         setVisible(true);
     }
