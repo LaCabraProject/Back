@@ -12,6 +12,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
@@ -58,7 +61,7 @@ public class WindowSalesStall extends JFrame {
         JPanel addPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JTextField addItemField = new JTextField(20);
         JButton btnAddItem = new JButton("Agregar Artículo");
-        addPanel.add(new JLabel("Artículo:"));
+        addPanel.add(new JLabel("Palabras clave:"));
         addPanel.add(addItemField);
         bottomPanel.add(addPanel);
 
@@ -86,8 +89,8 @@ public class WindowSalesStall extends JFrame {
         JPanel panelCantidad=new JPanel(new FlowLayout(FlowLayout.CENTER));
         JLabel labelCantidad= new JLabel("Cantidad del producto:");
         JTextField cantidadField = new JTextField(20);
-        panelPrecio.add(labelCantidad);
-        panelPrecio.add(cantidadField);
+        panelCantidad.add(labelCantidad);
+        panelCantidad.add(cantidadField);
         bottomPanel.add(panelCantidad);
 
         JPanel panelTipo =new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -112,12 +115,14 @@ public class WindowSalesStall extends JFrame {
 
         btnAddItem.addActionListener(e -> {
             String itemName = addItemField.getText();
+            String[] words = itemName.split("[,\\s]+");
+            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
             String itemDescription = descriptionField.getText();
             String itemPhotoPath = photoField.getText();
             ObjectId objId=ObjectId.from(itemName);
             Number numero=Double.parseDouble(precioField.getText());
             BigInteger cantidad=new BigInteger(cantidadField.getText());
-            Item item= new Item((ItemType) tipoField.getSelectedItem(), itemName,itemDescription,null,numero,0,cantidad, usuario);
+            Item item= new Item((ItemType) tipoField.getSelectedItem(), itemName,itemDescription,keywords,numero,0,cantidad, usuario);
             mc.PutItem(item);
             if (!itemName.isEmpty()) {
                 String[] rowData = {itemName, itemDescription, itemPhotoPath};
