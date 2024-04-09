@@ -3,6 +3,8 @@ package windows;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import data.User;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -93,7 +95,9 @@ public class WindowLogin extends JFrame {
 
                 if (username.equals("admin") && password.equals("admin")) {
                     dispose();
-                    WindowHome mainFrame = new WindowHome(true);
+                    User usuario=null;
+                    usuario=new User(username);
+                    WindowHome mainFrame = new WindowHome(usuario);
                     mainFrame.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(WindowLogin.this, "Nombre de usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -128,7 +132,7 @@ public class WindowLogin extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                WindowHome mainFrame = new WindowHome(false);
+                WindowHome mainFrame = new WindowHome(null);
                 mainFrame.setVisible(true);
             }
         });

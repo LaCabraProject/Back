@@ -3,6 +3,8 @@ package windows;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import data.User;
 import java.awt.*;
 import java.io.File;
 
@@ -10,11 +12,11 @@ public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
     private JTable table;
 
-    public WindowSalesStall() {
-        initUI();
+    public WindowSalesStall(User usuario) {    	
+        initUI(usuario);
     }
 
-    private void initUI() {
+    private void initUI(User usuario) {
         setTitle("Artículos a la venta");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -115,7 +117,7 @@ public class WindowSalesStall extends JFrame {
 
         btnBack.addActionListener(e -> {
             dispose();
-            new WindowHome(true);
+            new WindowHome(usuario);
         });
 
         btnClearList.addActionListener(e -> tableModel.setRowCount(0));
@@ -158,7 +160,7 @@ public class WindowSalesStall extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new WindowSalesStall());
+        SwingUtilities.invokeLater(() -> new WindowSalesStall(null));
     }
 }
 

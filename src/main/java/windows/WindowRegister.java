@@ -1,16 +1,19 @@
 package windows;
 
 import javax.swing.*;
+import data.UserId;
+import data.Credentials;
+import data.Authority;
+import data.User;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class WindowRegister extends JFrame {
-
-    private JTextField emailField;
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private JCheckBox newsletterCheckbox;
+    private JComboBox<Authority> selectionComboBox;
 
     public WindowRegister() {
         initUI();
@@ -23,10 +26,9 @@ public class WindowRegister extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(7, 1));
+        mainPanel.setLayout(new GridLayout(6, 1));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        mainPanel.add(createEmailLabelAndField());
         mainPanel.add(createUsernameLabelAndField());
         mainPanel.add(createPasswordLabelAndField());
         mainPanel.add(createNewsletterCheckbox());
@@ -38,17 +40,7 @@ public class WindowRegister extends JFrame {
         setVisible(true);
     }
 
-    private JPanel createEmailLabelAndField() {
-        JLabel emailLabel = new JLabel("Correo electrónico");
-        emailField = new JTextField();
-        emailField.setPreferredSize(new Dimension(200, 30));
-
-        JPanel panel = new JPanel();
-        panel.add(emailLabel);
-        panel.add(emailField);
-
-        return panel;
-    }
+   
 
     private JPanel createUsernameLabelAndField() {
         JLabel usernameLabel = new JLabel("Nombre de usuario");
@@ -74,11 +66,16 @@ public class WindowRegister extends JFrame {
         return panel;
     }
 
-    private JCheckBox createNewsletterCheckbox() {
-        newsletterCheckbox = new JCheckBox("Enviadme ofertas especiales y novedades");
-        newsletterCheckbox.setPreferredSize(new Dimension(200, 30));
+    private JPanel createNewsletterCheckbox() {
+    	JPanel checkBoxPanel=new JPanel();
+    	JLabel checkBoxlabel= new JLabel("Tipo de usuario:");
+    	Authority[] options = {Authority.Artist, Authority.Client};
+    	selectionComboBox = new JComboBox(options);
+    	selectionComboBox.setPreferredSize(new Dimension(120, 20));
+        checkBoxPanel.add(checkBoxlabel);
+        checkBoxPanel.add(selectionComboBox);
 
-        return newsletterCheckbox;
+        return checkBoxPanel;
     }
 
     private JButton createRegisterButton() {
@@ -88,14 +85,15 @@ public class WindowRegister extends JFrame {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String email = emailField.getText();
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
-                boolean subscribeToNewsletter = newsletterCheckbox.isSelected();
-
-                // TODO: Implement registration logic here
-
+                Authority selected = (Authority) selectionComboBox.getSelectedItem();
+                UserId userId=UserId.from(username);
+                Credentials cre=new Credentials(userId.get(),selected ,password);                
+                User usuario=new User(cre);                
                 JOptionPane.showMessageDialog(WindowRegister.this, "¡Has sido registrado exitosamente! Revisa tu bandeja de entrada para encontrar el descuento en tu primer pedido.");
+                dispose();
+                new WindowHome(usuario);
             }
         });
 
@@ -109,7 +107,7 @@ public class WindowRegister extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                WindowHome mainFrame = new WindowHome(false);
+                WindowHome mainFrame = new WindowHome(null);
                 mainFrame.setVisible(true);                
             }
         });
