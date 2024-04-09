@@ -4,7 +4,6 @@
            xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/jdo/jdoconfig
         http://xmlns.jcp.org/xml/ns/jdo/jdoconfig_3_2.xsd" version="3.2">
 
-    <!-- Tutorial "unit" -->
     <persistence-manager-factory name="LaCabraProject">
         <property name="javax.jdo.PersistenceManagerFactoryClass"
                   value="org.datanucleus.api.jdo.JDOPersistenceManagerFactory"/>
@@ -14,5 +13,8 @@
         <property name="javax.jdo.option.ConnectionUserName" value="lacabra"/>
         <property name="javax.jdo.option.ConnectionPassword" value="lacabra"/>
         <property name="datanucleus.schema.autoCreateAll" value="true"/>
+        <property name="datanucleus.attachSameDatastore" value="true"/>
+        <property name="datanucleus.detachedState" value="all"/>
+        <property name="datanucleus.query.checkUnusedParameters" value="false"/>
     </persistence-manager-factory>
 </jdoconfig>

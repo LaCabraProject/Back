@@ -1,0 +1,14 @@
+{
+  "$id": "objectid",
+  "anyOf": [
+    {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 79228162514264337593543950335
+    },
+    {
+      "type": "string",
+      "pattern": "^[0-9a-f]{1,24}$"
+    }
+  ]
+}

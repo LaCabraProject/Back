@@ -1,0 +1,76 @@
+{
+  "$id": "item",
+  "type": "object",
+  "required": [
+    "id",
+    "type",
+    "name"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "$ref": "classpath:///schema/objectid.json"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "clothing",
+        "accessories",
+        "decoration",
+        "utilities"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 10000
+    },
+    "keywords": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 20
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 20
+          },
+          "uniqueItems": true,
+          "maxItems": 50
+        }
+      ]
+    },
+    "price": {
+      "type": "number",
+      "minimum": 0
+    },
+    "discount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "stock": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "parent": {
+      "anyOf": [
+        {
+          "$ref": "user"
+        },
+        {
+          "$ref": "userid"
+        }
+      ]
+    }
+  }
+}

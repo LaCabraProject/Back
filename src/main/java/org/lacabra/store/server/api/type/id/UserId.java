@@ -8,6 +8,7 @@ import org.lacabra.store.server.json.serializer.UserIdSerializer;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,13 +17,13 @@ import java.util.stream.Collectors;
 @JsonSerialize(using = UserIdSerializer.class)
 @JsonDeserialize(using = UserIdDeserializer.class)
 public final class UserId implements Serializable {
-    public final static Pattern regex;
     @Serial
     private static final long serialVersionUID = 1L;
 
-    static {
-        String[] invalid = {"all"};
+    public final static Pattern regex;
+    public static final List<String> Invalid = List.of("all");;
 
+    static {
         String[] chars = {"a-zA-Z0-9", // ascii
                 "\\u00c0-\\u00d6\\u00d8-\\u00f6\\u0080-\\u00ff\\u0100-\\u017f\\u0180-\\u024f\\u1e00-\\u1eff", // latin
                 "\\u0370-\\u03ff\\u1f00-\\u1fff", // greek
@@ -30,7 +31,7 @@ public final class UserId implements Serializable {
         };
 
         regex = Pattern.compile(String.format("^(?!^%s$)(?=.{3,30}$)^([%s]+[-_\\.]?)+$",
-                Arrays.stream(invalid).map(x -> String.format("(?:%s)", x)).collect(Collectors.joining("|")),
+                Invalid.stream().map(x -> String.format("(?:%s)", x)).collect(Collectors.joining("|")),
                 Arrays.stream(chars).map(x -> {
                     Matcher m = Pattern.compile("(\\\\u.{1,4}-\\\\u.{1,4})|(.-.)").matcher(x);
 

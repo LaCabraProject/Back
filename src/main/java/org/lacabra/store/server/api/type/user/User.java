@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.jdo.converter.UserIdConverter;
+import org.lacabra.store.server.jdo.dao.Mergeable;
 import org.lacabra.store.server.json.deserializer.UserDeserializer;
 import org.lacabra.store.server.json.serializer.UserIdSerializer;
 
@@ -38,7 +39,7 @@ import java.util.Set;
         "LIKE" + " '%admin%'")
 @PersistenceCapable(table = "user")
 @JsonDeserialize(using = UserDeserializer.class)
-public class User implements Serializable {
+public class User implements Serializable, Mergeable<User> {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -78,7 +79,9 @@ public class User implements Serializable {
         this(new Credentials(id, passwd));
     }
 
-    public User(UserId id, String passwd) {this(new Credentials(id, passwd));}
+    public User(UserId id, String passwd) {
+        this(new Credentials(id, passwd));
+    }
 
     public User(Credentials creds) {
         this(creds, null);
@@ -122,5 +125,27 @@ public class User implements Serializable {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Mergeable<User> merge(User override) {
+        if (override == null) return this;
+
+        if (override.id != null)
+            this.id = override.id;
+
+        if (override.passwd != null)
+            this.passwd = override.passwd;
+
+        if (override.authorities != null)
+            this.authorities = override.authorities;
+
+        if (this.data == null)
+            this.data = override.data;
+
+        else
+            this.data.merge(override.data);
+
+        return this;
     }
 }

@@ -93,6 +93,18 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         Transaction tx = pm.currentTransaction();
 
         try {
+            T found = this.findOne(object);
+
+            if (found != null) {
+                if (found instanceof Mergeable f) {
+                    object = (T) f.merge(object);
+                    pm.refresh(found);
+                }
+
+                else
+                    this.delete(found);
+            }
+
             tx.begin();
             pm.flush();
             pm.makePersistent(object);

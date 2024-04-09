@@ -1,0 +1,40 @@
+{
+  "$id": "user",
+  "type": "object",
+  "required": [
+    "id"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "$ref": "classpath:///schema/objectid.json"
+    },
+    "passwd": {
+      "type": "string"
+    },
+    "authorities": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "admin",
+            "artist",
+            "client"
+          ]
+        },
+        {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "artist",
+              "client"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

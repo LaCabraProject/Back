@@ -17,6 +17,6 @@ public final class UserIdDeserializer extends JsonDeserializer<UserId> {
         if (!node.isTextual())
             return null;
 
-        return UserId.from(jp.getValueAsString());
+        return UserId.from(node.asText());
     }
 }

@@ -91,7 +91,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(UserId id, Collection<Authority> authorities, String passwd) {
-        this.id = Objects.requireNonNull(id);
+        this.id = id;
         this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
         this.passwd = passwd;
     }
