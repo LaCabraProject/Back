@@ -21,7 +21,13 @@ public class WindowLogin extends JFrame {
 
     public WindowLogin(MainController mc) {
         initUI(mc);
-        this.mc=mc;
+        this.mc = mc;
+    }
+
+    public static void main(String[] args) {
+        MainController mc = new MainController();
+        WindowLogin loginFrame = new WindowLogin(mc);
+        loginFrame.setVisible(true);
     }
 
     private void initUI(MainController mc) {
@@ -82,7 +88,7 @@ public class WindowLogin extends JFrame {
         JPanel panel = new JPanel();
         panel.add(passwordLabel);
         panel.add(passwordField);
-        
+
         return panel;
     }
 
@@ -98,12 +104,13 @@ public class WindowLogin extends JFrame {
 
                 if (username.equals("admin") && password.equals("admin")) {
                     dispose();
-                    User usuario=null;
-                    usuario=new User(new Credentials(username, Authority.Admin,password));
+                    User usuario = null;
+                    usuario = new User(new Credentials(username, Authority.Admin, password));
                     WindowHome mainFrame = new WindowHome(usuario, mc);
                     mainFrame.setVisible(true);
                 } else {
-                    JOptionPane.showMessageDialog(WindowLogin.this, "Nombre de usuario o contraseña incorrectos.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(WindowLogin.this, "Nombre de usuario o contraseña incorrectos.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -149,11 +156,5 @@ public class WindowLogin extends JFrame {
         if (exitOnClose.equals(EXIT_ON_CLOSE)) {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         }
-    }
-
-    public static void main(String[] args) {
-        MainController mc = new MainController();
-        WindowLogin loginFrame = new WindowLogin(mc);
-        loginFrame.setVisible(true);
     }
 }

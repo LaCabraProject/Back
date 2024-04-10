@@ -1,5 +1,5 @@
-@base = http://localhost:8080/api/item
-@id = 0
+@base = http://localhost:8080/api/user
+@id = mikel
 
 ###
 

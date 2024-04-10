@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.annotation.security.PermitAll;
 import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.internals.type.tuple.Pair;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.ObjectId;
 import org.lacabra.store.server.api.type.item.Item;
@@ -22,6 +23,7 @@ import javax.ws.rs.core.Response;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Path("/item")
 @Produces(MediaType.APPLICATION_JSON)
@@ -62,8 +64,7 @@ public final class Route {
 
         var dao = ItemDAO.getInstance();
 
-        List<Item> delete = new ArrayList<>(ret.length);
-        List<Item> store = new ArrayList<>(ret.length);
+        List<Pair<Item, Item>> trans = new ArrayList<>();
 
         for (final Item i : ret) {
             if (i == null) {
@@ -99,15 +100,109 @@ public final class Route {
                 return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), reason).build();
             }
 
-            delete.add(found);
-            store.add(i.merge(new Item(i.id() == null ? ObjectId.random(Item.class) : null, null, null, null, null,
-                    null, null, null, new User(uid))));
+            trans.add(new Pair<>(found, i.merge(new Item(i.id() == null ? ObjectId.random(Item.class) : null,
+                    null, null, null, null,
+                    null, null, null, new User(uid)))));
         }
 
-        delete.forEach(dao::delete);
-        dao.store(store);
+        List<Item> stored = new ArrayList<>();
+        for (Pair<Item, Item> pair : trans) {
+            final Response.ResponseBuilder r = Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    String.format(
+                            "Could " +
+                                    "not put item %s.", pair.x().id()));
 
-        return Response.ok(store.toArray()).build();
+            if (!dao.delete(pair.x()))
+                return r.build();
+
+            if (!dao.store(pair.y()))
+                return r.build();
+
+            stored.add(pair.y());
+        }
+
+        return switch (Integer.valueOf(stored.size())) {
+            case Integer zero when zero.equals(0) -> Response.ok().build();
+            case Integer one when one.equals(1) -> Response.ok(stored.getFirst()).build();
+            case Integer other -> Response.ok(stored.toArray(new Item[0])).build();
+        };
+    }
+
+    @PATCH
+    @PermitAll
+    public Response PATCH(@Context ContainerRequestContext context, String json) {
+        AuthTokenDetails user = ((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails();
+        if (!user.authorities().contains(Authority.Artist))
+            return Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), "Not an artist.").build();
+
+        String uid = user.username();
+
+        var omp = new ObjectMapperProvider();
+        var mapper = omp.getContext(Item[].class);
+
+        JsonNode node;
+
+        try {
+            node = mapper.readTree(json);
+        } catch (JsonProcessingException e) {
+            return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "Could not parse JSON.").build();
+        }
+
+        if (!node.isArray()) {
+            node = mapper.getNodeFactory().arrayNode().add(node);
+        }
+
+        Item[] ret;
+
+        try {
+            ret = mapper.treeToValue(node, Item[].class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        var dao = ItemDAO.getInstance();
+
+        List<Item> stored = new ArrayList<>();
+
+        for (final Item i : ret) {
+            if (i == null) {
+                final String reason = "Not an item.";
+                Logger.getLogger().warning("Bad request: " + reason);
+
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), reason).build();
+            }
+
+
+            if (i.id() == null) {
+                final String reason = "Item must have an ID.";
+                Logger.getLogger().warning("Bad request: " + reason);
+
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), reason).build();
+            }
+
+            Item found = dao.findOne(dao.getQuery("FindItem"), i);
+            if (found == null) {
+                final String reason = String.format("Item %s not found.", i.id());
+                Logger.getLogger().warning("Bad request: " + reason);
+
+                return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), reason).build();
+            }
+
+            if (!Objects.equals(found.parent().id(), uid)) {
+                final String reason = String.format("Not the parent of item %s.");
+                Logger.getLogger().warning("Unauthorized: " + reason);
+
+                return Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), reason).build();
+            }
+
+            stored.add(found.merge(i));
+        }
+
+        return switch (Integer.valueOf(stored.size())) {
+            case Integer zero when zero.equals(0) -> Response.status(Response.Status.NO_CONTENT).build();
+            case Integer one when one.equals(1) -> Response.ok(stored.getFirst()).build();
+            case Integer other -> Response.ok(stored.toArray(new Item[0])).build();
+        };
     }
 
     @Path("/item/all")

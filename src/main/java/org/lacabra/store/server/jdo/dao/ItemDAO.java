@@ -4,7 +4,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.item.Item;
 
-import javax.jdo.Query;
 import java.util.Collections;
 
 @ApplicationScoped

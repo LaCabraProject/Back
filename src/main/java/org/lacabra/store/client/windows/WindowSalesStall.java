@@ -23,10 +23,14 @@ import java.util.List;
 public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
     private JTable table;
-    private List<Item> lista=new ArrayList<>();
+    private List<Item> lista = new ArrayList<>();
 
     public WindowSalesStall(User usuario, MainController mc) {
         initUI(usuario, mc);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new WindowSalesStall(null, new MainController()));
     }
 
     private void initUI(User usuario, MainController mc) {
@@ -35,17 +39,19 @@ public class WindowSalesStall extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        List<ItemDTO> itemDTOs=null;
-        for (int i = 0; i < 5; i++){
+        List<ItemDTO> itemDTOs = null;
+        for (int i = 0; i < 5; i++) {
             String[] words = {"cabra", "goat", "beast"};
             Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
-            Item item=new Item(ObjectId.from(i+220),ItemType.Decoration,"chair"+i,"a goated chair",keywords,20,0,new BigInteger("2"),new User("mikel"));
+            Item item = new Item(ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
+                    , 20, 0, new BigInteger("2"), new User("mikel"));
             lista.add(item);
         }
 //        itemDTOs=MainController.ReceiveItems();
-        if(itemDTOs!=null){
-            for(ItemDTO i:itemDTOs){
-                Item item=new Item(i.type(),i.name(),i.description(),i.keywords(),i.price(),i.discount(),i.stock(),new User(i.parent()));
+        if (itemDTOs != null) {
+            for (ItemDTO i : itemDTOs) {
+                Item item = new Item(i.type(), i.name(), i.description(), i.keywords(), i.price(), i.discount(),
+                        i.stock(), new User(i.parent()));
                 lista.add(item);
             }
         }
@@ -74,7 +80,8 @@ public class WindowSalesStall extends JFrame {
 
         // Agregar los datos de los objetos Item a la tabla
         for (Item item : lista) {
-            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), "mikel"};
+            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                    item.price(), item.discount() + "%", item.stock(), "mikel"};
             tableModel.addRow(rowData);
         }
 
@@ -108,22 +115,22 @@ public class WindowSalesStall extends JFrame {
         photoPanel.add(btnAddPhoto);
         bottomPanel.add(photoPanel);
 
-        JPanel panelPrecio=new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelPrecio= new JLabel("Coste del producto:");
+        JPanel panelPrecio = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelPrecio = new JLabel("Coste del producto:");
         JTextField precioField = new JTextField(20);
         panelPrecio.add(labelPrecio);
         panelPrecio.add(precioField);
         bottomPanel.add(panelPrecio);
 
-        JPanel panelCantidad=new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelCantidad= new JLabel("Cantidad del producto:");
+        JPanel panelCantidad = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelCantidad = new JLabel("Cantidad del producto:");
         JTextField cantidadField = new JTextField(20);
         panelCantidad.add(labelCantidad);
         panelCantidad.add(cantidadField);
         bottomPanel.add(panelCantidad);
 
-        JPanel panelTipo =new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelTipo= new JLabel("Tipo de producto:");
+        JPanel panelTipo = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel labelTipo = new JLabel("Tipo de producto:");
         JComboBox tipoField = new JComboBox(ItemType.values());
         panelTipo.add(labelTipo);
         panelTipo.add(tipoField);
@@ -155,20 +162,22 @@ public class WindowSalesStall extends JFrame {
                     Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
                     String itemDescription = descriptionField.getText();
                     String itemPhotoPath = photoField.getText();
-                    ObjectId objId=ObjectId.from(itemName);
-                    int numero=Integer.parseInt(precioField.getText());
-                    BigInteger cantidad=new BigInteger(cantidadField.getText());
-                    Item item= new Item(ObjectId.from(nameField.getText()),(ItemType) tipoField.getSelectedItem(), nameField.getText(),itemDescription,keywords,numero,0,cantidad, usuario);
+                    ObjectId objId = ObjectId.from(itemName);
+                    int numero = Integer.parseInt(precioField.getText());
+                    BigInteger cantidad = new BigInteger(cantidadField.getText());
+                    Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
+                            nameField.getText(), itemDescription, keywords, numero, 0, cantidad, usuario);
                     //mc.PutItem(item);
-                    List<Item>list= new ArrayList<>();
-                    for(Item t:lista){
-                        if(t.equals(lista.get(selectedRowIndex))){
+                    List<Item> list = new ArrayList<>();
+                    for (Item t : lista) {
+                        if (t.equals(lista.get(selectedRowIndex))) {
                             list.add(item);
                         }
                         list.add(t);
                     }
-                    lista=new ArrayList<>(list);
-                    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(), item.discount()+"%", item.stock(), usuario.id().get()};
+                    lista = new ArrayList<>(list);
+                    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                            item.price(), item.discount() + "%", item.stock(), usuario.id().get()};
                     tableModel.removeRow(selectedRowIndex);
                     tableModel.insertRow(selectedRowIndex, rowData);
 
@@ -182,15 +191,17 @@ public class WindowSalesStall extends JFrame {
             Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
             String itemDescription = descriptionField.getText();
             String itemPhotoPath = photoField.getText();
-            ObjectId objId=ObjectId.from(itemName);
-            int numero=Integer.parseInt(precioField.getText());
-            BigInteger cantidad=new BigInteger(cantidadField.getText());
-            Item item= new Item(ObjectId.from(nameField.getText()),(ItemType) tipoField.getSelectedItem(), nameField.getText(),itemDescription,keywords,numero,0,cantidad, usuario);
+            ObjectId objId = ObjectId.from(itemName);
+            int numero = Integer.parseInt(precioField.getText());
+            BigInteger cantidad = new BigInteger(cantidadField.getText());
+            Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
+                    nameField.getText(), itemDescription, keywords, numero, 0, cantidad, usuario);
             //mc.PutItem(item);
             lista.add(item);
-            if (!itemName.isEmpty()&&cantidadField.getText()!=""&&precioField.getText()!="") {
-                Item item1=lista.get(lista.size()-1);
-                Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(), item1.price(), item1.discount()+"%", item1.stock(), usuario.id().get()};
+            if (!itemName.isEmpty() && cantidadField.getText() != "" && precioField.getText() != "") {
+                Item item1 = lista.get(lista.size() - 1);
+                Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(),
+                        item1.price(), item1.discount() + "%", item1.stock(), usuario.id().get()};
                 tableModel.addRow(rowData);
                 addItemField.setText("");
                 descriptionField.setText("");
@@ -215,7 +226,7 @@ public class WindowSalesStall extends JFrame {
             int selectedRowIndex = table.getSelectedRow();
             if (selectedRowIndex != -1) {
                 tableModel.removeRow(selectedRowIndex);
-                lista.remove(selectedRowIndex-1);
+                lista.remove(selectedRowIndex - 1);
             }
         });
 
@@ -224,7 +235,8 @@ public class WindowSalesStall extends JFrame {
             new WindowHome(usuario, mc);
         });
 
-        btnClearList.addActionListener(e -> tableModel.setRowCount(0));lista=new ArrayList<>();
+        btnClearList.addActionListener(e -> tableModel.setRowCount(0));
+        lista = new ArrayList<>();
         add(panel);
         setVisible(true);
     }
@@ -234,7 +246,8 @@ public class WindowSalesStall extends JFrame {
         private static final int MAX_IMAGE_HEIGHT = 100;
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                       boolean hasFocus, int row, int column) {
             JLabel label = new JLabel();
             if (value != null) {
                 String imagePath = (String) value;
@@ -261,10 +274,6 @@ public class WindowSalesStall extends JFrame {
             }
             return label;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new WindowSalesStall(null,new MainController()));
     }
 }
 

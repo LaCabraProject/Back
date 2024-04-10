@@ -11,12 +11,14 @@ public class UserData implements Serializable, Mergeable<UserData> {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public UserData() {}
+    public UserData() {
+    }
 
-    public UserData(UserData data) {}
+    public UserData(UserData data) {
+    }
 
     @Override
-    public UserData merge (UserData override) {
+    public UserData merge(UserData override) {
         if (override == null)
             return this;
 

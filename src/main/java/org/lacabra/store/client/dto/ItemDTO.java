@@ -30,17 +30,18 @@ public class ItemDTO implements Serializable {
 
     public ItemDTO() {
     }
+
     public ItemDTO(ObjectId id) {
         this(id, null, null, null, null, null, null, null, null);
     }
 
     public ItemDTO(ItemType type, String name, String description, Collection<String> keywords,
-                Number price, Integer discount, BigInteger stock, UserId parent) {
+                   Number price, Integer discount, BigInteger stock, UserId parent) {
         this(ObjectId.random(Item.class), type, name, description, keywords, price, discount, stock, parent);
     }
 
     public ItemDTO(ObjectId id, ItemType type, String name, String description, Collection<String> keywords,
-                Number price, Integer discount, Number stock, UserId parent) {
+                   Number price, Integer discount, Number stock, UserId parent) {
         this.id = id;
         this.type = type;
         this.name = name;
@@ -78,6 +79,7 @@ public class ItemDTO implements Serializable {
     public BigInteger stock() {
         return this.stock;
     }
+
     public Integer discount() {
         return this.discount;
     }

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchema;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.UserId;
@@ -14,7 +12,6 @@ import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.json.exception.JsonSchemaComplianceException;
-import org.lacabra.store.server.json.validator.JsonSchemaFactory;
 import org.lacabra.store.server.json.validator.JsonSchemaValidator;
 
 import java.io.IOException;

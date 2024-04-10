@@ -11,16 +11,19 @@ public class UserAssembler {
     private UserAssembler() {
 
     }
+
     public static UserAssembler getInstance() {
         if (instance == null) {
             instance = new UserAssembler();
         }
         return instance;
     }
+
     public UserDTO UserToDTO(User user) {
         UserDTO userDTO = new UserDTO(user.id().toString(), user.passwd());
         return userDTO;
     }
+
     public List<UserDTO> UsersToDTO(List<User> users) {
         List<UserDTO> dtos = new ArrayList<>();
 

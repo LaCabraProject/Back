@@ -7,7 +7,6 @@ import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +19,13 @@ public class WindowRegister extends JFrame {
 
     public WindowRegister(MainController mc) {
         initUI(mc);
-        this.mc=mc;
+        this.mc = mc;
+    }
+
+    public static void main(String[] args) {
+        MainController mc = new MainController();
+        WindowRegister registerWindow = new WindowRegister(mc);
+        registerWindow.setVisible(true);
     }
 
     private void initUI(MainController mc) {
@@ -43,8 +48,6 @@ public class WindowRegister extends JFrame {
 
         setVisible(true);
     }
-
-   
 
     private JPanel createUsernameLabelAndField() {
         JLabel usernameLabel = new JLabel("Nombre de usuario");
@@ -71,11 +74,11 @@ public class WindowRegister extends JFrame {
     }
 
     private JPanel createNewsletterCheckbox() {
-    	JPanel checkBoxPanel=new JPanel();
-    	JLabel checkBoxlabel= new JLabel("Tipo de usuario:");
-    	Authority[] options = {Authority.Artist, Authority.Client};
-    	selectionComboBox = new JComboBox(options);
-    	selectionComboBox.setPreferredSize(new Dimension(120, 20));
+        JPanel checkBoxPanel = new JPanel();
+        JLabel checkBoxlabel = new JLabel("Tipo de usuario:");
+        Authority[] options = {Authority.Artist, Authority.Client};
+        selectionComboBox = new JComboBox(options);
+        selectionComboBox.setPreferredSize(new Dimension(120, 20));
         checkBoxPanel.add(checkBoxlabel);
         checkBoxPanel.add(selectionComboBox);
 
@@ -92,19 +95,20 @@ public class WindowRegister extends JFrame {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 Authority selected = (Authority) selectionComboBox.getSelectedItem();
-                UserId userId=UserId.from(username);
-                Credentials cre=new Credentials(userId.get(),selected ,password);
-                User usuario=new User(cre);
+                UserId userId = UserId.from(username);
+                Credentials cre = new Credentials(userId.get(), selected, password);
+                User usuario = new User(cre);
                 mc.PutUser(usuario);
-                JOptionPane.showMessageDialog(WindowRegister.this, "¡Has sido registrado exitosamente! Revisa tu bandeja de entrada para encontrar el descuento en tu primer pedido.");
+                JOptionPane.showMessageDialog(WindowRegister.this, "¡Has sido registrado exitosamente! Revisa tu " +
+                        "bandeja de entrada para encontrar el descuento en tu primer pedido.");
                 dispose();
-                new WindowHome(usuario,mc);
+                new WindowHome(usuario, mc);
             }
         });
 
         return registerButton;
     }
-    
+
     private JPanel createGoBackButton() {
         JButton back = new JButton("Volver al inicio");
         back.setPreferredSize(new Dimension(120, 20));
@@ -113,17 +117,11 @@ public class WindowRegister extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 WindowHome mainFrame = new WindowHome(null, mc);
-                mainFrame.setVisible(true);                
+                mainFrame.setVisible(true);
             }
         });
-        JPanel jp= new JPanel();
+        JPanel jp = new JPanel();
         jp.add(back);
         return jp;
-    }
-
-    public static void main(String[] args) {
-        MainController mc = new MainController();
-        WindowRegister registerWindow = new WindowRegister(mc);
-        registerWindow.setVisible(true);
     }
 }

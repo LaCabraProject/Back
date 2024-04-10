@@ -13,19 +13,17 @@ import java.util.Objects;
 public final class JsonSchemaFactory {
     public static final String PREFIX = "https://github.com/LaCabraProject/";
     private static final SchemaValidatorsConfig CONFIG = new SchemaValidatorsConfig();
+    private static final com.networknt.schema.JsonSchemaFactory jsonSchemaFactory =
+            com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012, builder ->
+                    builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix(PREFIX, "classpath:schema/"))
+            );
+    private static final Map<Class<?>, JsonSchema> SCHEMAS = Map.of(User.class, getSchema("user"), UserId.class,
+            getSchema("userid"), Item.class, getSchema("item"), ObjectId.class, getSchema("objectid"));
 
     static {
         CONFIG.setPathType(PathType.JSON_POINTER);
         CONFIG.setEcma262Validator(true);
     }
-
-    private static final com.networknt.schema.JsonSchemaFactory jsonSchemaFactory =
-            com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012, builder ->
-                    builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix(PREFIX, "classpath:schema/"))
-            );
-
-    private static final Map<Class<?>, JsonSchema> SCHEMAS = Map.of(User.class, getSchema("user"), UserId.class,
-            getSchema("userid"), Item.class, getSchema("item"), ObjectId.class, getSchema("objectid"));
 
     public static JsonSchema getSchema(@NotNull String schema) {
         Objects.requireNonNull(schema);

@@ -18,7 +18,7 @@ public class WindowShoppingCart extends JFrame {
     private MainController mc;
 
     public WindowShoppingCart(MainController mc) {
-        this.mc=mc;
+        this.mc = mc;
         setTitle("Carrito de Compra");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
