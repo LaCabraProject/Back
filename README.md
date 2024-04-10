@@ -1,4 +1,7 @@
-Para ejecutar el projecto primero hay que compilarlo mediante la extension de maven de IntelIJ
+
+
+Para ejecutar el proyecto primero hay que tener una instancia de mysql ejecutandose en el equipo
+Despues hay que compilarlo mediante la extension de maven de IntelIJ
 
   LifeCycle -> Compile
 
