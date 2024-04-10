@@ -10,6 +10,6 @@ import java.io.IOException;
 public final class ObjectIdSerializer extends JsonSerializer<ObjectId> {
     @Override
     public void serialize(ObjectId value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-        jgen.writeString(value.toString());
+        jgen.writeString(value.normalize());
     }
 }

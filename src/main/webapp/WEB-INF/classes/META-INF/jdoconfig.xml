@@ -12,6 +12,7 @@
                   value="jdbc:mysql://127.0.0.1:3306/lacabradb?useServerPrepStmts=false&amp;createDatabaseIfNotExist=true&amp;verifyServerCertificate=false&amp;useSSL=false&amp;serverTimezone=UTC&amp;allowPublicKeyRetrieval=true"/>
         <property name="javax.jdo.option.ConnectionUserName" value="lacabra"/>
         <property name="javax.jdo.option.ConnectionPassword" value="lacabra"/>
+        <property name="javax.jdo.option.Optimistic" value="false"/>
         <property name="datanucleus.schema.autoCreateAll" value="true"/>
         <property name="datanucleus.attachSameDatastore" value="true"/>
         <property name="datanucleus.detachedState" value="all"/>

@@ -1,13 +1,14 @@
 package org.lacabra.store.server.jdo.converter;
 
-import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import org.lacabra.store.server.api.type.item.ItemType;
+
+import javax.jdo.AttributeConverter;
 
 @Converter(autoApply = true)
 public final class ItemTypeConverter implements AttributeConverter<ItemType, String> {
     @Override
-    public String convertToDatabaseColumn(ItemType type) {
+    public String convertToDatastore(ItemType type) {
         if (type == null) {
             return null;
         }
@@ -16,7 +17,7 @@ public final class ItemTypeConverter implements AttributeConverter<ItemType, Str
     }
 
     @Override
-    public ItemType convertToEntityAttribute(String type) {
+    public ItemType convertToAttribute(String type) {
         if (type == null) {
             return null;
         }

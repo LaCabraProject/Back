@@ -37,53 +37,52 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
 
         JsonNode node2;
 
-        ObjectId id = omp.getContext(ObjectId.class).treeToValue(node.get("id"), ObjectId.class);
+        ObjectId id = null;
+        node2 = node.get("id");
+        if (!(node2 == null || node2.isNull())) id = omp.getContext(ObjectId.class).treeToValue(node2, ObjectId.class);
+
         ItemType type = null;
 
         node2 = node.get("type");
-        if (!(node2 == null || node2.isNull()))
-            type = ItemType.parse(node2.asText());
+        if (!(node2 == null || node2.isNull())) type = ItemType.parse(node2.asText());
 
         String name = null;
 
         node2 = node.get("name");
-        if (!(node2 == null || node2.isNull()))
-            name = node2.asText();
+        if (!(node2 == null || node2.isNull())) name = node2.asText();
 
         String description = null;
 
         node2 = node.get("description");
-        if (!(node2 == null || node2.isNull()))
-            description = node2.asText();
+        if (!(node2 == null || node2.isNull())) description = node2.asText();
 
         var keywords = new HashSet<String>();
 
         node2 = node.get("keywords");
         if (!(node2 == null || node2.isNull())) {
-            if (node2.isArray())
-                for (final JsonNode n : node2) {
-                    keywords.add(n.asText());
-                }
-            else
-                keywords.add(node2.asText());
+            if (node2.isArray()) for (final JsonNode n : node2) {
+                keywords.add(n.asText());
+            }
+            else keywords.add(node2.asText());
         }
 
         Number price = null;
         node2 = node.get("price");
-        if (!(node2 == null || node2.isNull()))
-            price = node2.numberValue();
+        if (!(node2 == null || node2.isNull())) price = node2.numberValue();
 
         Integer discount = null;
         node2 = node.get("discount");
-        if (!(node2 == null || node2.isNull()))
-            discount = node2.intValue();
+        if (!(node2 == null || node2.isNull())) discount = node2.intValue();
 
         BigInteger stock = null;
         node2 = node.get("stock");
-        if (!(node2 == null || node2.isNull()))
-            stock = node2.bigIntegerValue();
+        if (!(node2 == null || node2.isNull())) stock = node2.bigIntegerValue();
 
-        UserId parent = omp.getContext(UserId.class).treeToValue(node.get("parent"), UserId.class);
+        UserId parent = null;
+        node2 = node.get("parent");
+        if (!(node2 == null || node2.isNull()))
+            parent = node.isTextual() ? omp.getContext(UserId.class).treeToValue(node2, UserId.class) :
+                    omp.getContext(User.class).treeToValue(node2, User.class).id();
 
         return new Item(id, type, name, description, keywords, price, discount, stock, new User(parent));
     }

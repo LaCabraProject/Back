@@ -2,35 +2,39 @@ package org.lacabra.store.server.api.type.item;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.ObjectId;
 import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.user.User;
+import org.lacabra.store.server.jdo.converter.BigIntegerConverter;
+import org.lacabra.store.server.jdo.converter.ItemTypeConverter;
 import org.lacabra.store.server.jdo.converter.ObjectIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
 import org.lacabra.store.server.json.deserializer.ItemDeserializer;
 import org.lacabra.store.server.json.serializer.ObjectIdSerializer;
 
 import javax.jdo.annotations.*;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 @JsonDeserialize(using = ItemDeserializer.class)
 @PersistenceCapable(table = "item")
+@ForeignKey(name = "parent", columns = {@Column(name = "parent", defaultValue =
+        "#NULL",
+        allowsNull = "true")},
+        unique = "false", deleteAction =
+        ForeignKeyAction.NONE, updateAction = ForeignKeyAction.NONE)
 @Query(name = "FindItem", value = "SELECT FROM Item WHERE id == :id")
 public class Item implements Serializable, Mergeable<Item> {
     @Serial
@@ -38,13 +42,14 @@ public class Item implements Serializable, Mergeable<Item> {
 
     @JsonProperty("id")
     @JsonSerialize(using = ObjectIdSerializer.class)
-    @Convert(ObjectIdConverter.class)
+    @Convert(value = ObjectIdConverter.class)
     @PrimaryKey
+    @Column(name = "id", jdbcType = "VARCHAR", sqlType = "VARCHAR", length = 24)
+    @Persistent(useDefaultConversion = true)
     private ObjectId id;
 
     @JsonProperty("type")
-    @Enumerated(EnumType.STRING)
-    @NotNull
+    @Convert(ItemTypeConverter.class)
     @Persistent
     private ItemType type;
 
@@ -61,19 +66,21 @@ public class Item implements Serializable, Mergeable<Item> {
     private Set<String> keywords;
 
     @JsonProperty("price")
-    @Column(jdbcType = "DECIMAL")
+    @Column(jdbcType = "DECIMAL", defaultValue = "0")
     private BigDecimal price;
 
     @JsonProperty("discount")
+    @Column(jdbcType = "INTEGER", defaultValue = "0")
     @Persistent
     private Integer discount;
 
     @Persistent
-    @Column(jdbcType = "BIGINT")
+    @Column(jdbcType = "BIGINT", defaultValue = "0")
+    @Convert(BigIntegerConverter.class)
     private BigInteger stock;
 
     @JsonSerialize(using = UserToIdSerializer.class)
-    @Column(name = "parent_id")
+    @Persistent
     private User parent;
 
     public Item() {
@@ -83,8 +90,8 @@ public class Item implements Serializable, Mergeable<Item> {
         this(id, null, null, null, null, null, null, null, null);
     }
 
-    public Item(ItemType type, String name, String description, Collection<String> keywords,
-                Number price, Integer discount, BigInteger stock, User parent) {
+    public Item(ItemType type, String name, String description, Collection<String> keywords, Number price,
+                Integer discount, BigInteger stock, User parent) {
         this(ObjectId.random(Item.class), type, name, description, keywords, price, discount, stock, parent);
     }
 
@@ -94,10 +101,11 @@ public class Item implements Serializable, Mergeable<Item> {
         this.type = type;
         this.name = name;
         this.description = description;
-        this.keywords = keywords == null ? Collections.EMPTY_SET : new HashSet<>(keywords);
-        this.price = price == null ? BigDecimal.ZERO : new BigDecimal(String.valueOf(price));
-        this.discount = discount == null ? 0 : discount;
-        this.stock = stock == null ? BigInteger.ZERO : new BigDecimal(String.valueOf(stock)).toBigInteger();
+        this.keywords = keywords == null ? null : new HashSet<>(keywords);
+        this.price = price == null ? null : new BigDecimal(String.valueOf(price));
+        this.discount = discount;
+        this.stock = stock == null ? null : new BigDecimal(String.valueOf(stock)).toBigInteger();
+        this.parent = parent;
     }
 
     public Item(ObjectId id, Item item) {
@@ -109,10 +117,16 @@ public class Item implements Serializable, Mergeable<Item> {
         this(item.id, item);
     }
 
-    public final class UserToIdSerializer extends JsonSerializer<User> {
+    public static final class UserToIdSerializer extends JsonSerializer<User> {
         @Override
         public void serialize(User value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeString(new ObjectMapperProvider().getContext(UserId.class).writer().writeValueAsString(value.id()));
+            if (value == null || value.id() == null) {
+                jgen.writeNull();
+
+                return;
+            }
+
+            jgen.writeString(new ObjectMapperProvider().getContext(UserId.class).writer().writeValueAsString(value.id()).replaceAll("^\"(.*)\"$", "$1"));
         }
     }
 
@@ -133,7 +147,7 @@ public class Item implements Serializable, Mergeable<Item> {
     }
 
     public Set<String> keywords() {
-        return this.keywords;
+        return this.keywords == null ? null : new HashSet<>(this.keywords);
     }
 
     public BigDecimal price() {
@@ -154,36 +168,37 @@ public class Item implements Serializable, Mergeable<Item> {
 
     @Override
     public Item merge(Item override) {
-        if (override == null)
-            return this;
+        if (override == null) return this;
 
-        if (override.id != null)
-            this.id = override.id;
+        if (override.id != null) this.id = override.id;
 
-        if (override.type != null)
-            this.type = override.type;
+        if (override.type != null) this.type = override.type;
 
-        if (override.name != null)
-            this.name = override.name;
+        if (override.name != null) this.name = override.name;
 
-        if (override.description != null)
-            this.description = override.description;
+        if (override.description != null) this.description = override.description;
 
-        if (override.keywords != null)
-            this.keywords = override.keywords;
+        if (override.keywords != null) this.keywords = override.keywords;
 
-        if (override.price != null)
-            this.price = override.price;
+        if (override.price != null) this.price = override.price;
 
-        if (override.stock != null)
-            this.stock = override.stock;
+        if (override.stock != null) this.stock = override.stock;
 
-        if (override.discount != null)
-            this.discount = override.discount;
+        if (override.discount != null) this.discount = override.discount;
 
-        if (override.parent != null)
-            this.parent = override.parent;
+        if (override.parent != null) this.parent = override.parent;
+
+        Mergeable.super.merge(this);
 
         return this;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapperProvider().getContext(Item.class).writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

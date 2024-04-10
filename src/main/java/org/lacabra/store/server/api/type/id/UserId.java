@@ -20,8 +20,8 @@ public final class UserId implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public final static Pattern regex;
-    public static final List<String> Invalid = List.of("all");;
+    public final static Pattern REGEX;
+    public static final List<String> Invalid = List.of("all");
 
     static {
         String[] chars = {"a-zA-Z0-9", // ascii
@@ -30,7 +30,7 @@ public final class UserId implements Serializable {
                 "\\u0400-\\u04ff\\u0500\\u052f" // cyrillic
         };
 
-        regex = Pattern.compile(String.format("^(?!^%s$)(?=.{3,30}$)^([%s]+[-_\\.]?)+$",
+        REGEX = Pattern.compile(String.format("^(?!^%s$)(?=.{3,30}$)^([%s]+[-_\\.]?)+$",
                 Invalid.stream().map(x -> String.format("(?:%s)", x)).collect(Collectors.joining("|")),
                 Arrays.stream(chars).map(x -> {
                     Matcher m = Pattern.compile("(\\\\u.{1,4}-\\\\u.{1,4})|(.-.)").matcher(x);
@@ -42,7 +42,7 @@ public final class UserId implements Serializable {
                 }).filter(Objects::nonNull).sorted((a, b) -> {
                     String[] match = new String[2];
 
-                    Pattern r = Pattern.compile("\\\\u(.{1,4})\\\\-.+");
+                    Pattern r = Pattern.compile("\\\\u(.{1,4})\\\\.+");
                     Matcher[] matcher = new Matcher[]{r.matcher(a), r.matcher(b)};
 
                     for (int i = 0; i < matcher.length; i++) {
@@ -78,7 +78,7 @@ public final class UserId implements Serializable {
         if (id == null)
             return false;
 
-        return regex.matcher(id.trim()).matches();
+        return REGEX.matcher(id.trim()).matches();
     }
 
     public static boolean is(UserId id) {

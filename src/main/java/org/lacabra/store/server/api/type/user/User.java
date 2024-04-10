@@ -5,19 +5,15 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.server.jdo.converter.AuthorityConverter;
 import org.lacabra.store.server.jdo.converter.UserIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
 import org.lacabra.store.server.json.deserializer.UserDeserializer;
 import org.lacabra.store.server.json.serializer.UserIdSerializer;
 
 import javax.jdo.annotations.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -54,10 +50,7 @@ public class User implements Serializable, Mergeable<User> {
     private String passwd;
 
     @JsonProperty("authorities")
-    @ElementCollection(targetClass = Authority.class, fetch = FetchType.LAZY)
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @Persistent
+    @Element(types = {Authority.class}, converter = AuthorityConverter.class)
     private Set<Authority> authorities;
 
     @JsonUnwrapped
@@ -103,7 +96,7 @@ public class User implements Serializable, Mergeable<User> {
     }
 
     public Set<Authority> authorities() {
-        return new HashSet<>(this.authorities);
+        return this.authorities == null ? null : new HashSet<>(this.authorities);
     }
 
     public UserId id() {
@@ -118,6 +111,46 @@ public class User implements Serializable, Mergeable<User> {
         return data;
     }
 
+    private void setId(UserId id) {
+        this.id = id;
+    }
+
+    private void setPasswd(String passwd) {
+        this.passwd = passwd;
+    }
+
+    private void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
+    private void setData(UserData data) {
+        this.data = data;
+    }
+
+    @Override
+    public User merge(User override) {
+        if (override == null) return this;
+
+        if (override.id != null)
+            this.setId(override.id);
+
+        if (override.passwd != null)
+            this.setPasswd(override.passwd);
+
+        if (override.authorities != null)
+            this.setAuthorities(override.authorities);
+
+        if (this.data == null)
+            this.setData(override.data);
+
+        else
+            this.setData(this.data.merge(override.data));
+
+        Mergeable.super.merge(this);
+
+        return this;
+    }
+
     @Override
     public String toString() {
         try {
@@ -125,27 +158,5 @@ public class User implements Serializable, Mergeable<User> {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public Mergeable<User> merge(User override) {
-        if (override == null) return this;
-
-        if (override.id != null)
-            this.id = override.id;
-
-        if (override.passwd != null)
-            this.passwd = override.passwd;
-
-        if (override.authorities != null)
-            this.authorities = override.authorities;
-
-        if (this.data == null)
-            this.data = override.data;
-
-        else
-            this.data.merge(override.data);
-
-        return this;
     }
 }

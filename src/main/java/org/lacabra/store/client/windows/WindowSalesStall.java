@@ -42,7 +42,7 @@ public class WindowSalesStall extends JFrame {
             Item item=new Item(ObjectId.from(i+220),ItemType.Decoration,"chair"+i,"a goated chair",keywords,20,0,new BigInteger("2"),new User("mikel"));
             lista.add(item);
         }
-        //itemDTOs=mc.ReceiveItems();
+//        itemDTOs=MainController.ReceiveItems();
         if(itemDTOs!=null){
             for(ItemDTO i:itemDTOs){
                 Item item=new Item(i.type(),i.name(),i.description(),i.keywords(),i.price(),i.discount(),i.stock(),new User(i.parent()));

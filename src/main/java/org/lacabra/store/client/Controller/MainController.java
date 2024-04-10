@@ -1,15 +1,14 @@
 package org.lacabra.store.client.Controller;
 
+import io.jsonwebtoken.lang.Collections;
 import org.lacabra.store.client.dto.ItemAssembler;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.dto.UserAssembler;
 import org.lacabra.store.client.dto.UserDTO;
-import org.lacabra.store.server.api.route.stats.Route;
+import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
-
-import io.jsonwebtoken.lang.Collections;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,17 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainController {
-    private static String ServerName = "http://localhost:8080";
+    private static String ServerName = "http://localhost:8080/api";
 
-    public List<ItemDTO> ReceiveItems() {
+    public static List<ItemDTO> ReceiveItems() {
         List<Item> items = new ArrayList<>();
         List<ItemDTO> itemDTOs = new ArrayList<>();
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ServerName.concat("/items"))).GET().build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(ServerName.concat("/item/all"))).GET().build();
 
         try {
             HttpResponse<String> respuesta = client.send(request, BodyHandlers.ofString());
-            System.out.println(respuesta.body());
+            Logger.getLogger().info(respuesta.body());
 
             // deserializar un json y devolver array de Items
             items =

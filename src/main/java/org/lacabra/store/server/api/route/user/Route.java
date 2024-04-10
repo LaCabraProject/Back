@@ -44,11 +44,11 @@ public final class Route {
             if (!UserId.is(id))
                 return Response.status(Response.Status.NOT_FOUND).build();
 
-            var user = UserDAO.getInstance().findOne(new User(new Credentials(id)));
+            var user = UserDAO.getInstance().findOne(new Credentials(id));
             if (user == null)
                 return Response.status(Response.Status.NOT_FOUND).build();
 
-            user = new User(new Credentials(user.id(), user.authorities(), null), user.data());
+            user = user.merge(new User(new Credentials(user.id(), user.authorities(), null), user.data()));
 
             return Response.ok().entity(user).build();
         }

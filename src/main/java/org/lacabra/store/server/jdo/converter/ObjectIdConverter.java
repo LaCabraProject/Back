@@ -9,19 +9,11 @@ import javax.jdo.AttributeConverter;
 public final class ObjectIdConverter implements AttributeConverter<ObjectId, String> {
     @Override
     public String convertToDatastore(ObjectId id) {
-        if (id == null) {
-            return null;
-        }
-
-        return id.toString();
+        return ObjectId.normalize(id);
     }
 
     @Override
     public ObjectId convertToAttribute(String id) {
-        if (id == null) {
-            return null;
-        }
-
         return ObjectId.from(id);
     }
 }

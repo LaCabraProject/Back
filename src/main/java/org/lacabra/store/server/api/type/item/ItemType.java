@@ -1,5 +1,7 @@
 package org.lacabra.store.server.api.type.item;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.io.Serializable;
 
 public enum ItemType implements Serializable {
@@ -14,7 +16,7 @@ public enum ItemType implements Serializable {
         this.type = type;
     }
 
-    static public ItemType parse(String type) {
+    public static ItemType parse(String type) {
         return switch (type) {
             case Constants.Clothing -> Clothing;
             case Constants.Accessories -> Accessories;
@@ -26,6 +28,7 @@ public enum ItemType implements Serializable {
     }
 
     @Override
+    @JsonValue
     public String toString() {
         return this.type;
     }

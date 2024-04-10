@@ -20,6 +20,8 @@ public class UserData implements Serializable, Mergeable<UserData> {
         if (override == null)
             return this;
 
+        Mergeable.super.merge(this);
+
         return this;
     }
 }

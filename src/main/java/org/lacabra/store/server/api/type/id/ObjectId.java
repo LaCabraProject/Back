@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.*;
 import java.util.regex.Pattern;
@@ -23,7 +24,7 @@ public final class ObjectId implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public final static Pattern regex = Pattern.compile("^[0-9a-f]{1,24}$");
+    public final static Pattern REGEX = Pattern.compile("^[0-9a-f]{1,24}$");
     public final static ObjectId MIN = new ObjectId(0);
     public final static ObjectId MAX;
 
@@ -36,7 +37,7 @@ public final class ObjectId implements Serializable {
         MAX = new ObjectId(new BigInteger(1, arr));
     }
 
-    final BigInteger value;
+    private final BigInteger value;
 
     private ObjectId(Number value) {
         this.value = NumberToBigInteger(value);
@@ -75,7 +76,7 @@ public final class ObjectId implements Serializable {
     public static boolean is(String id) {
         if (id == null) return false;
 
-        return ObjectId.regex.matcher(id).matches();
+        return ObjectId.REGEX.matcher(id).matches();
     }
 
     public static boolean is(Number id) {
@@ -138,7 +139,7 @@ public final class ObjectId implements Serializable {
         return id.normalize();
     }
 
-    public static ObjectId random(Class cls) {
+    public static ObjectId random(Class<?> cls) {
         var dao = DAO.getInstance(cls);
         if (dao == null)
             return null;
@@ -169,7 +170,7 @@ public final class ObjectId implements Serializable {
 
                 Object o = constructor.newInstance(id);
 
-                if (dao.findOne(o) != null)
+                if (dao.findOne(o) == null)
                     return id;
             }
         } catch (NoSuchMethodException e) {
@@ -186,6 +187,9 @@ public final class ObjectId implements Serializable {
     }
 
     public String normalize() {
+        if (this.value == null)
+            return null;
+
         var str = this.toString();
 
         return "0".repeat(24 - str.length()) + str;
@@ -201,8 +205,13 @@ public final class ObjectId implements Serializable {
         return switch (o) {
             case String s -> this.equals(ObjectId.from(s));
             case Number n -> this.equals(ObjectId.from(n));
-            case ObjectId id -> this.normalize().equals(id.value);
+            case ObjectId id -> Objects.equals(this.normalize(), id.normalize());
             case null, default -> false;
         };
+    }
+
+    @Override
+    public int hashCode() {
+        return this.value == null ? 0 : this.value.hashCode();
     }
 }

@@ -1,7 +1,9 @@
 package org.lacabra.store.server.api.type.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.json.serializer.UserIdSerializer;
 
@@ -10,7 +12,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Objects;
 
 public final class Credentials implements Serializable {
     @Serial
@@ -29,17 +30,18 @@ public final class Credentials implements Serializable {
     public Credentials() {
         this.id = null;
         this.passwd = null;
-        this.authorities = EnumSet.noneOf(Authority.class);
+        this.authorities = null;
     }
 
     public Credentials(Authority authorities) {
-        this(Collections.singleton(authorities));
+        this(authorities == null ? null : EnumSet.of(authorities));
     }
 
     public Credentials(Collection<Authority> authorities) {
         this.id = null;
         this.passwd = null;
-        this.authorities = authorities == null ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
+        this.authorities = authorities == null ? null : authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(authorities);
     }
 
     public Credentials(String id) {
@@ -51,7 +53,7 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(String id, Authority authorities) {
-        this(id, Collections.singleton(authorities));
+        this(id, authorities == null ? null : EnumSet.of(authorities));
     }
 
     public Credentials(String id, Collection<Authority> authorities) {
@@ -65,11 +67,11 @@ public final class Credentials implements Serializable {
     public Credentials(UserId id, String passwd) {
         this.id = id;
         this.passwd = passwd;
-        this.authorities = EnumSet.noneOf(Authority.class);
+        this.authorities = null;
     }
 
     public Credentials(String id, Authority authorities, String passwd) {
-        this(id, Collections.singleton(authorities), passwd);
+        this(id, authorities == null ? null : EnumSet.of(authorities), passwd);
     }
 
     public Credentials(String id, Collection<Authority> authorities, String passwd) {
@@ -77,23 +79,23 @@ public final class Credentials implements Serializable {
     }
 
     public Credentials(UserId id, Authority authorities) {
-        this(id, Collections.singleton(authorities));
+        this(id, authorities == null ? null : EnumSet.of(authorities));
     }
 
     public Credentials(UserId id, Collection<Authority> authorities) {
-        this.id = Objects.requireNonNull(id);
+        this.id = id;
         this.passwd = null;
         this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
                 EnumSet.copyOf(authorities);
     }
 
     public Credentials(UserId id, Authority authorities, String passwd) {
-        this(id, Collections.singleton(authorities), passwd);
+        this(id, authorities == null ? null : Collections.singleton(authorities), passwd);
     }
 
     public Credentials(UserId id, Collection<Authority> authorities, String passwd) {
         this.id = id;
-        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+        this.authorities = authorities == null ? null : authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
                 EnumSet.copyOf(authorities);
         this.passwd = passwd;
     }
@@ -103,7 +105,8 @@ public final class Credentials implements Serializable {
     }
 
     public EnumSet<Authority> authorities() {
-        return EnumSet.copyOf(this.authorities);
+        return this.authorities == null ? null : authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(this.authorities);
     }
 
     public UserId id() {
@@ -136,6 +139,10 @@ public final class Credentials implements Serializable {
 
     @Override
     public String toString() {
-        return this.id.get();
+        try {
+            return new ObjectMapperProvider().getContext(Credentials.class).writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

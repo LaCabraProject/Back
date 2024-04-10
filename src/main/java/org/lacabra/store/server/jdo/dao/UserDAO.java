@@ -52,8 +52,9 @@ public class UserDAO extends DAO<User> {
     }
 
     @Override
-    public void store(User user) {
-        super.store(new User(new Credentials(user.id(), user.authorities(), PasswordHasher.hash(user.passwd())),
+    public boolean store(User user) {
+        return super.store(new User(new Credentials(user.id(), user.authorities(), user.passwd().startsWith("$2a$") ?
+                user.passwd() : PasswordHasher.hash(user.passwd())),
                 user.data()));
     }
 }

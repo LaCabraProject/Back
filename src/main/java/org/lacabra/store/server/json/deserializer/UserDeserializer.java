@@ -23,9 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 
 public final class UserDeserializer extends JsonDeserializer<User> {
-    private static final ObjectMapper mapper = new ObjectMapperProvider().getContext(User.class);
-    private static final JsonSchema schema = JsonSchemaFactory.getSchema("user");
-
     @Override
     public User deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = jp.readValueAsTree();

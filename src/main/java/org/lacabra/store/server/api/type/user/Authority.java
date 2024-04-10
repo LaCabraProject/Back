@@ -1,5 +1,7 @@
 package org.lacabra.store.server.api.type.user;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.io.Serializable;
 
 public enum Authority implements Serializable {
@@ -13,10 +15,6 @@ public enum Authority implements Serializable {
         this.authority = authority;
     }
 
-    public String value () {
-        return this.authority;
-    }
-
     public static Authority parse(String authority) {
         return switch (authority) {
             case Constants.Client -> Client;
@@ -28,6 +26,7 @@ public enum Authority implements Serializable {
     }
 
     @Override
+    @JsonValue
     public String toString() {
         return this.authority;
     }
