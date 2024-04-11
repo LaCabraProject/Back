@@ -13,11 +13,13 @@
 
 ---
 
+1. La base de datos del proyecto y su usuario asociado ejecutando el script SQL *src/main/resources/sql/create_user.sql*.
+
 1. (Opcional) Limpiar el directorio de trabajo de aquellos archivos que hayan sido
 generados durante la construcción del proyecto con el target *clean:clean* de Maven
 (```mvn clean:clean -f pom.xml```).
 
-2. (Recomendado) Compilar el proyecto mediante el target *compiler:compile* de Maven (```mvn compiler:compile -f pom.xml```).
+2. Compilar el proyecto mediante el target *compiler:compile* de Maven (```mvn compiler:compile -f pom.xml```).
 
 3. Ejecutar el servidor mediante el target *jetty:run* de Maven (```mvn jetty:run -f pom.xml```).
 

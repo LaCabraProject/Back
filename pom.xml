@@ -359,7 +359,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <mainClass>src.main.java.org.lacabra.store.client.main.Main</mainClass>
+                            <mainClass>org.lacabra.store.client.main.Main</mainClass>
                         </configuration>
                     </plugin>
                 </plugins>
