@@ -18,14 +18,16 @@ public final class UserArrayDeserializer extends JsonDeserializer<User[]> {
         JsonNode node = jp.readValueAsTree();
 
         if (node.isNull())
-            throw new RuntimeException("cannot be null.");
+            return null;
+
+        var omp = new ObjectMapperProvider();
 
         if (!node.isArray())
-            throw new RuntimeException("is not an array.");
+            node = omp.getContext(User[].class).createArrayNode().add(node);
 
         List<User> users = new ArrayList<>();
 
-        var mapper = new ObjectMapperProvider().getContext(User.class);
+        var mapper = omp.getContext(User.class);
         for (final JsonNode n : node) {
             users.add(mapper.treeToValue(n, User.class));
         }

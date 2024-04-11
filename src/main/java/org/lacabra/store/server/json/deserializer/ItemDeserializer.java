@@ -80,9 +80,12 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
 
         UserId parent = null;
         node2 = node.get("parent");
-        if (!(node2 == null || node2.isNull()))
-            parent = node.isTextual() ? omp.getContext(UserId.class).treeToValue(node2, UserId.class) :
-                    omp.getContext(User.class).treeToValue(node2, User.class).id();
+        if (!(node2 == null || node2.isNull())) {
+            parent = omp.getContext(UserId.class).treeToValue(node2, UserId.class);
+
+            if (parent == null)
+                parent = omp.getContext(User.class).treeToValue(node2, User.class).id();
+        }
 
         return new Item(id, type, name, description, keywords, price, discount, stock, new User(parent));
     }

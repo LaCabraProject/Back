@@ -1,26 +1,24 @@
+# Ejecución
 
+---
 
-Para ejecutar el proyecto primero hay que tener una instancia de mysql ejecutandose en el equipo
-Despues hay que compilarlo mediante la extension de maven de IntelIJ
+## Disclaimer
 
-  LifeCycle -> Compile
+- Se necesita una instancia de MySQL en ejecución a la hora de ejecutar el servidor del proyceto.
 
-o mediante el siguiente comando
+- Se recomienda usar IntelliJ IDEA para ejecutar el proyecto gracias a su resolución de dependencias y facilidad de uso
+(permite ejecutar los targets necesarios en el apartado *Plugins*).
 
-  mvn compile
+- Se necesita Java 21 y configurar Maven para usarlo (o usar IntelliJ).
 
-Para ejecutar el Server utilizar el plugin de jetty
+---
 
-  plugins -> jetty -> jetty:run
+1. (Opcional) Limpiar el directorio de trabajo de aquellos archivos que hayan sido
+generados durante la construcción del proyecto con el target *clean:clean* de Maven
+(```mvn clean:clean -f pom.xml```).
 
-o ejecutando el siguiente comando
+2. (Recomendado) Compilar el proyecto mediante el target *compiler:compile* de Maven (```mvn compiler:compile -f pom.xml```).
 
-  mvn jetty:run
+3. Ejecutar el servidor mediante el target *jetty:run* de Maven (```mvn jetty:run -f pom.xml```).
 
-Para ejecutar el cliente utilizar el plugin de exec
-
-  plugins -> exec -> exec:java
-
-o ejecutando el siguiente comando
-
-  mvn exec:java -pClient
+4. Ejecutar el client mediante el target *exec:java* de Maven (```mvn exec:java -P client -f pom.xml```).

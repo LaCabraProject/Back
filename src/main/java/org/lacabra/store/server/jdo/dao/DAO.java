@@ -164,7 +164,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     }
 
     private Object findCountAttached(Query<T> query, Object param, boolean count, boolean detached, boolean one) {
-        Object ret = count ? BigInteger.ZERO : Collections.EMPTY_LIST;
+        Object ret = count ? BigInteger.ZERO : one ? null : Collections.EMPTY_LIST;
 
         if (query == null && param == null) return ret;
 

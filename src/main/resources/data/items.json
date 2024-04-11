@@ -1,0 +1,9 @@
+{
+  "id": 0,
+  "type": "clothing",
+  "name": "Camiseta de grupo genérico",
+  "price": 25,
+  "discount": 30,
+  "stock": 1000,
+  "parent": "mikel"
+}

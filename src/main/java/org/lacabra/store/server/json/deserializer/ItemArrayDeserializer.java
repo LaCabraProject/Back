@@ -18,14 +18,16 @@ public final class ItemArrayDeserializer extends JsonDeserializer<Item[]> {
         JsonNode node = jp.readValueAsTree();
 
         if (node.isNull())
-            throw new RuntimeException("cannot be null.");
+            return null;
+
+        var omp = new ObjectMapperProvider();
 
         if (!node.isArray())
-            throw new RuntimeException("is not an array.");
+            node = omp.getContext(Item[].class).createArrayNode().add(node);
 
         List<Item> items = new ArrayList<>();
 
-        var mapper = new ObjectMapperProvider().getContext(Item.class);
+        var mapper = omp.getContext(Item.class);
         for (final JsonNode n : node) {
             items.add(mapper.treeToValue(n, Item.class));
         }

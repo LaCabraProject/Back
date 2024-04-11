@@ -7,6 +7,7 @@ import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,8 +18,14 @@ public final class JsonSchemaFactory {
             com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012, builder ->
                     builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix(PREFIX, "classpath:schema/"))
             );
-    private static final Map<Class<?>, JsonSchema> SCHEMAS = Map.of(User.class, getSchema("user"), UserId.class,
-            getSchema("userid"), Item.class, getSchema("item"), ObjectId.class, getSchema("objectid"));
+    private static final Map<Class<?>, JsonSchema> SCHEMAS = new HashMap<>();
+
+    static {
+        SCHEMAS.put(User.class, getSchema("user"));
+        SCHEMAS.put(UserId.class, getSchema("userid"));
+        SCHEMAS.put(Item.class, getSchema("item"));
+        SCHEMAS.put(ObjectId.class, getSchema("objectid"));
+    }
 
     static {
         CONFIG.setPathType(PathType.JSON_POINTER);
@@ -28,9 +35,8 @@ public final class JsonSchemaFactory {
     public static JsonSchema getSchema(@NotNull String schema) {
         Objects.requireNonNull(schema);
 
-        return jsonSchemaFactory.getSchema(SchemaLocation.of(PREFIX + (schema.endsWith(".json") ? schema :
-                        (schema + ".json"))),
-                CONFIG);
+        return jsonSchemaFactory.getSchema(SchemaLocation.of(PREFIX + (schema.endsWith(".json") ? schema : (schema +
+                ".json"))), CONFIG);
     }
 
     public static JsonSchema getSchema(@NotNull Class<?> cls) {

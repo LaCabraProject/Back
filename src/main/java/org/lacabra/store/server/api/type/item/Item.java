@@ -31,15 +31,16 @@ import java.util.Set;
 
 @JsonDeserialize(using = ItemDeserializer.class)
 @PersistenceCapable(table = "item")
-@ForeignKey(name = "parent", columns = {@Column(name = "parent", defaultValue =
-        "#NULL",
+@ForeignKey(name = "parent", members = "id", columns = {@Column(name = "parent", defaultValue = "#NULL",
         allowsNull = "true")},
         unique = "false", deleteAction =
         ForeignKeyAction.NONE, updateAction = ForeignKeyAction.NONE)
 @Query(name = "FindItem", value = "SELECT FROM Item WHERE id == :id")
+@Query(name = "FindByParent", language = "javax.jdo.query.SQL", value = "SELECT * FROM ITEM WHERE parent = :parent")
 public class Item implements Serializable, Mergeable<Item> {
     @Serial
     private static final long serialVersionUID = 1L;
+
     @JsonProperty("id")
     @JsonSerialize(using = ObjectIdSerializer.class)
     @Convert(value = ObjectIdConverter.class)
@@ -47,35 +48,44 @@ public class Item implements Serializable, Mergeable<Item> {
     @Column(name = "id", jdbcType = "VARCHAR", sqlType = "VARCHAR", length = 24)
     @Persistent(useDefaultConversion = true)
     private ObjectId id;
+
     @JsonProperty("type")
     @Convert(ItemTypeConverter.class)
     @Persistent
     private ItemType type;
+
     @JsonProperty("name")
     @Persistent
     private String name;
+
     @JsonProperty("description")
     @Persistent
     private String description;
+
     @JsonProperty("keywords")
     @Persistent
     private Set<String> keywords;
+
     @JsonProperty("price")
     @Column(jdbcType = "DECIMAL", defaultValue = "0")
     private BigDecimal price;
+
     @JsonProperty("discount")
     @Column(jdbcType = "INTEGER", defaultValue = "0")
     @Persistent
     private Integer discount;
+
     @Persistent
     @Column(jdbcType = "BIGINT", defaultValue = "0")
     @Convert(BigIntegerConverter.class)
     @JsonProperty("stock")
     @JsonSerialize(using = BigIntegerSerializer.class)
     private BigInteger stock;
+
     @JsonSerialize(using = UserToIdSerializer.class)
     @JsonProperty("parent")
     @Persistent
+    @Column(name = "parent")
     private User parent;
 
     public Item() {

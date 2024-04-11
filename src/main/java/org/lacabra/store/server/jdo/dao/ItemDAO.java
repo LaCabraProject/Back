@@ -1,9 +1,13 @@
 package org.lacabra.store.server.jdo.dao;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 
 @ApplicationScoped
@@ -11,7 +15,17 @@ public class ItemDAO extends DAO<Item> {
     private static ItemDAO instance;
 
     static {
-        DAO.instances.put(Item.class, ItemDAO.getInstance());
+        var dao = ItemDAO.getInstance();
+        DAO.instances.put(Item.class, dao);
+
+        try (InputStream in = ItemDAO.class.getClassLoader().getResourceAsStream("data/items.json")) {
+            if (in != null) {
+                ObjectMapper mapper = new ObjectMapperProvider().getContext(Item[].class);
+                dao.store(mapper.readValue(in, Item[].class));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private ItemDAO() throws NoSuchMethodException {
@@ -43,7 +57,7 @@ public class ItemDAO extends DAO<Item> {
         }
 
         item = item.merge(new Item(item.id(), null, null, null, null, null, null, null,
-                UserDAO.getInstance().findOne(item.parent())));
+                item.parent() == null ? null : UserDAO.getInstance().findOne(item.parent())));
 
         return super.store(item.merge(new Item(item.id(), null, null, null, item.keywords() == null ?
                 Collections.EMPTY_SET

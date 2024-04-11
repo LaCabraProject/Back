@@ -221,7 +221,9 @@ public final class Route {
         @GET
         @PermitAll
         public static Response GET(@PathParam("id") String id) {
-            if (!ObjectId.is(id)) return Response.status(Response.Status.NOT_FOUND).build();
+            var oid = ObjectId.from(id);
+
+            if (oid == null) return Response.status(Response.Status.NOT_FOUND).build();
 
             var item = ItemDAO.getInstance().findOne(new Item(ObjectId.from(id)));
             if (item == null) return Response.status(Response.Status.NOT_FOUND).build();

@@ -60,10 +60,10 @@
     "parent": {
       "anyOf": [
         {
-          "$ref": "user"
+          "$ref": "classpath:///schema/user.json"
         },
         {
-          "$ref": "userid"
+          "$ref": "classpath:///schema/userid.json"
         }
       ]
     }
