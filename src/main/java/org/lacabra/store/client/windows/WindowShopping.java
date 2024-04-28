@@ -2,6 +2,7 @@ package org.lacabra.store.client.windows;
 
 import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.client.dto.ItemDTO;
+import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
 
@@ -99,6 +100,7 @@ public class WindowShopping {
                         tableModel.addRow(rowData);
                     }
                 }
+                tableModel.fireTableDataChanged();
             }
         });
         btnBack.addActionListener(e -> {
@@ -107,6 +109,8 @@ public class WindowShopping {
         });
         btnCarrito.addActionListener(e -> {
             MainController.ReceiveItems().get(table.getSelectedRow());
+            Logger.getLogger().info("Se añadio el producto con id:"+tableModel.getValueAt(
+                    table.getSelectedRow(), 0).toString());
         });
 
         frame.setVisible(true);
@@ -128,10 +132,8 @@ public class WindowShopping {
                 String imagePath = (String) value;
                 ImageIcon icon = new ImageIcon(imagePath);
                 Image image = icon.getImage();
-
                 int width = image.getWidth(null);
                 int height = image.getHeight(null);
-
                 double aspectRatio = (double) width / height;
                 int newWidth, newHeight;
                 if (width > height) {
@@ -141,7 +143,6 @@ public class WindowShopping {
                     newHeight = MAX_IMAGE_HEIGHT;
                     newWidth = (int) (newHeight * aspectRatio);
                 }
-
                 Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon = new ImageIcon(scaledImage);
                 label.setIcon(scaledIcon);
