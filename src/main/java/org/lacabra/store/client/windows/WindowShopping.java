@@ -1,6 +1,7 @@
 package org.lacabra.store.client.windows;
 
 import org.lacabra.store.client.Controller.MainController;
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
 
@@ -46,13 +47,25 @@ public class WindowShopping {
         panel.add(label, BorderLayout.NORTH);
 
         tableModel = new DefaultTableModel();
-        tableModel.addColumn("Artículo");
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Tipo");
+        tableModel.addColumn("Nombre");
         tableModel.addColumn("Descripción");
+        tableModel.addColumn("Palabras Clave");
+        tableModel.addColumn("Precio");
+        tableModel.addColumn("Descuento");
+        tableModel.addColumn("Stock");
+        tableModel.addColumn("Propietario");
         tableModel.addColumn("Foto");
+        for (ItemDTO item : MainController.ReceiveItems()) {
+            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                    item.price(), item.discount(), item.stock(), item.parent()};
+            tableModel.addRow(rowData);
+        }
         table = new JTable(tableModel) {
             @Override
             public Class<?> getColumnClass(int column) {
-                return column == 2 ? ImageIcon.class : Object.class;
+                return column == 9 ? ImageIcon.class : Object.class;
             }
         };
         table.setRowHeight(100); // Altura predeterminada de las filas
@@ -66,20 +79,34 @@ public class WindowShopping {
         panel.add(bottomPanel, BorderLayout.SOUTH);
         JButton btnBack = new JButton("Volver al inicio");
         bottomPanel.add(btnBack);
+        JButton btnCarrito = new JButton("Guardar en carrito");
+        bottomPanel.add(btnCarrito);
         frame.add(panel, BorderLayout.CENTER);
 
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String searchTerm = searchField.getText();
-                String selectedCategory = (String) searchComboBox.getSelectedItem();
-                System.out.println("Searching for: " + searchTerm + " in category: " + selectedCategory);
+                for(int i = 0; i < tableModel.getRowCount(); i++){
+                    tableModel.removeRow(i);
+                }
                 // Add filtering and retrieval logic here
+                for(ItemDTO item : MainController.ReceiveItems()) {
+                    if(item.type().equals(searchComboBox.getSelectedItem())){
+                        if(item.name().contains(searchTerm)||searchTerm.isBlank()||searchTerm.isEmpty()){}
+                        Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                                item.price(), item.discount(), item.stock(), item.parent()};
+                        tableModel.addRow(rowData);
+                    }
+                }
             }
         });
         btnBack.addActionListener(e -> {
             frame.dispose();
             new WindowHome(usuario, mc);
+        });
+        btnCarrito.addActionListener(e -> {
+            MainController.ReceiveItems().get(table.getSelectedRow());
         });
 
         frame.setVisible(true);

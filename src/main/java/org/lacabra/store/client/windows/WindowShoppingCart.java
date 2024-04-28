@@ -90,7 +90,7 @@ public class WindowShoppingCart extends JFrame {
         botonEliminarProducto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                modeloListaProductos.remove(listaProductos.getSelectedIndex());
             }
         });
 
@@ -104,7 +104,8 @@ public class WindowShoppingCart extends JFrame {
         botonRealizarPago.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                campoCostoTotal.setText("$0");
+                modeloListaProductos.clear();
             }
         });
 

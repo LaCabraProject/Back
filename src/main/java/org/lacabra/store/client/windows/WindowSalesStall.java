@@ -79,9 +79,9 @@ public class WindowSalesStall extends JFrame {
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // Agregar los datos de los objetos Item a la tabla
-        for (Item item : lista) {
+        for (ItemDTO item : MainController.ReceiveItems()) {
             Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
-                    item.price(), item.discount() + "%", item.stock(), "mikel"};
+                    item.price(), item.discount(), item.stock(), item.parent()};
             tableModel.addRow(rowData);
         }
 
