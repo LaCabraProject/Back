@@ -1,13 +1,9 @@
 package org.lacabra.store.client.windows;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,41 +41,46 @@ public class WindowItemDetail extends JFrame {
 
     private JPanel crearBarraNavegacion() {
         JPanel barraNavegacion = new JPanel();
-        barraNavegacion.setLayout(new GridLayout(1, 3));
+        barraNavegacion.setLayout(new GridLayout(1, 4));
         barraNavegacion.setBackground(Color.LIGHT_GRAY);
+        barraNavegacion.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-        JButton botonInicio = new JButton("Inicio");
+        JButton botonInicio = new JButton("Inicio", new ImageIcon("ruta/a/home.png"));
+        botonInicio.setHorizontalTextPosition(SwingConstants.CENTER);
+        botonInicio.setVerticalTextPosition(SwingConstants.BOTTOM);
         botonInicio.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         barraNavegacion.add(botonInicio);
 
-        JButton botonCategoria = new JButton("Categoría");
+        JButton botonCategoria = new JButton("Categoría", new ImageIcon("ruta/a/category.png"));
+        botonCategoria.setHorizontalTextPosition(SwingConstants.CENTER);
+        botonCategoria.setVerticalTextPosition(SwingConstants.BOTTOM);
         botonCategoria.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         barraNavegacion.add(botonCategoria);
 
-        JButton botonCarrito = new JButton("Carrito");
+        JButton botonCarrito = new JButton("Carrito", new ImageIcon("ruta/a/cart.png"));
+        botonCarrito.setHorizontalTextPosition(SwingConstants.CENTER);
+        botonCarrito.setVerticalTextPosition(SwingConstants.BOTTOM);
         botonCarrito.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         barraNavegacion.add(botonCarrito);
 
-        JButton botonBuscar = new JButton("Buscar");
+        JButton botonBuscar = new JButton("Buscar", new ImageIcon("ruta/a/search.png"));
+        botonBuscar.setHorizontalTextPosition(SwingConstants.CENTER);
+        botonBuscar.setVerticalTextPosition(SwingConstants.BOTTOM);
         botonBuscar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         barraNavegacion.add(botonBuscar);
@@ -92,6 +93,7 @@ public class WindowItemDetail extends JFrame {
 
         JPanel panelResenas = new JPanel();
         panelResenas.setLayout(new BorderLayout());
+        panelResenas.setBorder(new CompoundBorder(new TitledBorder("Reseñas del Producto"), new EmptyBorder(10, 10, 10, 10)));
 
         reseñas = new ArrayList<>();
         reseñas.add("¡Excelente producto!");
@@ -133,13 +135,13 @@ public class WindowItemDetail extends JFrame {
         JPanel piePagina = new JPanel();
         piePagina.setLayout(new GridLayout(1, 5));
         piePagina.setBackground(Color.LIGHT_GRAY);
+        piePagina.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JLabel etiquetaEnlace1 = new JLabel("Política de Privacidad");
         etiquetaEnlace1.setForeground(Color.BLUE);
         etiquetaEnlace1.addMouseListener((MouseListener) new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
             }
         });
         piePagina.add(etiquetaEnlace1);
@@ -149,34 +151,33 @@ public class WindowItemDetail extends JFrame {
         etiquetaEnlace2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-
             }
         });
         piePagina.add(etiquetaEnlace2);
 
         JButton botonFacebook = new JButton(new ImageIcon("ruta/a/facebook.png"));
+        botonFacebook.setPreferredSize(new Dimension(32, 32));
         botonFacebook.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         piePagina.add(botonFacebook);
 
         JButton botonTwitter = new JButton(new ImageIcon("ruta/a/twitter.png"));
+        botonTwitter.setPreferredSize(new Dimension(32, 32));
         botonTwitter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
             }
         });
         piePagina.add(botonTwitter);
 
         JButton botonInstagram = new JButton(new ImageIcon("ruta/a/instagram.png"));
+        botonInstagram.setPreferredSize(new Dimension(32, 32));
         botonInstagram.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
             }
         });
         piePagina.add(botonInstagram);
@@ -193,3 +194,4 @@ public class WindowItemDetail extends JFrame {
         });
     }
 }
+
