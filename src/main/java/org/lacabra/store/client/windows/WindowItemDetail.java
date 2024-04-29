@@ -8,8 +8,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WindowItemDetail extends JFrame {
+
+    private List<String> reseñas;
 
     public WindowItemDetail() {
         super("Detalle del Artículo");
@@ -88,14 +92,41 @@ public class WindowItemDetail extends JFrame {
 
         JPanel panelResenas = new JPanel();
         panelResenas.setLayout(new BorderLayout());
-        panelResenas.add(new JLabel("Reseñas del Producto"), BorderLayout.NORTH);
+
+        reseñas = new ArrayList<>();
+        reseñas.add("¡Excelente producto!");
+        reseñas.add("Me encantó, muy recomendado.");
+        reseñas.add("Buena calidad y buen precio.");
+
         JTextArea areaResenas = new JTextArea();
         areaResenas.setEditable(false);
+        actualizarResenas(areaResenas);
         JScrollPane scrollPane = new JScrollPane(areaResenas);
         panelResenas.add(scrollPane, BorderLayout.CENTER);
+
+        JButton botonAgregarResena = new JButton("Agregar Reseña");
+        botonAgregarResena.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String nuevaResena = JOptionPane.showInputDialog("Escribe tu reseña:");
+                if (nuevaResena != null && !nuevaResena.isEmpty()) {
+                    reseñas.add(nuevaResena);
+                    actualizarResenas(areaResenas);
+                }
+            }
+        });
+        panelResenas.add(botonAgregarResena, BorderLayout.SOUTH);
+
         panelPestanas.addTab("Reseñas", panelResenas);
 
         return panelPestanas;
+    }
+
+    private void actualizarResenas(JTextArea areaResenas) {
+        areaResenas.setText("");
+        for (String resena : reseñas) {
+            areaResenas.append("- " + resena + "\n");
+        }
     }
 
     private JPanel crearPiePagina() {
@@ -145,7 +176,7 @@ public class WindowItemDetail extends JFrame {
         botonInstagram.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	
+                
             }
         });
         piePagina.add(botonInstagram);
