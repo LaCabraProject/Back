@@ -3,15 +3,23 @@ package org.lacabra.store.client.windows;
 import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.api.type.id.ObjectId;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
-
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Random;
 
 public class WindowShopping {
     private JFrame frame;
@@ -63,6 +71,13 @@ public class WindowShopping {
                     item.price(), item.discount(), item.stock(), item.parent()};
             tableModel.addRow(rowData);
         }
+        for (int i = 0; i < 5; i++) {
+            String[] words = {"cabra", "goat", "beast"};
+            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+            Object[] rowData = {ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
+                    , 20, 0, new BigInteger("2"), new User("mikel")};
+            tableModel.addRow(rowData);
+        }
         table = new JTable(tableModel) {
             @Override
             public Class<?> getColumnClass(int column) {
@@ -72,6 +87,21 @@ public class WindowShopping {
         table.setRowHeight(100); // Altura predeterminada de las filas
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getColumn("Foto").setCellRenderer(new ImageRenderer());
+
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) { // Verifica si se ha hecho clic derecho
+                    int column = table.columnAtPoint(e.getPoint());
+                    int row = table.rowAtPoint(e.getPoint());
+                    if (column != -1) {
+                        String message = getRandomMessage();
+                        JOptionPane.showMessageDialog(frame, message);
+                    }
+                }
+            }
+        });
+
 
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -116,6 +146,20 @@ public class WindowShopping {
         frame.setVisible(true);
     }
 
+    private String getRandomMessage() {
+        String[] messages = {
+                "Este producto puede contener componentes nocivos.",
+                "No apto para menores de 3 años.",
+                "Atención: este artículo puede causar alergias.",
+                "Producto inflamable, mantener alejado del fuego.",
+                "Advertencia: contiene piezas pequeñas que pueden ser un peligro de asfixia.",
+                "Atención: el uso excesivo puede ser perjudicial para la salud.",
+                "Recuerda leer las instrucciones de seguridad antes de usar este producto."
+        };
+        Random random = new Random();
+        return messages[random.nextInt(messages.length)];
+    }
+
     public static void main(String[] args) {
         new WindowShopping(null, new MainController());
     }
@@ -152,3 +196,4 @@ public class WindowShopping {
         }
     }
 }
+
