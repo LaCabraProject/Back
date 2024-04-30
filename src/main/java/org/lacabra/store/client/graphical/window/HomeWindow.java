@@ -1,7 +1,7 @@
 package org.lacabra.store.client.graphical.window;
 
-import org.lacabra.store.client.graphical.DispatchedWindow;
-import org.lacabra.store.client.graphical.WindowDispatcher;
+import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.internals.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -10,15 +10,15 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class WindowHome extends DispatchedWindow {
+public final class HomeWindow extends DispatchedWindow {
     public final String TITLE = "GOAT";
     public final Dimension SIZE = new Dimension(800, 600);
 
-    public WindowHome() {
+    public HomeWindow() {
         this(null);
     }
 
-    public WindowHome(WindowDispatcher wd) {
+    public HomeWindow(WindowDispatcher wd) {
         super(wd);
     }
 
@@ -35,7 +35,7 @@ public class WindowHome extends DispatchedWindow {
                 this.close();
 
                 controller.unauth();
-                this.dispatch(WindowAuth.class);
+                this.dispatch(AuthWindow.class);
 
                 return;
             }

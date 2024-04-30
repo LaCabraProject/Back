@@ -1,13 +1,58 @@
-package org.lacabra.store.client.windows;
+package org.lacabra.store.client.graphical.window;
+
+import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WindowItemDetail extends JFrame {
+public class WindowItemDetail extends DispatchedWindow {
+    public static final String TITLE = "Carrito de compra";
+    public static final Dimension SIZE = new Dimension(800, 600);
+
+    public static final int BORDER = 10;
+
+    public WindowItemDetail() {
+        this((WindowDispatcher) null);
+    }
+
+    public WindowItemDetail(final WindowDispatcher wd) {
+        super(wd);
+
+        this.setDispatcher(wd);
+    }
+
+    @Override
+    public void setDispatcher(final WindowDispatcher wd) {
+        super.setDispatcher(wd);
+
+        final var controller = this.controller();
+        if (controller == null) return;
+
+        controller.auth().thenAccept((auth) -> {
+            if (!auth) {
+                this.close();
+
+                controller.unauth();
+                this.dispatch(AuthWindow.class);
+
+                return;
+            }
+
+            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            this.setTitle(TITLE);
+            this.setSize(SIZE);
+            this.setLocationRelativeTo(null);
+            this.setLayout(new BorderLayout());
+        });
+    }
 
     private List<String> reseñas;
 
@@ -93,7 +138,8 @@ public class WindowItemDetail extends JFrame {
 
         JPanel panelResenas = new JPanel();
         panelResenas.setLayout(new BorderLayout());
-        panelResenas.setBorder(new CompoundBorder(new TitledBorder("Reseñas del Producto"), new EmptyBorder(10, 10, 10, 10)));
+        panelResenas.setBorder(new CompoundBorder(new TitledBorder("Reseñas del Producto"), new EmptyBorder(10, 10,
+                10, 10)));
 
         reseñas = new ArrayList<>();
         reseñas.add("¡Excelente producto!");

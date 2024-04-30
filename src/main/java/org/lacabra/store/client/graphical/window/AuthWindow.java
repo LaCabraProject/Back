@@ -1,20 +1,20 @@
 package org.lacabra.store.client.graphical.window;
 
-import org.lacabra.store.client.graphical.DispatchedWindow;
-import org.lacabra.store.client.graphical.WindowDispatcher;
+import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 
 import javax.swing.*;
 import java.awt.*;
 
-public final class WindowAuth extends DispatchedWindow {
+public final class AuthWindow extends DispatchedWindow {
     public final static String TITLE = "Autenticación necesaria";
     public final static Dimension SIZE = new Dimension(400, 400);
 
-    public WindowAuth() {
+    public AuthWindow() {
         this(null);
     }
 
-    public WindowAuth(WindowDispatcher wd) {
+    public AuthWindow(WindowDispatcher wd) {
         super(wd);
     }
 
@@ -33,7 +33,7 @@ public final class WindowAuth extends DispatchedWindow {
         controller.auth().thenAccept((auth) -> {
             if (auth) {
                 this.close();
-                d.dispatch(WindowHome.class);
+                d.dispatch(HomeWindow.class);
 
                 return;
             }
@@ -58,7 +58,7 @@ public final class WindowAuth extends DispatchedWindow {
                         final JButton b = new JButton("Iniciar sesión");
                         b.addActionListener(e -> {
                             this.close();
-                            this.dispatch(WindowLogin.class);
+                            this.dispatch(LoginWindow.class);
                         });
 
                         p2.add(b);
@@ -68,7 +68,7 @@ public final class WindowAuth extends DispatchedWindow {
                         final JButton b = new JButton("Crear cuenta");
                         b.addActionListener(e -> {
                             this.close();
-                            this.dispatch(WindowRegister.class);
+                            this.dispatch(SignupWindow.class);
                         });
 
                         p2.add(b);

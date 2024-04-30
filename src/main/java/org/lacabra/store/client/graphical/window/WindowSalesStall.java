@@ -24,7 +24,7 @@ public class WindowSalesStall extends JFrame {
     private DefaultTableModel tableModel;
     private JTable table;
     private List<Item> lista = new ArrayList<>();
-    private boolean exito=true;
+
     public WindowSalesStall(User usuario, MainController mc) {
         initUI(usuario, mc);
     }
@@ -39,6 +39,30 @@ public class WindowSalesStall extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+        List<ItemDTO> itemDTOs = null;
+        for (int i = 0; i < 5; i++) {
+            String[] words = {"cabra", "goat", "beast"};
+            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+            Item item = new Item(ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
+                    , 20, 0, new BigInteger("2"), new User("mikel"));
+            lista.add(item);
+        }
+//        itemDTOs=MainController.ReceiveItems();
+        if (itemDTOs != null) {
+            for (ItemDTO i : itemDTOs) {
+                Item item = new Item(i.type(), i.name(), i.description(), i.keywords(), i.price(), i.discount(),
+                        i.stock(), new User(i.parent()));
+                lista.add(item);
+            }
+        }
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+
+        JLabel label = new JLabel("Lista de Artículos para Vender:");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(label, BorderLayout.NORTH);
+
         tableModel = new DefaultTableModel();
         tableModel.addColumn("ID");
         tableModel.addColumn("Tipo");
@@ -49,40 +73,18 @@ public class WindowSalesStall extends JFrame {
         tableModel.addColumn("Descuento");
         tableModel.addColumn("Stock");
         tableModel.addColumn("Propietario");
-        List<ItemDTO> itemDTOs = null;
-        try{
-            itemDTOs=MainController.ReceiveItems();
-        }catch (Exception e){
-            e.printStackTrace();
-            exito=false;
-        }
-        for (int i = 0; i < 5; i++) {
-            String[] words = {"cabra", "goat", "beast"};
-            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
-            Object[] rowData = {ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
-                    , 20, 0, new BigInteger("2"), new User("mikel")};
-            tableModel.addRow(rowData);
-        }
-
-            for (ItemDTO item : itemDTOs) {
-                Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
-                        item.price(), item.discount(), item.stock(), item.parent()};
-                tableModel.addRow(rowData);
-            }
-
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        JLabel label = new JLabel("Lista de Artículos para Vender:");
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(label, BorderLayout.NORTH);
 
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // Agregar los datos de los objetos Item a la tabla
+        for (Item item : lista) {
+            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                    item.price(), item.discount() + "%", item.stock(), "mikel"};
+            tableModel.addRow(rowData);
+        }
+
         JPanel bottomPanel = new JPanel(new GridLayout(9, 1));
         panel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -230,7 +232,7 @@ public class WindowSalesStall extends JFrame {
 
         btnBack.addActionListener(e -> {
             dispose();
-            new WindowHome(usuario, mc);
+            new HomeWindow(usuario, mc);
         });
 
         btnClearList.addActionListener(e -> tableModel.setRowCount(0));
