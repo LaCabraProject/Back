@@ -259,6 +259,10 @@ public class MainController implements Serializable {
         }
     }
 
+    public UserId getUser() {
+        return this.user;
+    }
+
     public void unauth() {
         this.user = null;
         this.token = null;
