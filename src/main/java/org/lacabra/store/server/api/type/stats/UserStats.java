@@ -3,7 +3,7 @@ package org.lacabra.store.server.api.type.stats;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lacabra.store.server.jdo.dao.UserDAO;
-import org.lacabra.store.server.json.serializer.BigIntegerSerializer;
+import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
 
 import java.math.BigInteger;
 

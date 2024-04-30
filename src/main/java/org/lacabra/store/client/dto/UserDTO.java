@@ -1,6 +1,6 @@
 package org.lacabra.store.client.dto;
 
-import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.UserData;

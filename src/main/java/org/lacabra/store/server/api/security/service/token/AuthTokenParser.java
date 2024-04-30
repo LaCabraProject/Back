@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"unchecked", "deprecation"})
 @Dependent
 public class AuthTokenParser {
     public static AuthTokenDetails parse(String token) {

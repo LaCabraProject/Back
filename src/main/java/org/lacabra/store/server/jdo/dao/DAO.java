@@ -38,7 +38,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         super();
 
         this.objClass = Objects.requireNonNull(objClass);
-        this.pkQuery = (Query<T>) pm.newNamedQuery(this.objClass, Objects.requireNonNull(pkQuery));
+        this.pkQuery = pm.newNamedQuery(this.objClass, Objects.requireNonNull(pkQuery));
     }
 
     public static DAO<?> getInstance(Class<?> objClass) {
@@ -85,6 +85,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public boolean store(T object) {
         if (object == null) {
             Logger.getLogger().warning("tried to store null object.");
@@ -140,14 +141,14 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final List<T> find() {
-        return this.find((Query<T>) pm.newQuery(String.format("SELECT b FROM %s b",
-                this.instance().objClass.getSimpleName())));
+        return this.find((Query<T>) pm.newQuery(String.format("SELECT FROM %s",
+                this.instance().objClass.getName())));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<T> find(Object param) {
-        if (param instanceof Query q) return this.find((Query<T>) q, null);
+        if (param instanceof Query<?> q) return this.find((Query<T>) q, null);
 
         return this.find(this.pkQuery, param);
     }
@@ -163,6 +164,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         return (List<T>) this.findCountAttached(query, param, false, true, false);
     }
 
+    @SuppressWarnings("unchecked")
     private Object findCountAttached(Query<T> query, Object param, boolean count, boolean detached, boolean one) {
         Object ret = count ? BigInteger.ZERO : one ? null : Collections.EMPTY_LIST;
 
@@ -301,7 +303,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     @Override
     @SuppressWarnings("unchecked")
     public List<T> findAttached(Object param) {
-        if (param instanceof Query q) return this.findAttached((Query<T>) q, null);
+        if (param instanceof Query<?> q) return this.findAttached((Query<T>) q, null);
 
         return this.find(this.pkQuery, param);
     }

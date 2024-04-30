@@ -6,7 +6,7 @@ import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.server.api.type.stats.ItemStats;
 import org.lacabra.store.server.api.type.stats.Stats;
 import org.lacabra.store.server.api.type.stats.UserStats;
-import org.lacabra.store.server.json.serializer.BigIntegerSerializer;
+import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

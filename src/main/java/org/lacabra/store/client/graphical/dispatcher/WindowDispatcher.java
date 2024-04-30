@@ -1,11 +1,15 @@
-package org.lacabra.store.client.graphical;
+package org.lacabra.store.client.graphical.dispatcher;
 
 import org.lacabra.store.client.controller.MainController;
 import org.lacabra.store.internals.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -14,17 +18,43 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 
-public final class WindowDispatcher {
-    private final Map<Long, DispatchedWindow> windows = new HashMap<>();
+public class WindowDispatcher implements IWindowDispatcher, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public final HashMap<Long, WindowState> state = new HashMap<>();
+    private final HashMap<Long, DispatchedWindow> windows = new HashMap<>();
+
     private final MainController controller;
 
     public final Color BANNER_COLOR = new Color(254, 5, 20, 215);
 
     public final URI FACEBOOK_URI = URI.create("https://www.facebook.com/Redbubble");
-    private JPanel footer;
 
-    public WindowDispatcher(MainController controller) {
+    private final JPanel[] footer = new JPanel[2];
+
+    private final Color FOOTER_BACKGROUND = Color.LIGHT_GRAY;
+    private final int FOOTER_BORDER = 5;
+
+    private final Color LINK_FOREGROUND = Color.BLUE;
+    public final URI PRIVACY_POLICY_URI = URI.create("https://www.lipsum.com/");
+    public final URI TERMS_OF_USE_URI = URI.create("https://www.lipsum.com/");
+
+
+    static {
+        UIManager.put("ComboBox.selectionBackground", Color.LIGHT_GRAY);
+        UIManager.put("ComboBox.selectionForeground", Color.BLACK);
+        UIManager.put("TextField.background", Color.WHITE);
+        UIManager.put("TextField.foreground", Color.BLACK);
+    }
+
+    public WindowDispatcher() {
+        this(null);
+    }
+
+    public WindowDispatcher(final MainController controller) {
         super();
 
         this.controller = new MainController(controller) {
@@ -54,6 +84,115 @@ public final class WindowDispatcher {
         };
     }
 
+    public static WindowDispatcher fromArgs(final String[] args) throws MalformedURLException {
+        return new WindowDispatcher(MainController.fromArgs(args));
+    }
+
+    public Map<Long, WindowState> state() {
+        return new HashMap<>(this.state);
+    }
+
+    public WindowState stateOf(final DispatchedWindow w) {
+        return this.stateOf(this.getId(w));
+    }
+
+    public WindowState stateOf(final Long id) {
+        if (id == null)
+            return null;
+
+        return this.state.get(id);
+    }
+
+    public Long connect(final DispatchedWindow w, final Signal<?> signal) {
+        return this.connect(this.stateOf(w), signal);
+    }
+
+    public Long connect(final Long w, final Signal<?> signal) {
+        if (w == null)
+            return null;
+
+        final var state = this.state.get(w);
+
+        if (state == null)
+            return null;
+
+        return state.connect(signal);
+    }
+
+    public Long connect(final WindowState state, final Signal<?> signal) {
+        if (state == null)
+            return null;
+
+        return this.connect(this.state.entrySet().stream().filter(x -> x.getValue().equals(state)).map(Map.Entry::getKey).findFirst().orElse(null), signal);
+    }
+
+    public Long[] connect(final DispatchedWindow w, final Signal<?>... signals) {
+        if (signals == null)
+            return new Long[0];
+
+        return Stream.of(signals).map(x -> this.connect(w, x)).toArray(Long[]::new);
+    }
+
+    public Long[] connect(final Long w, final Signal<?>... signals) {
+        if (signals == null)
+            return new Long[0];
+
+        return Stream.of(signals).map(x -> this.connect(w, x)).toArray(Long[]::new);
+    }
+
+    public Long[] connect(final WindowState state, final Signal<?>... signals) {
+        if (signals == null)
+            return new Long[0];
+
+        return Stream.of(signals).map(x -> this.connect(state, x)).toArray(Long[]::new);
+    }
+
+    public Signal<?> disconnect(final Long w, final Signal<?> signal) {
+        if (w == null)
+            return null;
+
+        final var state = this.state.get(w);
+
+        if (state == null)
+            return null;
+
+        return state.disconnect(signal);
+    }
+
+    public Signal<?> disconnect(final Long w, final Long signal) {
+        if (w == null)
+            return null;
+
+        final var state = this.state.get(w);
+
+        if (state == null)
+            return null;
+
+        return state.disconnect(signal);
+    }
+
+    public Signal<?> disconnect(final DispatchedWindow w, final Long signal) {
+        return this.disconnect(this.stateOf(w), signal);
+    }
+
+    public Signal<?> disconnect(final DispatchedWindow w, final Signal<?> signal) {
+        return this.disconnect(this.stateOf(w), signal);
+    }
+
+    public Signal<?> disconnect(final WindowState state, final Signal<?> signal) {
+        if (state == null)
+            return null;
+
+        return this.disconnect(this.state.entrySet().stream().filter(x -> x.getValue().equals(state)).map(Map.Entry::getKey).findFirst().orElse(null), signal);
+    }
+
+    public Signal<?> disconnect(final WindowState state, final Long signal) {
+        if (state == null)
+            return null;
+
+        return this.disconnect(this.state.entrySet().stream().filter(x -> x.getValue().equals(state)).map(Map.Entry::getKey).findFirst().orElse(null), signal);
+    }
+
     public Map<Long, DispatchedWindow> windows() {
         return new HashMap<>(this.windows);
     }
@@ -70,23 +209,26 @@ public final class WindowDispatcher {
         return null;
     }
 
-    public DispatchedWindow getWindow (final Long id) {
+    public DispatchedWindow getWindow(final Long id) {
         if (id == null)
             return null;
 
         return this.windows.get(id);
     }
 
-    public Long dispatch(Class<? extends DispatchedWindow> w) {
+    public Long dispatch(final Class<? extends DispatchedWindow> cls) {
+        if (cls == null)
+            return null;
+
         try {
-            return this.dispatch(w.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
+            return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Long dispatch(DispatchedWindow w) {
+    public Long dispatch(final DispatchedWindow w) {
         if (w == null) return null;
 
         final Set<Long> keys = Set.of(this.windows.keySet().toArray(new Long[0]));
@@ -104,11 +246,11 @@ public final class WindowDispatcher {
         return null;
     }
 
-    public boolean close(DispatchedWindow w) {
+    public boolean close(final DispatchedWindow w) {
         return this.close(this.getId(w));
     }
 
-    public boolean close(Long id) {
+    public boolean close(final Long id) {
         if (id == null) return false;
 
         final DispatchedWindow w = this.windows.remove(id);
@@ -166,46 +308,123 @@ public final class WindowDispatcher {
     }
 
     public JPanel footer() {
-        if (this.footer != null)
-            return (JPanel) this.yieldComponent(this.footer);
+        return this.footer(false);
+    }
+
+    public JPanel footer(final boolean full) {
+        final var idx = full ? 1 : 0;
+
+        if (this.footer[idx] != null)
+            return (JPanel) this.yieldComponent(this.footer[idx]);
 
         final var footer = new JPanel();
-        footer.setLayout(new BorderLayout());
 
-        {
-            final var label = new JLabel("Síguenos en Facebook");
+        if (full) {
+            footer.setLayout(new GridLayout(1, 5));
+            footer.setBackground(FOOTER_BACKGROUND);
+            footer.setBorder(new EmptyBorder(FOOTER_BORDER, FOOTER_BORDER, FOOTER_BORDER, FOOTER_BORDER));
 
-            footer.add(label, BorderLayout.WEST);
-        }
+            for (Map.Entry<String, URI> details :
+                    Map.of("Política de privacidad", PRIVACY_POLICY_URI, "Términos de uso", TERMS_OF_USE_URI).entrySet()) {
+                final var title = details.getKey();
+                final var uri = details.getValue();
 
-        try {
-            final var media = new JButton();
-            media.setPreferredSize(new Dimension(90, 30));
-            media.addActionListener(e -> {
-                try {
-                    Desktop.getDesktop().browse(FACEBOOK_URI);
-                } catch (IOException ex) {
-                    Logger.getLogger().warning(ex);
-                }
-            });
+                final var l = new JLabel(title);
+                l.setForeground(LINK_FOREGROUND);
 
-            final var res = this.getClass().getClassLoader().getResource("facebook.png");
+                final var f = l.getFont();
 
-            if (res != null) {
-                media.setIcon(new ImageIcon(ImageIO.read(new File(res.getFile())).getScaledInstance(10,
-                        10, Image.SCALE_SMOOTH)));
+                l.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        try {
+                            Desktop.getDesktop().browse(uri);
+                        } catch (IOException ex) {
+                            Logger.getLogger().warning(ex);
+                        }
+                    }
 
-                footer.add(media, BorderLayout.EAST);
+                    @Override
+                    @SuppressWarnings("unchecked")
+                    public void mouseEntered(MouseEvent e) {
+                        final var attr = (Map<TextAttribute, Object>) f.getAttributes();
 
-                this.footer = footer;
+                        attr.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                        l.setFont(f.deriveFont(attr));
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        l.setFont(f);
+                    }
+                });
+
+                footer.add(l);
             }
-        } catch (IOException e) {
-            Logger.getLogger().warning(e);
+        } else {
+            footer.setLayout(new BorderLayout());
+
+            {
+                final var label = new JLabel("Síguenos en Facebook");
+
+                footer.add(label, BorderLayout.WEST);
+            }
+
+            try {
+                final var media = new JButton();
+                media.setPreferredSize(new Dimension(90, 30));
+                media.addActionListener(e -> {
+                    try {
+                        Desktop.getDesktop().browse(FACEBOOK_URI);
+                    } catch (IOException ex) {
+                        Logger.getLogger().warning(ex);
+                    }
+                });
+
+                final var res = this.getClass().getClassLoader().getResource("facebook.png");
+
+                if (res != null) {
+                    media.setIcon(new ImageIcon(ImageIO.read(new File(res.getFile())).getScaledInstance(10,
+                            10, Image.SCALE_SMOOTH)));
+
+                    footer.add(media, BorderLayout.EAST);
+
+                    this.footer[idx] = footer;
+                }
+            } catch (IOException e) {
+                Logger.getLogger().warning(e);
+            }
         }
 
-        if (this.footer == null)
+        if (this.footer[idx] == null)
             return null;
 
-        return this.footer();
+        return this.footer(full);
+    }
+
+    public void message(final Long id, final String message) {
+        final var w = this.getWindow(id);
+        if (w == null)
+            return;
+
+        JOptionPane.showMessageDialog(w, message);
+    }
+
+    public void message(final DispatchedWindow w, final String message) {
+        this.message(this.getId(w), message);
+    }
+
+    @Override
+    public String input(final Long id, final String message) {
+        final var w = this.getWindow(id);
+        if (w == null)
+            return null;
+
+        return JOptionPane.showInputDialog(message);
+    }
+
+    @Override
+    public String input(final DispatchedWindow w, final String message) {
+        return this.input(this.getId(w), message);
     }
 }

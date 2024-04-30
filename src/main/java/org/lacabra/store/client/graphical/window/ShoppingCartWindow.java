@@ -6,17 +6,17 @@ import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import javax.swing.*;
 import java.awt.*;
 
-public final class WindowShoppingCart extends DispatchedWindow {
+public final class ShoppingCartWindow extends DispatchedWindow {
     public static final String TITLE = "Carrito de compra";
     public static final Dimension SIZE = new Dimension(800, 600);
 
     public static final int BORDER = 10;
 
-    public WindowShoppingCart() {
-        this((WindowDispatcher) null);
+    public ShoppingCartWindow() {
+        this(null);
     }
 
-    public WindowShoppingCart(final WindowDispatcher wd) {
+    public ShoppingCartWindow(final WindowDispatcher wd) {
         super(wd);
 
         this.setDispatcher(wd);

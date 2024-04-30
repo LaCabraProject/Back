@@ -1,6 +1,6 @@
 package org.lacabra.store.server.api.type.security.password;
 
-import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.security.exception.AuthenticationException;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;

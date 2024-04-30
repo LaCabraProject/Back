@@ -20,6 +20,7 @@ import java.io.Serializable;
 public class Tuple implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+
     private final Serializable[] members;
 
     protected Tuple(Serializable... members) {

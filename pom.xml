@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <server.hostname>127.0.0.1</server.hostname>
         <server.port>8080</server.port>
+        <server.endpoint>api</server.endpoint>
 
         <jersey.version>2.42</jersey.version>
         <datanucleus.version>6.0.7</datanucleus.version>
@@ -266,9 +267,9 @@
                 <directory>${config.files.dir}</directory>
                 <includes>
                     <include>**/*.jdo</include>
-                    <include>**/*.orm</include>
                     <include>**/*.properties</include>
                     <include>**/*.json</include>
+                    <include>**/*.png</include>
                 </includes>
             </resource>
         </resources>
@@ -297,6 +298,18 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+
+                    <compilerArgs>
+                        <arg>-Xlint:all,unchecked,deprecation,-options,-path</arg>
+                    </compilerArgs>
+
+                    <annotationProcessorPaths>
+                        <annotationProcessorPath>
+                            <groupId>com.fasterxml.jackson.core</groupId>
+                            <artifactId>jackson-annotations</artifactId>
+                            <version>${jackson.version}</version>
+                        </annotationProcessorPath>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
@@ -334,18 +347,16 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <version>3.2.0</version>
 
                 <configuration>
                     <mainClass>org.lacabra.store.client.main.Main</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>${basedir}/assembly.xml</descriptor>
-                    </descriptors>
+
+                    <arguments>
+                        <argument>${server.hostname}</argument>
+                        <argument>${server.port}</argument>
+                        <argument>${server.endpoint}</argument>
+                    </arguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -386,7 +397,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -394,9 +405,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <mainClass>org.lacabra.store.client.main.Main</mainClass>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

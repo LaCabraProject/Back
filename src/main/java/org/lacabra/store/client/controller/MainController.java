@@ -10,18 +10,22 @@ import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.Credentials;
 
+import javax.net.ssl.SSLSession;
 import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -45,6 +49,49 @@ public class MainController {
             .followRedirects(HttpClient.Redirect.NORMAL)
             .connectTimeout(Duration.ofSeconds(20))
             .build();
+
+    public final static Function<String, HttpResponse<String>> RequestError =
+            body -> new HttpResponse<>() {
+                @Override
+                public int statusCode() {
+                    return 0;
+                }
+
+                @Override
+                public HttpRequest request() {
+                    return null;
+                }
+
+                @Override
+                public Optional<HttpResponse<String>> previousResponse() {
+                    return Optional.empty();
+                }
+
+                @Override
+                public HttpHeaders headers() {
+                    return null;
+                }
+
+                @Override
+                public String body() {
+                    return body;
+                }
+
+                @Override
+                public Optional<SSLSession> sslSession() {
+                    return Optional.empty();
+                }
+
+                @Override
+                public URI uri() {
+                    return null;
+                }
+
+                @Override
+                public HttpClient.Version version() {
+                    return null;
+                }
+            };
 
     private String token;
 
@@ -97,6 +144,18 @@ public class MainController {
         this.setEndpointPrimitive(mc.endpoint);
 
         this.token = mc.token;
+    }
+
+    public static MainController fromArgs(final String[] args) throws MalformedURLException {
+        if (args == null)
+            return new MainController();
+
+        return switch (args.length) {
+            case 0 -> new MainController();
+            case 1 -> new MainController(args[0]);
+            case 2 -> new MainController(args[0], args[1]);
+            default -> new MainController(args[0], args[1], args[2]);
+        };
     }
 
     public String getHostname() {
@@ -202,37 +261,74 @@ public class MainController {
     }
 
     public CompletableFuture<Boolean> auth() {
-        if (this.token == null) {
-            Logger.getLogger().warning("Requested credential-less authentication without an existing token.");
-
-            return CompletableFuture.completedFuture(false);
-        }
-
-        return this.request("/auth/refresh", RequestMethod.POST, null, null, Map.of("Authorization", this.token)).thenApply((r) -> {
-            if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode())
-                return false;
-
-            this.token = r.body();
-            return true;
-        });
+        return this.authResp().thenApply(r -> this.token != null);
     }
 
     public CompletableFuture<Boolean> auth(final String id, String passwd) {
-        if (id == null) {
-            Logger.getLogger().warning("No username was provided");
+        return this.authResp(id, passwd).thenApply(r -> this.token != null);
+    }
 
-            return CompletableFuture.completedFuture(false);
+    public CompletableFuture<Boolean> auth(final Credentials creds) {
+        return this.authResp(creds).thenApply(r -> this.token != null);
+    }
+
+    public CompletableFuture<HttpResponse<String>> authResp() {
+        if (this.token == null) {
+            final var body = "Requested token-based authentication without an existing token.";
+
+            Logger.getLogger().warning(body);
+
+            return CompletableFuture.completedFuture(RequestError.apply(body));
         }
 
-        if (passwd == null)
-            passwd = "";
-
-        return this.request("/auth", RequestMethod.POST, null, new Credentials(id, passwd)).thenApply(r -> {
-            if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode())
-                return false;
+        return this.request("/auth/refresh", RequestMethod.POST, null, null, Map.of("Authorization", this.token)).thenApply((r) -> {
+            if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {
+                this.token = null;
+                return r;
+            }
 
             this.token = r.body();
-            return true;
+            return r;
+        });
+    }
+
+    public CompletableFuture<HttpResponse<String>> authResp(final String id, String passwd) {
+        if (id == null || id.isBlank()) {
+            final var body = "No username was provided";
+
+            Logger.getLogger().warning(body);
+            return CompletableFuture.completedFuture(RequestError.apply(body));
+        }
+
+        if (passwd == null || passwd.isBlank())
+            passwd = "";
+
+        return this.authResp(new Credentials(id, passwd));
+    }
+
+    public CompletableFuture<HttpResponse<String>> authResp(final Credentials creds) {
+        if (creds == null) {
+            final var body = "No credentials were provided.";
+
+            Logger.getLogger().warning(body);
+            return CompletableFuture.completedFuture(RequestError.apply(body));
+        }
+
+        if (creds.id().get() == null) {
+            final var body = "Invalid username.";
+
+            Logger.getLogger().warning(body);
+            return CompletableFuture.completedFuture(RequestError.apply(body));
+        }
+
+        return this.request("/auth", RequestMethod.POST, null, creds).thenApply(r -> {
+            if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {
+                this.token = null;
+                return r;
+            }
+
+            this.token = r.body();
+            return r;
         });
     }
 

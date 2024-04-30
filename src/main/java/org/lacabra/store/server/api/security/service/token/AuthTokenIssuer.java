@@ -11,6 +11,7 @@ import org.lacabra.store.server.api.type.security.token.AuthTokenSettings;
 import java.util.Date;
 
 @Dependent
+@SuppressWarnings("deprecation")
 public class AuthTokenIssuer {
     public static String issue(AuthTokenDetails details) {
         return Jwts.builder()

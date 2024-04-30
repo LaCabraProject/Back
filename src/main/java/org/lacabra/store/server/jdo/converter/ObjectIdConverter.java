@@ -1,7 +1,7 @@
 package org.lacabra.store.server.jdo.converter;
 
 import jakarta.persistence.Converter;
-import org.lacabra.store.server.api.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.ObjectId;
 
 import javax.jdo.AttributeConverter;
 

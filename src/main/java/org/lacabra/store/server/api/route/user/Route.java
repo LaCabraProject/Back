@@ -3,7 +3,7 @@ package org.lacabra.store.server.api.route.user;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import org.glassfish.jersey.process.internal.RequestScoped;
-import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;

@@ -1,7 +1,10 @@
 package org.lacabra.store.client.graphical.window;
 
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
+import org.lacabra.store.internals.type.id.UserId;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -10,27 +13,35 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-public class WindowItemDetail extends DispatchedWindow {
-    public static final String TITLE = "Carrito de compra";
+public class ItemDetailsWindow extends DispatchedWindow {
+    public static final String TITLE = "Detalles del artículo";
+
     public static final Dimension SIZE = new Dimension(800, 600);
+    public static final Dimension IMAGE_SIZE = new Dimension(300, 300);
 
     public static final int BORDER = 10;
 
-    public WindowItemDetail() {
-        this((WindowDispatcher) null);
+    public static final int UPDATE_ITEM = 1000;
+
+    public ItemDetailsWindow(final ItemDTO item) {
+        this(null, item);
     }
 
-    public WindowItemDetail(final WindowDispatcher wd) {
-        super(wd);
-
-        this.setDispatcher(wd);
+    public ItemDetailsWindow(final WindowDispatcher wd, final ItemDTO item) {
+        super(wd, item);
     }
 
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
-        super.setDispatcher(wd);
+        this.setDispatcher(wd, (Signal<ItemDTO>) null);
+    }
+
+    @Override
+    public void setDispatcher(final WindowDispatcher wd, final Signal<ItemDTO> signal) {
+        super.setDispatcher(wd, signal);
 
         final var controller = this.controller();
         if (controller == null) return;
@@ -51,12 +62,114 @@ public class WindowItemDetail extends DispatchedWindow {
             this.setSize(SIZE);
             this.setLocationRelativeTo(null);
             this.setLayout(new BorderLayout());
+
+            {
+                final var p = new JPanel();
+                p.setLayout(new BorderLayout());
+                p.setBorder(new EmptyBorder(BORDER, BORDER, BORDER, BORDER));
+
+                {
+                    final var p2 = new JPanel();
+                    p2.setLayout(new GridLayout(1, 4));
+                    p2.setBackground(Color.LIGHT_GRAY);
+                    p2.setBorder(new EmptyBorder(BORDER / 2, BORDER / 2, BORDER / 2, BORDER / 2));
+
+                    for (Object[] init : new Object[][]{{"Inicio", null, null}, {"Categoría", null, null}, {"Carrito"
+                            , null, null}, {"Buscar", null, null}}) {
+                        final var b = new JButton((String) init[0], new ImageIcon());
+
+                        b.setHorizontalTextPosition(SwingConstants.CENTER);
+                        b.setVerticalTextPosition(SwingConstants.BOTTOM);
+                        b.addActionListener((ActionListener) init[3]);
+
+                        p2.add(b);
+                    }
+
+                    p.add(p2, BorderLayout.NORTH);
+                }
+
+                {
+                    final var l = new JLabel();
+                    l.setPreferredSize(IMAGE_SIZE);
+
+                    {
+                        final var i = new ImageIcon();
+
+                        l.setIcon(i);
+                    }
+
+                    p.add(l, BorderLayout.WEST);
+                }
+
+                {
+                    final var p2 = new JTabbedPane();
+
+                    {
+                        final var p3 = new JPanel();
+                        p3.setLayout(new BorderLayout());
+                        p3.setBorder(new CompoundBorder(new TitledBorder("Reseñas del producto"),
+                                new EmptyBorder(BORDER, BORDER, BORDER, BORDER)));
+
+                        if (signal != null)
+                            signal.effect(item -> {
+                                p3.removeAll();
+
+                                {
+                                    final var p4 = new JPanel();
+
+                                    new HashMap<UserId, String>().forEach((user, review) -> {
+                                        final var p5 = new JPanel();
+
+                                        {
+                                            final var t = new JTextArea(review);
+                                            t.setEditable(false);
+
+                                            p5.add(t);
+                                        }
+
+                                        p4.add(p5);
+                                    });
+
+                                    p3.add(new JScrollPane(p4), BorderLayout.CENTER);
+                                }
+
+                                {
+                                    final var b = new JButton("Agregar reseña");
+                                    b.addActionListener(e -> {
+                                        signal.interval(0);
+
+                                        this.input("Escribe tu reseña:");
+
+                                        signal.interval(1000);
+                                    });
+
+                                    p3.add(b, BorderLayout.SOUTH);
+                                }
+                            });
+
+                        p2.add(p3);
+                    }
+
+                    p.add(p2, BorderLayout.CENTER);
+                }
+
+                {
+                    p.add(this.footer(true), BorderLayout.SOUTH);
+                }
+
+                this.add(p);
+            }
+
+            if (signal != null)
+                signal.interval(UPDATE_ITEM);
+
+            this.setVisible(true);
         });
     }
 
     private List<String> reseñas;
 
-    public WindowItemDetail() {
+    public ItemDetailsWindow() {
         super("Detalle del Artículo");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -235,7 +348,7 @@ public class WindowItemDetail extends DispatchedWindow {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new WindowItemDetail();
+                new ItemDetailsWindow();
             }
         });
     }

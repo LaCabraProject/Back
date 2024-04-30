@@ -5,19 +5,18 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.internals.json.deserializer.UserDeserializer;
+import org.lacabra.store.internals.json.serializer.UserIdSerializer;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
-import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.jdo.converter.AuthorityConverter;
 import org.lacabra.store.server.jdo.converter.UserIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
-import org.lacabra.store.server.json.deserializer.UserDeserializer;
-import org.lacabra.store.server.json.serializer.UserIdSerializer;
 
 import javax.jdo.annotations.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Query(name = "FindUser", value = "SELECT FROM User WHERE id == :id")
 @Query(name = "CredMatch", value = "SELECT FROM User WHERE id == :id && passwd == :passwd")
@@ -51,7 +50,7 @@ public class User implements Serializable, Mergeable<User> {
 
     @JsonProperty("authorities")
     @Element(types = {Authority.class}, converter = AuthorityConverter.class)
-    private Set<Authority> authorities;
+    private HashSet<Authority> authorities;
 
     @JsonUnwrapped
     @Embedded
@@ -84,7 +83,9 @@ public class User implements Serializable, Mergeable<User> {
         if (creds != null) {
             this.id = creds.id();
             this.passwd = creds.passwd();
-            this.authorities = creds.authorities();
+            this.authorities = new HashSet<Authority>(creds.authorities() == null ?
+                    Collections.emptySet() :
+                    Objects.requireNonNull(creds.authorities()));
         }
 
         this.data = data;
@@ -119,8 +120,8 @@ public class User implements Serializable, Mergeable<User> {
         this.passwd = passwd;
     }
 
-    private void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
+    private void setAuthorities(Collection<Authority> authorities) {
+        this.authorities = new HashSet<>(authorities == null ? Collections.emptySet() : authorities);
     }
 
     private void setData(UserData data) {

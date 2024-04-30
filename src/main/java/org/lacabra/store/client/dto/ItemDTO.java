@@ -1,8 +1,8 @@
 package org.lacabra.store.client.dto;
 
 
-import org.lacabra.store.server.api.type.id.ObjectId;
-import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
 
@@ -40,13 +40,14 @@ public class ItemDTO implements Serializable {
         this(ObjectId.random(Item.class), type, name, description, keywords, price, discount, stock, parent);
     }
 
+    @SuppressWarnings("unchecked")
     public ItemDTO(ObjectId id, ItemType type, String name, String description, Collection<String> keywords,
                    Number price, Integer discount, Number stock, UserId parent) {
         this.id = id;
         this.type = type;
         this.name = name;
         this.description = description;
-        this.keywords = keywords == null ? Collections.EMPTY_SET : new HashSet<>(keywords);
+        this.keywords = keywords == null ?  Collections.EMPTY_SET : new HashSet<>(keywords);
         this.price = new BigDecimal(String.valueOf(price));
         this.discount = discount;
         this.stock = new BigDecimal(String.valueOf(stock)).toBigInteger();

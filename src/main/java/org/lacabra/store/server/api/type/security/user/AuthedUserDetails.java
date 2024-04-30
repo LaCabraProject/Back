@@ -1,6 +1,6 @@
 package org.lacabra.store.server.api.type.security.user;
 
-import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 
@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 public final class AuthedUserDetails implements Principal {
@@ -31,6 +32,7 @@ public final class AuthedUserDetails implements Principal {
         this(new Credentials(id, authorities));
     }
 
+    @SuppressWarnings("unchecked")
     public AuthedUserDetails(Credentials creds) {
         switch (creds) {
             case null -> {
@@ -40,7 +42,8 @@ public final class AuthedUserDetails implements Principal {
 
             case Credentials c -> {
                 this.id = creds.id() == null ? null : creds.id().get();
-                this.authorities = Set.copyOf(creds.authorities());
+                this.authorities = Set.copyOf(creds.authorities() == null ? Collections.EMPTY_SET :
+                        Objects.requireNonNull(creds.authorities()));
             }
         }
     }

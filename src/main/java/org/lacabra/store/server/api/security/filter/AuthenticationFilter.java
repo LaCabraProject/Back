@@ -32,6 +32,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void handleTokenBasedAuthentication(String token, ContainerRequestContext requestContext) {
         AuthTokenDetails tokenDetails = AuthTokenUtils.parse(token);
         User user = UserDAO.getInstance().findOne(new Credentials(tokenDetails.username()));

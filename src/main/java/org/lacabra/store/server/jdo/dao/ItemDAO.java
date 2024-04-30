@@ -51,6 +51,7 @@ public class ItemDAO extends DAO<Item> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean store(Item item) {
         if (item == null) {
             return super.store((Item) null);
