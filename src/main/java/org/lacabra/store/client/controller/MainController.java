@@ -1,7 +1,6 @@
 package org.lacabra.store.client.controller;
 
 
-import lombok.Getter;
 import org.glassfish.jersey.http.ResponseStatus;
 import org.lacabra.store.client.dto.ItemAssembler;
 import org.lacabra.store.client.dto.ItemDTO;
@@ -16,6 +15,8 @@ import org.lacabra.store.server.api.type.user.Credentials;
 
 import javax.net.ssl.SSLSession;
 import javax.validation.constraints.NotNull;
+import java.io.Serial;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -33,7 +34,10 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class MainController {
+public class MainController implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public final static Pattern URL_REGEX =
             Pattern.compile("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;" + "]*[-a-zA-Z0-9" + "+&@#/%=~_|]");
 
@@ -44,11 +48,8 @@ public class MainController {
     public final static int DEFAULT_PORT = 8080;
     public final static String DEFAULT_ENDPOINT = "/api";
 
-    @Getter
     private String hostname;
-    @Getter
     private Integer port;
-    @Getter
     private String endpoint;
 
     private final HttpClient httpClient =
@@ -96,7 +97,6 @@ public class MainController {
         }
     };
 
-    @Getter
     private UserId user;
     private String token;
 
@@ -161,6 +161,10 @@ public class MainController {
         };
     }
 
+    public String getHostname() {
+        return this.hostname;
+    }
+
     private void setHostnamePrimitive(String hostname) throws IllegalArgumentException, MalformedURLException {
         if (hostname == null) {
             this.hostname = MainController.DEFAULT_HOSTNAME;
@@ -194,6 +198,10 @@ public class MainController {
         this.setHostnamePrimitive(hostname);
     }
 
+    public Integer getPort() {
+        return this.port;
+    }
+
     private void setPortPrimitive(final String port) throws NumberFormatException {
         if (port == null) {
             setPortPrimitive((Integer) null);
@@ -225,6 +233,10 @@ public class MainController {
         this.setPortPrimitive(port);
     }
 
+    public String getEndpoint() {
+        return this.endpoint;
+    }
+
     private void setEndpointPrimitive(final String endpoint) {
         this.endpoint = endpoint == null ? DEFAULT_ENDPOINT : endpoint.replaceAll("^/", "");
     }
@@ -245,6 +257,10 @@ public class MainController {
 
             return null;
         }
+    }
+
+    public UserId getUser() {
+        return this.user;
     }
 
     public void unauth() {

@@ -8,7 +8,6 @@
       "client"
     ]
   },
-
   {
     "id": "ana",
     "passwd": "password123",
@@ -16,7 +15,6 @@
       "client"
     ]
   },
-
   {
     "id": "carlos",
     "passwd": "securePassword",
@@ -25,7 +23,6 @@
       "client"
     ]
   },
-
   {
     "id": "laura",
     "passwd": "laura2024",
@@ -33,7 +30,6 @@
       "client"
     ]
   },
-
   {
     "id": "daniel",
     "passwd": "daniel123",
@@ -42,6 +38,4 @@
       "client"
     ]
   }
-
-
 ]
