@@ -1,41 +1,26 @@
 package org.lacabra.store.client.controller;
 
-import categories.IntegrationTest;
-import com.github.noconnor.junitperf.JUnitPerfTest;
-import org.junit.Test;
-import org.junit.AfterClass;
+import categories.PerformanceTest;
+import com.github.noconnor.junitperf.JUnitPerfRule;
+import com.github.noconnor.junitperf.reporting.providers.HtmlReportGenerator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import io.jsonwebtoken.lang.Collections;
-import org.lacabra.store.client.dto.ItemAssembler;
-import org.lacabra.store.client.dto.ItemDTO;
-import org.lacabra.store.client.dto.UserAssembler;
-import org.lacabra.store.client.dto.UserDTO;
-import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
-import org.lacabra.store.server.api.type.item.Item;
-import org.lacabra.store.server.api.type.user.User;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
-public class MainControllerIntegrationTest {
-
+@Category(PerformanceTest.class)
+public class MainControllerPerformanceTest {
     MainController controller;
+
+    @Rule
+    public JUnitPerfRule perfTestRule = new JUnitPerfRule(new HtmlReportGenerator("target/junitperf/report.html"));
     @BeforeClass
     public static void launchAPI() throws IOException {
         Runtime.getRuntime().exec(new String [] { "mvn", "jetty:run", "-f pom.xml" });
@@ -46,7 +31,6 @@ public class MainControllerIntegrationTest {
         controller = new MainController();
     }
     @Test
-    @JUnitPerfTest(threads = 10, durationMs = 1000)
     public void testAuthentication() {
         controller.auth("mikel", "1234");
         assertEquals(controller.getUser().toString(), "mikel");
@@ -54,7 +38,6 @@ public class MainControllerIntegrationTest {
         assertNull(controller.getUser());
     }
     @Test
-    @JUnitPerfTest(threads = 10, durationMs = 2000)
     public void testItems() {
         var items = controller.GET.Item.id(ObjectId.from(0)).join();
         assertNotNull(items);
@@ -64,7 +47,6 @@ public class MainControllerIntegrationTest {
         // item post
     }
     @Test
-    @JUnitPerfTest(threads = 10, durationMs = 1000)
     public void testUsers() {
         controller.auth("mikel", "1234");
         var user = controller.GET.User;
