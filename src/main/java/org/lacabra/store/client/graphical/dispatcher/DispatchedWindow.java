@@ -46,7 +46,7 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
         final var state = this.state();
 
         if (state == null)
-            return new Signal[0];
+            return new Signal<?>[0];
 
         return state.getAll();
     }
