@@ -1,13 +1,17 @@
 package org.lacabra.store.client.controller;
 
 
+import lombok.Getter;
 import org.glassfish.jersey.http.ResponseStatus;
 import org.lacabra.store.client.dto.ItemAssembler;
 import org.lacabra.store.client.dto.ItemDTO;
+import org.lacabra.store.client.dto.UserAssembler;
+import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.RequestMethod;
+import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.provider.ObjectMapperProvider;
-import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.Credentials;
 
 import javax.net.ssl.SSLSession;
@@ -40,58 +44,57 @@ public class MainController {
     public final static int DEFAULT_PORT = 8080;
     public final static String DEFAULT_ENDPOINT = "/api";
 
+    @Getter
     private String hostname;
+    @Getter
     private Integer port;
+    @Getter
     private String endpoint;
 
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .version(HttpClient.Version.HTTP_1_1)
-            .followRedirects(HttpClient.Redirect.NORMAL)
-            .connectTimeout(Duration.ofSeconds(20))
-            .build();
+    private final HttpClient httpClient =
+            HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(20)).build();
 
-    public final static Function<String, HttpResponse<String>> RequestError =
-            body -> new HttpResponse<>() {
-                @Override
-                public int statusCode() {
-                    return 0;
-                }
+    public final static Function<String, HttpResponse<String>> RequestError = body -> new HttpResponse<>() {
+        @Override
+        public int statusCode() {
+            return 0;
+        }
 
-                @Override
-                public HttpRequest request() {
-                    return null;
-                }
+        @Override
+        public HttpRequest request() {
+            return null;
+        }
 
-                @Override
-                public Optional<HttpResponse<String>> previousResponse() {
-                    return Optional.empty();
-                }
+        @Override
+        public Optional<HttpResponse<String>> previousResponse() {
+            return Optional.empty();
+        }
 
-                @Override
-                public HttpHeaders headers() {
-                    return null;
-                }
+        @Override
+        public HttpHeaders headers() {
+            return null;
+        }
 
-                @Override
-                public String body() {
-                    return body;
-                }
+        @Override
+        public String body() {
+            return body;
+        }
 
-                @Override
-                public Optional<SSLSession> sslSession() {
-                    return Optional.empty();
-                }
+        @Override
+        public Optional<SSLSession> sslSession() {
+            return Optional.empty();
+        }
 
-                @Override
-                public URI uri() {
-                    return null;
-                }
+        @Override
+        public URI uri() {
+            return null;
+        }
 
-                @Override
-                public HttpClient.Version version() {
-                    return null;
-                }
-            };
+        @Override
+        public HttpClient.Version version() {
+            return null;
+        }
+    };
 
     private String token;
 
@@ -131,8 +134,7 @@ public class MainController {
     public MainController(MainController mc) {
         super();
 
-        if (mc == null)
-            mc = new MainController();
+        if (mc == null) mc = new MainController();
 
         try {
             this.setHostnamePrimitive(mc.hostname);
@@ -147,8 +149,7 @@ public class MainController {
     }
 
     public static MainController fromArgs(final String[] args) throws MalformedURLException {
-        if (args == null)
-            return new MainController();
+        if (args == null) return new MainController();
 
         return switch (args.length) {
             case 0 -> new MainController();
@@ -156,10 +157,6 @@ public class MainController {
             case 2 -> new MainController(args[0], args[1]);
             default -> new MainController(args[0], args[1], args[2]);
         };
-    }
-
-    public String getHostname() {
-        return this.hostname;
     }
 
     private void setHostnamePrimitive(String hostname) throws IllegalArgumentException, MalformedURLException {
@@ -195,10 +192,6 @@ public class MainController {
         this.setHostnamePrimitive(hostname);
     }
 
-    public Integer getPort() {
-        return this.port;
-    }
-
     private void setPortPrimitive(final String port) throws NumberFormatException {
         if (port == null) {
             setPortPrimitive((Integer) null);
@@ -228,10 +221,6 @@ public class MainController {
 
     public void setPort(final Integer port) throws IllegalArgumentException {
         this.setPortPrimitive(port);
-    }
-
-    public String getEndpoint() {
-        return this.endpoint;
     }
 
     private void setEndpointPrimitive(final String endpoint) {
@@ -300,8 +289,7 @@ public class MainController {
             return CompletableFuture.completedFuture(RequestError.apply(body));
         }
 
-        if (passwd == null || passwd.isBlank())
-            passwd = "";
+        if (passwd == null || passwd.isBlank()) passwd = "";
 
         return this.authResp(new Credentials(id, passwd));
     }
@@ -372,14 +360,12 @@ public class MainController {
 
             if (params != null) {
                 url += params.entrySet().stream().flatMap((entry) -> Arrays.stream(entry.getValue() == null ?
-                        new String[0] : entry.getValue()).map(x -> String.format("%s=%s", entry.getKey(), x))).reduce(
-                        "?", (acc, param) -> acc + param + "&").replaceAll("&$", "");
+                        new String[0] : entry.getValue()).map(x -> String.format("%s=%s", entry.getKey(), x))).reduce("?", (acc, param) -> acc + param + "&").replaceAll("&$", "");
             }
 
             HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(url));
 
-            if (this.token != null)
-                builder = builder.header("Authorization", this.token);
+            if (this.token != null) builder = builder.header("Authorization", this.token);
 
             if (headers != null) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
@@ -404,15 +390,12 @@ public class MainController {
             return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply((r) -> {
                 Logger.getLogger().info(String.format("%s: %d", route.replaceAll("^([^/])", "/$1"), r.statusCode()));
 
-                if (r.statusCode() != ResponseStatus.ClientError4xx.UNAUTHORIZED_401.getStatusCode())
-                    return r;
+                if (r.statusCode() != ResponseStatus.ClientError4xx.UNAUTHORIZED_401.getStatusCode()) return r;
 
-                if (Pattern.matches("^/?auth(/refresh?)?/?$", route))
-                    return r;
+                if (Pattern.matches("^/?auth(/refresh?)?/?$", route)) return r;
 
                 return this.auth().thenApply((auth) -> {
-                    if (auth)
-                        return this.request(route, method, params, b, headers).getNow(r);
+                    if (auth) return this.request(route, method, params, b, headers).getNow(r);
 
                     return r;
                 }).getNow(r);
@@ -424,21 +407,69 @@ public class MainController {
         }
     }
 
-    public CompletableFuture<List<ItemDTO>> getItems() {
-        return this.request("/item/all").thenApply((r) -> {
-            if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode())
-                return null;
+    public final GET GET = new GET(this);
 
-            try {
-                var ia = ItemAssembler.getInstance();
+    public static final class GET {
+        public final Item Item;
+        public final User User;
 
-                return Stream.of(new ObjectMapperProvider().getContext(Item[].class).readValue(r.body(),
-                        Item[].class)).map(ia::ItemToDTO).toList();
-            } catch (Exception e) {
-                Logger.getLogger().warning(e);
+        public GET(final MainController controller) {
+            super();
 
-                return null;
+            this.Item = new Item(controller);
+            this.User = new User(controller);
+        }
+
+        public record Item(MainController controller) {
+            public CompletableFuture<ItemDTO> id(final ObjectId id) {
+                if (id == null) return CompletableFuture.completedFuture(null);
+
+                return this.controller.request("/item/" + id).thenApply(r -> {
+                    if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) return null;
+
+                    try {
+                        return ItemAssembler.getInstance().ItemToDTO(new ObjectMapperProvider().getContext(org.lacabra.store.server.api.type.item.Item.class).readValue(r.body(), org.lacabra.store.server.api.type.item.Item.class));
+                    } catch (Exception e) {
+                        Logger.getLogger().warning(e);
+
+                        return null;
+                    }
+                });
             }
-        });
+
+            public CompletableFuture<List<ItemDTO>> all() {
+                return this.controller.request("/item/all").thenApply((r) -> {
+                    if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) return null;
+
+                    try {
+                        var ia = ItemAssembler.getInstance();
+
+                        return Stream.of(new ObjectMapperProvider().getContext(org.lacabra.store.server.api.type.item.Item[].class).readValue(r.body(), org.lacabra.store.server.api.type.item.Item[].class)).map(ia::ItemToDTO).toList();
+                    } catch (Exception e) {
+                        Logger.getLogger().warning(e);
+
+                        return null;
+                    }
+                });
+            }
+        }
+
+        public record User(MainController controller) {
+            public CompletableFuture<UserDTO> id(final UserId id) {
+                if (id == null) return CompletableFuture.completedFuture(null);
+
+                return this.controller.request("/user/" + id).thenApply(r -> {
+                    if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) return null;
+
+                    try {
+                        return UserAssembler.getInstance().UserToDTO(new ObjectMapperProvider().getContext(org.lacabra.store.server.api.type.user.User.class).readValue(r.body(), org.lacabra.store.server.api.type.user.User.class));
+                    } catch (Exception e) {
+                        Logger.getLogger().warning(e);
+
+                        return null;
+                    }
+                });
+            }
+        }
     }
 }

@@ -2,7 +2,10 @@ package org.lacabra.store.client.graphical.dispatcher;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Stream;
 
 public final class WindowState implements Serializable {
@@ -72,6 +75,13 @@ public final class WindowState implements Serializable {
         if (id == null)
             return null;
 
-        return this.signals.remove(id);
+        final var ret = this.signals.remove(id);
+        ret.interval(0);
+
+        return ret;
+    }
+
+    public Signal<?>[] disconnectAll() {
+        return this.signals.keySet().stream().map(this::disconnect).toArray(Signal[]::new);
     }
 }

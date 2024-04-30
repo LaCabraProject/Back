@@ -29,19 +29,26 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
 
     private final MainController controller;
 
-    public final Color BANNER_COLOR = new Color(254, 5, 20, 215);
-
-    public final URI FACEBOOK_URI = URI.create("https://www.facebook.com/Redbubble");
+    public static final Color BANNER_COLOR = new Color(254, 5, 20, 215);
 
     private final JPanel[] footer = new JPanel[2];
 
-    private final Color FOOTER_BACKGROUND = Color.LIGHT_GRAY;
-    private final int FOOTER_BORDER = 5;
+    private static final Color FOOTER_BACKGROUND = Color.LIGHT_GRAY;
+    private static final int FOOTER_BORDER = 5;
 
-    private final Color LINK_FOREGROUND = Color.BLUE;
-    public final URI PRIVACY_POLICY_URI = URI.create("https://www.lipsum.com/");
-    public final URI TERMS_OF_USE_URI = URI.create("https://www.lipsum.com/");
+    public static final Dimension MEDIA_BUTTON_SIZE = new Dimension(32, 32);
 
+    private static final Color LINK_FOREGROUND = Color.BLUE;
+    private static final URI PRIVACY_POLICY_URI = URI.create("https://www.lipsum.com/");
+    private static final URI TERMS_OF_USE_URI = URI.create("https://www.lipsum.com/");
+
+    private static final String FACEBOOK_IMG = "facebook.png";
+    private static final String INSTAGRAM_IMG = "instagram.png";
+    private static final String TWITTER_IMG = "twitter.png";
+
+    private static final URI FACEBOOK_URI = URI.create("https://www.facebook.com/Redbubble");
+    private static final URI INSTAGRAM_URI = URI.create("https://www.instagram.com/redbubble/");
+    private static final URI TWITTER_URI = URI.create("https://twitter.com/redbubble");
 
     static {
         UIManager.put("ComboBox.selectionBackground", Color.LIGHT_GRAY);
@@ -60,26 +67,22 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         this.controller = new MainController(controller) {
             @Override
             public void setHostname(String hostname) throws MalformedURLException {
-                if (this.getHostname() != null)
-                    super.setHostname(hostname);
+                if (this.getHostname() != null) super.setHostname(hostname);
             }
 
             @Override
             public void setPort(String port) {
-                if (this.getPort() != null)
-                    super.setPort(port);
+                if (this.getPort() != null) super.setPort(port);
             }
 
             @Override
             public void setPort(Integer port) {
-                if (this.getPort() != null)
-                    super.setPort(port);
+                if (this.getPort() != null) super.setPort(port);
             }
 
             @Override
             public void setEndpoint(String endpoint) {
-                if (this.getEndpoint() != null)
-                    super.setEndpoint(endpoint);
+                if (this.getEndpoint() != null) super.setEndpoint(endpoint);
             }
         };
     }
@@ -97,8 +100,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     }
 
     public WindowState stateOf(final Long id) {
-        if (id == null)
-            return null;
+        if (id == null) return null;
 
         return this.state.get(id);
     }
@@ -108,65 +110,55 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     }
 
     public Long connect(final Long w, final Signal<?> signal) {
-        if (w == null)
-            return null;
+        if (w == null) return null;
 
         final var state = this.state.get(w);
 
-        if (state == null)
-            return null;
+        if (state == null) return null;
 
         return state.connect(signal);
     }
 
     public Long connect(final WindowState state, final Signal<?> signal) {
-        if (state == null)
-            return null;
+        if (state == null) return null;
 
         return this.connect(this.state.entrySet().stream().filter(x -> x.getValue().equals(state)).map(Map.Entry::getKey).findFirst().orElse(null), signal);
     }
 
     public Long[] connect(final DispatchedWindow w, final Signal<?>... signals) {
-        if (signals == null)
-            return new Long[0];
+        if (signals == null) return new Long[0];
 
         return Stream.of(signals).map(x -> this.connect(w, x)).toArray(Long[]::new);
     }
 
     public Long[] connect(final Long w, final Signal<?>... signals) {
-        if (signals == null)
-            return new Long[0];
+        if (signals == null) return new Long[0];
 
         return Stream.of(signals).map(x -> this.connect(w, x)).toArray(Long[]::new);
     }
 
     public Long[] connect(final WindowState state, final Signal<?>... signals) {
-        if (signals == null)
-            return new Long[0];
+        if (signals == null) return new Long[0];
 
         return Stream.of(signals).map(x -> this.connect(state, x)).toArray(Long[]::new);
     }
 
     public Signal<?> disconnect(final Long w, final Signal<?> signal) {
-        if (w == null)
-            return null;
+        if (w == null) return null;
 
         final var state = this.state.get(w);
 
-        if (state == null)
-            return null;
+        if (state == null) return null;
 
         return state.disconnect(signal);
     }
 
     public Signal<?> disconnect(final Long w, final Long signal) {
-        if (w == null)
-            return null;
+        if (w == null) return null;
 
         final var state = this.state.get(w);
 
-        if (state == null)
-            return null;
+        if (state == null) return null;
 
         return state.disconnect(signal);
     }
@@ -180,15 +172,13 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     }
 
     public Signal<?> disconnect(final WindowState state, final Signal<?> signal) {
-        if (state == null)
-            return null;
+        if (state == null) return null;
 
         return this.disconnect(this.state.entrySet().stream().filter(x -> x.getValue().equals(state)).map(Map.Entry::getKey).findFirst().orElse(null), signal);
     }
 
     public Signal<?> disconnect(final WindowState state, final Long signal) {
-        if (state == null)
-            return null;
+        if (state == null) return null;
 
         return this.disconnect(this.state.entrySet().stream().filter(x -> x.getValue().equals(state)).map(Map.Entry::getKey).findFirst().orElse(null), signal);
     }
@@ -198,27 +188,23 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     }
 
     public Long getId(final DispatchedWindow w) {
-        if (w == null)
-            return null;
+        if (w == null) return null;
 
         for (Map.Entry<Long, DispatchedWindow> entry : this.windows.entrySet()) {
-            if (entry.getValue().equals(w))
-                return entry.getKey();
+            if (entry.getValue().equals(w)) return entry.getKey();
         }
 
         return null;
     }
 
     public DispatchedWindow getWindow(final Long id) {
-        if (id == null)
-            return null;
+        if (id == null) return null;
 
         return this.windows.get(id);
     }
 
     public Long dispatch(final Class<? extends DispatchedWindow> cls) {
-        if (cls == null)
-            return null;
+        if (cls == null) return null;
 
         try {
             return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
@@ -256,6 +242,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         final DispatchedWindow w = this.windows.remove(id);
         if (w == null) return false;
 
+        this.stateOf(w).disconnectAll();
         w.dispose();
         return true;
     }
@@ -265,8 +252,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     }
 
     private Component yieldComponent(Component c) {
-        if (c == null)
-            return null;
+        if (c == null) return null;
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -290,8 +276,8 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
 
             if (res != null) {
                 final var banner =
-                        new JLabel(new ImageIcon(ImageIO.read(new File(res.getFile())).getScaledInstance(10,
-                                10, Image.SCALE_SMOOTH)));
+                        new JLabel(new ImageIcon(ImageIO.read(new File(res.getFile())).getScaledInstance(10, 10,
+                                Image.SCALE_SMOOTH)));
 
                 if (frame != null)
                     p.setPreferredSize(new Dimension(frame.getWidth(), banner.getPreferredSize().height));
@@ -314,8 +300,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     public JPanel footer(final boolean full) {
         final var idx = full ? 1 : 0;
 
-        if (this.footer[idx] != null)
-            return (JPanel) this.yieldComponent(this.footer[idx]);
+        if (this.footer[idx] != null) return (JPanel) this.yieldComponent(this.footer[idx]);
 
         final var footer = new JPanel();
 
@@ -324,8 +309,8 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
             footer.setBackground(FOOTER_BACKGROUND);
             footer.setBorder(new EmptyBorder(FOOTER_BORDER, FOOTER_BORDER, FOOTER_BORDER, FOOTER_BORDER));
 
-            for (Map.Entry<String, URI> details :
-                    Map.of("Política de privacidad", PRIVACY_POLICY_URI, "Términos de uso", TERMS_OF_USE_URI).entrySet()) {
+            for (Map.Entry<String, URI> details : Map.of("Política de privacidad", PRIVACY_POLICY_URI, "Términos de " +
+                    "uso", TERMS_OF_USE_URI).entrySet()) {
                 final var title = details.getKey();
                 final var uri = details.getValue();
 
@@ -361,6 +346,24 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
 
                 footer.add(l);
             }
+
+            for (Map.Entry<String, URI> media : Map.of(FACEBOOK_IMG, FACEBOOK_URI, TWITTER_IMG,
+                    TWITTER_URI, INSTAGRAM_IMG, INSTAGRAM_URI).entrySet()) {
+                final var file = media.getKey();
+                final var uri = media.getValue();
+
+                final var b = new JButton(new ImageIcon(file));
+                b.setPreferredSize(MEDIA_BUTTON_SIZE);
+                b.addActionListener(e -> {
+                    try {
+                        Desktop.getDesktop().browse(uri);
+                    } catch (IOException ex) {
+                        Logger.getLogger().warning(ex);
+                    }
+                });
+
+                footer.add(b);
+            }
         } else {
             footer.setLayout(new BorderLayout());
 
@@ -384,8 +387,8 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
                 final var res = this.getClass().getClassLoader().getResource("facebook.png");
 
                 if (res != null) {
-                    media.setIcon(new ImageIcon(ImageIO.read(new File(res.getFile())).getScaledInstance(10,
-                            10, Image.SCALE_SMOOTH)));
+                    media.setIcon(new ImageIcon(ImageIO.read(new File(res.getFile())).getScaledInstance(10, 10,
+                            Image.SCALE_SMOOTH)));
 
                     footer.add(media, BorderLayout.EAST);
 
@@ -396,16 +399,14 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
             }
         }
 
-        if (this.footer[idx] == null)
-            return null;
+        if (this.footer[idx] == null) return null;
 
         return this.footer(full);
     }
 
     public void message(final Long id, final String message) {
         final var w = this.getWindow(id);
-        if (w == null)
-            return;
+        if (w == null) return;
 
         JOptionPane.showMessageDialog(w, message);
     }
@@ -417,8 +418,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     @Override
     public String input(final Long id, final String message) {
         final var w = this.getWindow(id);
-        if (w == null)
-            return null;
+        if (w == null) return null;
 
         return JOptionPane.showInputDialog(message);
     }
