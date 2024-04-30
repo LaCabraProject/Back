@@ -4,6 +4,7 @@ import org.lacabra.store.client.Controller.MainController;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.id.ObjectId;
+import org.lacabra.store.server.api.type.id.UserId;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
 import javax.swing.event.MouseInputAdapter;
@@ -26,6 +27,8 @@ public class WindowShopping {
     private JTextField searchField;
     private DefaultTableModel tableModel;
     private JTable table;
+    private JButton btnDetalle= new JButton("Ver objeto en detalle");
+    private JList<ItemDTO>list=new JList<>();
 
     public WindowShopping(User usuario, MainController mc) {
         frame = new JFrame("Buscador");
@@ -37,7 +40,12 @@ public class WindowShopping {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new FlowLayout());
 
-        JComboBox<ItemType> searchComboBox = new JComboBox<>(ItemType.values());
+        JComboBox<String> searchComboBox = new JComboBox<>();
+        searchComboBox.addItem("Todos");
+        searchComboBox.addItem("Ropa");
+        searchComboBox.addItem("Decoración");
+        searchComboBox.addItem("Accesorios");
+        searchComboBox.addItem("Utilidades");
         topPanel.add(searchComboBox);
 
         searchField = new JTextField(20);
@@ -66,11 +74,13 @@ public class WindowShopping {
         tableModel.addColumn("Stock");
         tableModel.addColumn("Propietario");
         tableModel.addColumn("Foto");
+
         for (ItemDTO item : MainController.ReceiveItems()) {
             Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
                     item.price(), item.discount(), item.stock(), item.parent()};
             tableModel.addRow(rowData);
         }
+
         for (int i = 0; i < 5; i++) {
             String[] words = {"cabra", "goat", "beast"};
             Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
@@ -78,6 +88,13 @@ public class WindowShopping {
                     , 20, 0, new BigInteger("2"), new User("mikel")};
             tableModel.addRow(rowData);
         }
+
+        //for (ItemDTO item : list) {
+        //    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+        //            item.price(), item.discount(), item.stock(), item.parent()};
+        //    tableModel.addRow(rowData);
+        //}
+
         table = new JTable(tableModel) {
             @Override
             public Class<?> getColumnClass(int column) {
@@ -112,6 +129,7 @@ public class WindowShopping {
         bottomPanel.add(btnBack);
         JButton btnCarrito = new JButton("Guardar en carrito");
         bottomPanel.add(btnCarrito);
+        bottomPanel.add(btnDetalle);
         frame.add(panel, BorderLayout.CENTER);
 
         searchButton.addActionListener(new ActionListener() {
@@ -143,6 +161,18 @@ public class WindowShopping {
                     table.getSelectedRow(), 0).toString());
         });
 
+        btnDetalle.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int num=table.getSelectedRow();
+                ItemDTO item = new ItemDTO((ObjectId) tableModel.getValueAt(num, 0),
+                        (ItemType) tableModel.getValueAt(num,1), (String) tableModel.getValueAt(num, 2),
+                        (String) tableModel.getValueAt(num, 3), (Collection<String>) tableModel.getValueAt(num,4),
+                        (Number) tableModel.getValueAt(num,5), (Integer) tableModel.getValueAt(num, 6),
+                        (Number) tableModel.getValueAt(num, 7),new User(String.valueOf(tableModel.getValueAt(num,8))).id());
+                new WindowItemDetail(item);
+            }
+        });
         frame.setVisible(true);
     }
 

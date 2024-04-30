@@ -41,7 +41,7 @@ public class WindowItemDetail extends JFrame {
 
     public WindowItemDetail(ItemDTO itemDTO) {
         super("Detalle del Artículo");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(800, 600);
 
         panelPrincipal.setLayout(new BorderLayout());
