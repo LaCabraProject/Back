@@ -42,10 +42,8 @@ public final class ProfileWindow extends DispatchedWindow {
 
         controller.auth().thenAccept((auth) -> {
             if (!auth) {
-                this.close();
-
                 controller.unauth();
-                this.dispatch(AuthWindow.class);
+                this.replace(AuthWindow.class);
 
                 return;
             }

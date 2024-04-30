@@ -44,8 +44,7 @@ public final class LoginWindow extends DispatchedWindow {
 
         controller.auth().thenAccept((auth) -> {
             if (auth) {
-                this.close();
-                d.dispatch(HomeWindow.class);
+                this.replace(HomeWindow.class);
 
                 return;
             }

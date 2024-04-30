@@ -1,6 +1,5 @@
 package org.lacabra.store.client.main;
 
-import org.lacabra.store.client.controller.MainController;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.client.graphical.window.HomeWindow;
 import org.lacabra.store.internals.json.validator.JsonSchemaFactory;
@@ -26,9 +25,7 @@ public final class Main {
                     JsonSchemaFactory.addPreloadedSchema(cls, new File(res.getFile()));
             }
 
-            new WindowDispatcher(MainController.fromArgs(args)).dispatch(HomeWindow.class);
-//
-//            new WindowHome(null, mc);
+            WindowDispatcher.fromArgs(args).dispatch(HomeWindow.class);
         } catch (IllegalArgumentException e) {
             Logger.getLogger().severe(e);
         } catch (MalformedURLException e) {
