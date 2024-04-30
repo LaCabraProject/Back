@@ -18,7 +18,7 @@ public final class HomeWindow extends DispatchedWindow {
         this(null);
     }
 
-    public HomeWindow(WindowDispatcher wd) {
+    public HomeWindow(final WindowDispatcher wd) {
         super(wd);
     }
 
@@ -58,7 +58,7 @@ public final class HomeWindow extends DispatchedWindow {
                         final var item = new JMenuItem("Buscar");
                         item.addActionListener(e -> {
                             this.close();
-                            this.dispatch(WindowShopping.class);
+                            this.dispatch(ShoppingWindow.class);
                         });
 
                         search.add(item);

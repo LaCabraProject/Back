@@ -12,13 +12,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 public final class ProfileWindow extends DispatchedWindow {
-    private JLabel etiquetaNombre, etiquetaCorreo, etiquetaContraseña, etiquetaDireccion, etiquetaTelefono,
-            etiquetaPago, etiquetaNumeroTarjeta, etiquetaFechaCaducidad, etiquetaCVV, etiquetaNombreTarjeta;
-    private JTextField campoNombre, campoCorreo, campoDireccion, campoTelefono, campoNumeroTarjeta,
-            campoFechaCaducidad, campoCVV, campoNombreTarjeta, campoContraseña;
-    private JCheckBox checkBoxBoletin, checkBoxProgramaLealtad;
-    private JComboBox<String> comboBoxIdioma, comboBoxMoneda;
-
     public static final Function<String, String> TITLE = name -> String.format("Perfil de usuario%s", name == null ?
             "" : (":" + " " + name));
 

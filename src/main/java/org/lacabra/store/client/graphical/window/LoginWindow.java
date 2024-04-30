@@ -77,7 +77,7 @@ public final class LoginWindow extends DispatchedWindow {
                 constraints.insets = new Insets(INSET, INSET, INSET, INSET);
 
                 {
-                    final var user = new JTextField();
+                    final var user = new JTextField(controller.getUser().get());
                     final var passwd = new JPasswordField();
                     final var b = new JButton("Iniciar sesión");
 

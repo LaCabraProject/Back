@@ -55,7 +55,7 @@ jobs:
           sudo systemctl enable mysql.service
           sudo systemctl start mysql.service
 
-      - name: Run sample.sql
+      - name: Create the database
         run: mysql --protocol=tcp -h localhost -P 3306 -u root -ppassword -e "$(cat $(find ./ -name create_user.sql))"
 
       - name: Build with Maven

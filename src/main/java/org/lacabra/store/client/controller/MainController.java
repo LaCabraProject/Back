@@ -96,6 +96,8 @@ public class MainController {
         }
     };
 
+    @Getter
+    private UserId user;
     private String token;
 
     public MainController() {
@@ -246,6 +248,7 @@ public class MainController {
     }
 
     public void unauth() {
+        this.user = null;
         this.token = null;
     }
 
@@ -302,12 +305,16 @@ public class MainController {
             return CompletableFuture.completedFuture(RequestError.apply(body));
         }
 
-        if (creds.id().get() == null) {
+        final var id = creds.id();
+
+        if (id.get() == null) {
             final var body = "Invalid username.";
 
             Logger.getLogger().warning(body);
             return CompletableFuture.completedFuture(RequestError.apply(body));
         }
+
+        this.user = id;
 
         return this.request("/auth", RequestMethod.POST, null, creds).thenApply(r -> {
             if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {

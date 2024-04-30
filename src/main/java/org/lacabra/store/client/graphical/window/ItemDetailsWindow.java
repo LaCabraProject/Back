@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 
 public class ItemDetailsWindow extends DispatchedWindow {
@@ -178,6 +179,10 @@ public class ItemDetailsWindow extends DispatchedWindow {
 
             this.setVisible(true);
         });
+    }
+
+    public static void main(final String[] args) throws MalformedURLException {
+        WindowDispatcher.fromArgs(args).dispatch(ItemDetailsWindow.class);
     }
 }
 
