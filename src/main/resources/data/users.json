@@ -7,5 +7,41 @@
       "artist",
       "client"
     ]
+  },
+
+  {
+    "id": "ana",
+    "passwd": "password123",
+    "authorities": [
+      "client"
+    ]
+  },
+
+  {
+    "id": "carlos",
+    "passwd": "securePassword",
+    "authorities": [
+      "artist",
+      "client"
+    ]
+  },
+
+  {
+    "id": "laura",
+    "passwd": "laura2024",
+    "authorities": [
+      "client"
+    ]
+  },
+
+  {
+    "id": "daniel",
+    "passwd": "daniel123",
+    "authorities": [
+      "admin",
+      "client"
+    ]
   }
+
+
 ]
