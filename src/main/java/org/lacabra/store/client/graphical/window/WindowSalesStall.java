@@ -2,6 +2,8 @@ package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.controller.MainController;
 import org.lacabra.store.client.dto.ItemDTO;
+import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
@@ -20,223 +22,270 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class WindowSalesStall extends JFrame {
+public class WindowSalesStall extends DispatchedWindow {
     private DefaultTableModel tableModel;
     private JTable table;
     private List<Item> lista = new ArrayList<>();
+    private MainController mc;
+    private JScrollPane scrollPane;
+    private JPanel panel = new JPanel();
+    private JPanel bottomPanel,namePanel,addPanel,descriptionPanel,photoPanel,panelPrecio,panelCantidad,
+            panelTipo,panelCrearProducto,controlPanel;
+    private JTextField nameField,addItemField,descriptionField,photoField,precioField,cantidadField;
+    private JButton btnAddItem,btnAddPhoto,modificar,btnRemoveItem,btnClearList,btnBack;
+    private JLabel labelPrecio,labelCantidad,labelTipo,label;
+    private JComboBox<ItemType> tipoField;
+    private List<ItemDTO> itemDTOs;
 
-    public WindowSalesStall(User usuario, MainController mc) {
-        initUI(usuario, mc);
+    public WindowSalesStall(final WindowDispatcher wd) {
+        super(wd);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new WindowSalesStall(null, new MainController()));
-    }
+    @Override
+    public void setDispatcher(final WindowDispatcher wd) {
+        super.setDispatcher(wd);
 
-    private void initUI(User usuario, MainController mc) {
-        setTitle("Artículos a la venta");
-        setSize(800, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        List<ItemDTO> itemDTOs = null;
-        for (int i = 0; i < 5; i++) {
-            String[] words = {"cabra", "goat", "beast"};
-            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
-            Item item = new Item(ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
-                    , 20, 0, new BigInteger("2"), new User("mikel"));
-            lista.add(item);
+        mc=wd.controller();
+        if (mc == null)
+            return;
+
+        mc.auth().thenAccept((auth) -> {
+            if (!auth) {
+                this.close();
+                mc.unauth();
+                this.dispatch(AuthWindow.class);
+                return;
+            }
+        });
+
+        //ajustes iniciales
+        {
+            setTitle("Artículos a la venta");
+            setSize(800, 600);
+            setLocationRelativeTo(null);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            itemDTOs = null;
         }
-//        itemDTOs=MainController.ReceiveItems();
-        if (itemDTOs != null) {
-            for (ItemDTO i : itemDTOs) {
-                Item item = new Item(i.type(), i.name(), i.description(), i.keywords(), i.price(), i.discount(),
-                        i.stock(), new User(i.parent()));
-                lista.add(item);
+
+        //carga de objetos
+        {
+            itemDTOs = mc.GET.Item.all().join();
+            if (itemDTOs != null) {
+                for (ItemDTO i : itemDTOs) {
+                    Item item = new Item(i.type(), i.name(), i.description(), i.keywords(), i.price(), i.discount(),
+                            i.stock(), new User(i.parent()));
+                    lista.add(item);
+                }
+            } else {
+                for (int i = 0; i < 5; i++) {
+                    String[] words = {"cabra", "goat", "beast"};
+                    Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+                    Item item = new Item(ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
+                            , 20, 0, new BigInteger("2"), new User("mikel"));
+                    lista.add(item);
+                }
             }
         }
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
 
-        JLabel label = new JLabel("Lista de Artículos para Vender:");
+        panel.setLayout(new BorderLayout());
+        label = new JLabel("Lista de Artículos para Vender:");
         label.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(label, BorderLayout.NORTH);
 
-        tableModel = new DefaultTableModel();
-        tableModel.addColumn("ID");
-        tableModel.addColumn("Tipo");
-        tableModel.addColumn("Nombre");
-        tableModel.addColumn("Descripción");
-        tableModel.addColumn("Palabras Clave");
-        tableModel.addColumn("Precio");
-        tableModel.addColumn("Descuento");
-        tableModel.addColumn("Stock");
-        tableModel.addColumn("Propietario");
+        //tabla
+        {
+            tableModel = new DefaultTableModel();
+            tableModel.addColumn("ID");
+            tableModel.addColumn("Tipo");
+            tableModel.addColumn("Nombre");
+            tableModel.addColumn("Descripción");
+            tableModel.addColumn("Palabras Clave");
+            tableModel.addColumn("Precio");
+            tableModel.addColumn("Descuento");
+            tableModel.addColumn("Stock");
+            tableModel.addColumn("Propietario");
 
-        table = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(table);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        // Agregar los datos de los objetos Item a la tabla
-        for (Item item : lista) {
-            Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
-                    item.price(), item.discount() + "%", item.stock(), "mikel"};
-            tableModel.addRow(rowData);
+            table = new JTable(tableModel);
+            scrollPane = new JScrollPane(table);
+            panel.add(scrollPane, BorderLayout.CENTER);
         }
 
-        JPanel bottomPanel = new JPanel(new GridLayout(9, 1));
-        panel.add(bottomPanel, BorderLayout.SOUTH);
+        // Agregar los datos de los objetos Item a la tabla
+        {
+            for (Item item : lista) {
+                Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                        item.price(), item.discount(), item.stock(), item.parent().id()};
+                tableModel.addRow(rowData);
+            }
+        }
 
-        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JTextField nameField = new JTextField(20);
-        namePanel.add(new JLabel("Nombre:"));
-        namePanel.add(nameField);
-        bottomPanel.add(namePanel);
+        //campos para rellenar en un nuevo objeto y botón para crear
+        {
+            bottomPanel = new JPanel(new GridLayout(9, 1));
+            panel.add(bottomPanel, BorderLayout.SOUTH);
 
-        JPanel addPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JTextField addItemField = new JTextField(20);
-        JButton btnAddItem = new JButton("Agregar Artículo");
-        addPanel.add(new JLabel("Palabras clave:"));
-        addPanel.add(addItemField);
-        bottomPanel.add(addPanel);
+            namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            nameField = new JTextField(20);
+            namePanel.add(new JLabel("Nombre:"));
+            namePanel.add(nameField);
+            bottomPanel.add(namePanel);
 
-        JPanel descriptionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JTextField descriptionField = new JTextField(20);
-        descriptionPanel.add(new JLabel("Descripción:"));
-        descriptionPanel.add(descriptionField);
-        bottomPanel.add(descriptionPanel);
+            addPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            addItemField = new JTextField(20);
+            btnAddItem = new JButton("Agregar Artículo");
+            addPanel.add(new JLabel("Palabras clave:"));
+            addPanel.add(addItemField);
+            bottomPanel.add(addPanel);
 
-        JPanel photoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JTextField photoField = new JTextField(20);
-        JButton btnAddPhoto = new JButton("Agregar Foto");
-        photoPanel.add(new JLabel("Ruta de la Foto:"));
-        photoPanel.add(photoField);
-        photoPanel.add(btnAddPhoto);
-        bottomPanel.add(photoPanel);
+            descriptionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            descriptionField = new JTextField(20);
+            descriptionPanel.add(new JLabel("Descripción:"));
+            descriptionPanel.add(descriptionField);
+            bottomPanel.add(descriptionPanel);
 
-        JPanel panelPrecio = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelPrecio = new JLabel("Coste del producto:");
-        JTextField precioField = new JTextField(20);
-        panelPrecio.add(labelPrecio);
-        panelPrecio.add(precioField);
-        bottomPanel.add(panelPrecio);
+            photoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            photoField = new JTextField(20);
+            btnAddPhoto = new JButton("Agregar Foto");
+            photoPanel.add(new JLabel("Ruta de la Foto:"));
+            photoPanel.add(photoField);
+            photoPanel.add(btnAddPhoto);
+            bottomPanel.add(photoPanel);
 
-        JPanel panelCantidad = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelCantidad = new JLabel("Cantidad del producto:");
-        JTextField cantidadField = new JTextField(20);
-        panelCantidad.add(labelCantidad);
-        panelCantidad.add(cantidadField);
-        bottomPanel.add(panelCantidad);
+            panelPrecio = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            labelPrecio = new JLabel("Coste del producto:");
+            precioField = new JTextField(20);
+            panelPrecio.add(labelPrecio);
+            panelPrecio.add(precioField);
+            bottomPanel.add(panelPrecio);
 
-        JPanel panelTipo = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel labelTipo = new JLabel("Tipo de producto:");
-        JComboBox tipoField = new JComboBox(ItemType.values());
-        panelTipo.add(labelTipo);
-        panelTipo.add(tipoField);
-        bottomPanel.add(panelTipo);
+            panelCantidad = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            labelCantidad = new JLabel("Cantidad del producto:");
+            cantidadField = new JTextField(20);
+            panelCantidad.add(labelCantidad);
+            panelCantidad.add(cantidadField);
+            bottomPanel.add(panelCantidad);
 
-        JPanel panelCrearProducto = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panelCrearProducto.add(btnAddItem);
-        bottomPanel.add(panelCrearProducto);
+            panelTipo = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            labelTipo = new JLabel("Tipo de producto:");
+            tipoField = new JComboBox(ItemType.values());
+            panelTipo.add(labelTipo);
+            panelTipo.add(tipoField);
+            bottomPanel.add(panelTipo);
 
-        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton modificar = new JButton("Modificar seleccionado");
-        JButton btnRemoveItem = new JButton("Eliminar artículo seleccionado");
-        JButton btnClearList = new JButton("Borrar lista");
-        JButton btnBack = new JButton("Volver al inicio");
-        controlPanel.add(modificar);
-        controlPanel.add(btnRemoveItem);
-        controlPanel.add(btnClearList);
-        controlPanel.add(btnBack);
-        bottomPanel.add(controlPanel);
 
-        modificar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+            panelCrearProducto = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            panelCrearProducto.add(btnAddItem);
+            bottomPanel.add(panelCrearProducto);
+        }
+
+        //Botones de parte baja de pantalla
+        {
+            controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            modificar = new JButton("Modificar seleccionado");
+            btnRemoveItem = new JButton("Eliminar artículo seleccionado");
+            btnClearList = new JButton("Borrar lista");
+            btnBack = new JButton("Volver al inicio");
+            controlPanel.add(modificar);
+            controlPanel.add(btnRemoveItem);
+            controlPanel.add(btnClearList);
+            controlPanel.add(btnBack);
+            bottomPanel.add(controlPanel);
+        }
+
+        //actionListeners
+        {
+            modificar.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int selectedRowIndex = table.getSelectedRow();
+                    if (selectedRowIndex != -1) {
+                        System.out.println(selectedRowIndex);
+                        String itemName = addItemField.getText();
+                        String[] words = itemName.split("\\s*,\\s*");
+                        Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+                        String itemDescription = descriptionField.getText();
+                        String itemPhotoPath = photoField.getText();
+                        ObjectId objId = ObjectId.from(itemName);
+                        int numero = Integer.parseInt(precioField.getText());
+                        BigInteger cantidad = new BigInteger(cantidadField.getText());
+                        Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
+                                nameField.getText(), itemDescription, keywords, numero, 0, cantidad, new User(mc.getUser()));
+                        //*linea para mandar el item(no hemos decidido)
+                        List<Item> list = new ArrayList<>();
+                        for (Item t : lista) {
+                            if (t.equals(lista.get(selectedRowIndex))) {
+                                list.add(item);
+                            }
+                            list.add(t);
+                        }
+                        lista = new ArrayList<>(list);
+                        Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
+                                item.price(), item.discount() + "%", item.stock(), new User(mc.getUser()).id().get()};
+                        tableModel.removeRow(selectedRowIndex);
+                        tableModel.insertRow(selectedRowIndex, rowData);
+
+                    }
+                }
+            });
+
+            btnAddItem.addActionListener(e -> {
+                String itemName = addItemField.getText();
+                String[] words = itemName.split("\\s*,\\s*");
+                Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
+                String itemDescription = descriptionField.getText();
+                String itemPhotoPath = photoField.getText();
+                ObjectId objId = ObjectId.from(itemName);
+                int numero = Integer.parseInt(precioField.getText());
+                BigInteger cantidad = new BigInteger(cantidadField.getText());
+                Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
+                        nameField.getText(), itemDescription, keywords, numero, 0, cantidad, new User(mc.getUser()));
+                //mc.PutItem(item);
+                lista.add(item);
+                if (!itemName.isEmpty() && cantidadField.getText() != "" && precioField.getText() != "") {
+                    Item item1 = lista.get(lista.size() - 1);
+                    Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(),
+                            item1.price(), item1.discount(), item1.stock(), new User(mc.getUser()).id().get()};
+                    tableModel.addRow(rowData);
+                    addItemField.setText("");
+                    descriptionField.setText("");
+                    photoField.setText("");
+                    nameField.setText("");
+                    cantidadField.setText("");
+                    precioField.setText("");
+                }
+            });
+
+            btnAddPhoto.addActionListener(e -> {
+                JFileChooser fileChooser = new JFileChooser();
+                int returnValue = fileChooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    String filePath = selectedFile.getAbsolutePath();
+                    photoField.setText(filePath);
+                }
+            });
+
+            btnRemoveItem.addActionListener(e -> {
                 int selectedRowIndex = table.getSelectedRow();
                 if (selectedRowIndex != -1) {
-                    System.out.println(selectedRowIndex);
-                    String itemName = addItemField.getText();
-                    String[] words = itemName.split("\\s*,\\s*");
-                    Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
-                    String itemDescription = descriptionField.getText();
-                    String itemPhotoPath = photoField.getText();
-                    ObjectId objId = ObjectId.from(itemName);
-                    int numero = Integer.parseInt(precioField.getText());
-                    BigInteger cantidad = new BigInteger(cantidadField.getText());
-                    Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
-                            nameField.getText(), itemDescription, keywords, numero, 0, cantidad, usuario);
-                    //mc.PutItem(item);
-                    List<Item> list = new ArrayList<>();
-                    for (Item t : lista) {
-                        if (t.equals(lista.get(selectedRowIndex))) {
-                            list.add(item);
-                        }
-                        list.add(t);
-                    }
-                    lista = new ArrayList<>(list);
-                    Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
-                            item.price(), item.discount() + "%", item.stock(), usuario.id().get()};
                     tableModel.removeRow(selectedRowIndex);
-                    tableModel.insertRow(selectedRowIndex, rowData);
-
+                    lista.remove(selectedRowIndex - 1);
                 }
-            }
-        });
+            });
 
-        btnAddItem.addActionListener(e -> {
-            String itemName = addItemField.getText();
-            String[] words = itemName.split("\\s*,\\s*");
-            Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
-            String itemDescription = descriptionField.getText();
-            String itemPhotoPath = photoField.getText();
-            ObjectId objId = ObjectId.from(itemName);
-            int numero = Integer.parseInt(precioField.getText());
-            BigInteger cantidad = new BigInteger(cantidadField.getText());
-            Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
-                    nameField.getText(), itemDescription, keywords, numero, 0, cantidad, usuario);
-            //mc.PutItem(item);
-            lista.add(item);
-            if (!itemName.isEmpty() && cantidadField.getText() != "" && precioField.getText() != "") {
-                Item item1 = lista.get(lista.size() - 1);
-                Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(),
-                        item1.price(), item1.discount() + "%", item1.stock(), usuario.id().get()};
-                tableModel.addRow(rowData);
-                addItemField.setText("");
-                descriptionField.setText("");
-                photoField.setText("");
-                nameField.setText("");
-                cantidadField.setText("");
-                precioField.setText("");
-            }
-        });
+            btnBack.addActionListener(e -> {
+                dispose();
+                this.dispatch(HomeWindow.class);
+            });
 
-        btnAddPhoto.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            int returnValue = fileChooser.showOpenDialog(null);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                String filePath = selectedFile.getAbsolutePath();
-                photoField.setText(filePath);
-            }
-        });
+            btnClearList.addActionListener(e -> {
+                tableModel.setRowCount(0);
+                lista = new ArrayList<>();
+            });
+        }
 
-        btnRemoveItem.addActionListener(e -> {
-            int selectedRowIndex = table.getSelectedRow();
-            if (selectedRowIndex != -1) {
-                tableModel.removeRow(selectedRowIndex);
-                lista.remove(selectedRowIndex - 1);
-            }
-        });
-
-        btnBack.addActionListener(e -> {
-            dispose();
-            new HomeWindow(usuario, mc);
-        });
-
-        btnClearList.addActionListener(e -> tableModel.setRowCount(0));
-        lista = new ArrayList<>();
         add(panel);
         setVisible(true);
     }

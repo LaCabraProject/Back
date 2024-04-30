@@ -99,6 +99,26 @@ public final class HomeWindow extends DispatchedWindow {
 
                     bar.add(decoration);
                 }
+
+                {
+                    final var carrito = new JMenu("Mi carrito");
+                    carrito.addActionListener(e -> {
+                        this.close();
+                        this.dispatch(ShoppingCartWindow.class);
+                    });
+
+                    bar.add(carrito);
+                }
+
+                {
+                    final var puesto = new JMenu("Mis productos");
+                    puesto.addActionListener(e -> {
+                        this.close();
+                        this.dispatch(WindowSalesStall.class);
+                    });
+
+                    bar.add(puesto);
+                }
             }
 
             {
