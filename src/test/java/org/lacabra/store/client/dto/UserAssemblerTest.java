@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.api.type.user.UserData;
 import org.lacabra.store.server.api.type.user.Credentials;
-import org.lacabra.store.server.api.type.id.UserId;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 

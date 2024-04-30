@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.lacabra.store.server.api.type.item.Item;
-import org.lacabra.store.server.json.deserializer.ItemDeserializer;
+import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
 import org.mockito.Mockito;
 
 import java.io.IOException;

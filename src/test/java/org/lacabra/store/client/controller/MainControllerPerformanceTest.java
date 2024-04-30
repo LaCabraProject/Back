@@ -39,11 +39,19 @@ public class MainControllerPerformanceTest {
     }
     @Test
     public void testItems() {
-        var items = controller.GET.Item.id(ObjectId.from(0)).join();
+
+        var item = controller.GET.Item.id(ObjectId.from(0)).join();
+        assertNotNull(item);
+        assertEquals(item.name(), "Camiseta de grupo genérico");
+        assertEquals(item.id(), 0);
+        assertEquals(item.stock().toString(), "1000");
+
+        var items = controller.GET.Item.all().join();
         assertNotNull(items);
-        assertEquals(items.name(), "Camiseta de grupo genérico");
-        assertEquals(items.id(), 0);
-        assertEquals(items.stock().toString(), "1000");
+        for (var i = 0; i < items.size(); i++) {
+            assertEquals(items.get(i).id(), i);
+        }
+
         // item post
     }
     @Test

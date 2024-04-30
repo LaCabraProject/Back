@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.server.api.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.ObjectId;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
