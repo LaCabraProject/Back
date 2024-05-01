@@ -5,6 +5,7 @@ import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
 import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.internals.type.id.UserId;
+import org.lacabra.store.server.api.type.item.ItemType;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -95,7 +96,8 @@ public class ItemDetailsWindow extends DispatchedWindow {
                     p2.setBorder(new EmptyBorder(BORDER / 2, BORDER / 2, BORDER / 2, BORDER / 2));
 
                     for (Object[] init : new Object[][]{{"Inicio", null, null}, {"Categoría", null, null}, {"Carrito"
-                            , null, null}, {"Buscar", null, null}}) {
+                            , "src/main/java/org/lacabra/store/client/img/carro.png", null}, {"Buscar",
+                            "src/main/java/org/lacabra/store/client/img/lupa.png", null}}) {
                         final var b = new JButton((String) init[0], new ImageIcon((String) init[1]));
 
                         b.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -113,8 +115,17 @@ public class ItemDetailsWindow extends DispatchedWindow {
                     l.setPreferredSize(IMAGE_SIZE);
 
                     {
-                        final var i = new ImageIcon();
-
+                        var i = new ImageIcon("src/main/java/org/lacabra/store/client/img/utilidad.jpg");
+                        ItemDTO item=signal.get();
+                        if(item.type().equals(ItemType.Utilities)) {
+                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/utilidad.jpg");
+                        }else if(item.type().equals(ItemType.Decoration)) {
+                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/decoracion.jpg");
+                        }else if(item.type().equals(ItemType.Accessories)) {
+                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/accesorio.jpg");
+                        }else if(item.type().equals(ItemType.Clothing)) {
+                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/ropa.jpg");
+                        }
                         l.setIcon(i);
                     }
 

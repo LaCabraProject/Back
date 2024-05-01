@@ -291,6 +291,7 @@ public class WindowSalesStall extends DispatchedWindow {
                 lista = new ArrayList<>();
             });
         }
+        panel.add(this.footer(true), BorderLayout.SOUTH);
 
         add(panel);
         setVisible(true);
