@@ -384,7 +384,7 @@
     "price": 30,
     "discount": 6,
     "stock": 250,
-    "parent": "carlos"
+    "parent": "maria"
   },
   {
     "id": 43,
@@ -393,7 +393,7 @@
     "price": 20,
     "discount": 4,
     "stock": 200,
-    "parent": "mikel"
+    "parent": "javier"
   },
   {
     "id": 44,
@@ -402,7 +402,7 @@
     "price": 70,
     "discount": 14,
     "stock": 150,
-    "parent": "ana"
+    "parent": "luis"
   },
   {
     "id": 45,
@@ -411,7 +411,7 @@
     "price": 90,
     "discount": 18,
     "stock": 100,
-    "parent": "mikel"
+    "parent": "patricia"
   },
   {
     "id": 46,
@@ -420,7 +420,7 @@
     "price": 15,
     "discount": 3,
     "stock": 200,
-    "parent": "carlos"
+    "parent": "sara"
   },
   {
     "id": 47,
@@ -429,7 +429,7 @@
     "price": 60,
     "discount": 12,
     "stock": 150,
-    "parent": "laura"
+    "parent": "victor"
   },
   {
     "id": 48,
@@ -438,7 +438,7 @@
     "price": 25,
     "discount": 5,
     "stock": 300,
-    "parent": "mikel"
+    "parent": "pablo"
   },
   {
     "id": 49,
@@ -447,7 +447,7 @@
     "price": 50,
     "discount": 10,
     "stock": 180,
-    "parent": "ana"
+    "parent": "julia"
   },
   {
     "id": 50,
@@ -456,7 +456,7 @@
     "price": 15,
     "discount": 3,
     "stock": 250,
-    "parent": "carlos"
+    "parent": "lucas"
   },
   {
     "id": 51,
@@ -465,7 +465,7 @@
     "price": 300,
     "discount": 20,
     "stock": 50,
-    "parent": "laura"
+    "parent": "elena"
   },
   {
     "id": 52,
@@ -474,7 +474,7 @@
     "price": 200,
     "discount": 15,
     "stock": 80,
-    "parent": "carlos"
+    "parent": "maria"
   },
   {
     "id": 53,
@@ -483,7 +483,7 @@
     "price": 50,
     "discount": 10,
     "stock": 100,
-    "parent": "laura"
+    "parent": "javier"
   },
   {
     "id": 54,
@@ -492,7 +492,7 @@
     "price": 40,
     "discount": 8,
     "stock": 120,
-    "parent": "ana"
+    "parent": "luis"
   },
   {
     "id": 55,
@@ -501,7 +501,7 @@
     "price": 60,
     "discount": 12,
     "stock": 150,
-    "parent": "laura"
+    "parent": "patricia"
   },
   {
     "id": 56,
@@ -510,7 +510,7 @@
     "price": 25,
     "discount": 5,
     "stock": 200,
-    "parent": "mikel"
+    "parent": "sara"
   },
   {
     "id": 57,
@@ -519,7 +519,7 @@
     "price": 30,
     "discount": 6,
     "stock": 150,
-    "parent": "laura"
+    "parent": "victor"
   },
   {
     "id": 58,
@@ -528,7 +528,7 @@
     "price": 70,
     "discount": 14,
     "stock": 100,
-    "parent": "mikel"
+    "parent": "pablo"
   },
   {
     "id": 59,
@@ -537,7 +537,7 @@
     "price": 80,
     "discount": 16,
     "stock": 120,
-    "parent": "carlos"
+    "parent": "julia"
   },
   {
     "id": 60,
@@ -546,97 +546,7 @@
     "price": 100,
     "discount": 20,
     "stock": 80,
-    "parent": "ana"
-  },
-  {
-    "id": 61,
-    "type": "decoration",
-    "name": "Marco de fotos vintage",
-    "price": 20,
-    "discount": 5,
-    "stock": 100,
-    "parent": "laura"
-  },
-  {
-    "id": 62,
-    "type": "decoration",
-    "name": "Lámpara de pie moderna",
-    "price": 80,
-    "discount": 15,
-    "stock": 50,
-    "parent": "carlos"
-  },
-  {
-    "id": 63,
-    "type": "decoration",
-    "name": "Alfombra tejida a mano",
-    "price": 70,
-    "discount": 10,
-    "stock": 80,
-    "parent": "laura"
-  },
-  {
-    "id": 64,
-    "type": "decoration",
-    "name": "Centro de mesa de cristal",
-    "price": 50,
-    "discount": 8,
-    "stock": 120,
-    "parent": "ana"
-  },
-  {
-    "id": 65,
-    "type": "decoration",
-    "name": "Juego de velas aromáticas",
-    "price": 25,
-    "discount": 5,
-    "stock": 200,
-    "parent": "mikel"
-  },
-  {
-    "id": 66,
-    "type": "decoration",
-    "name": "Marco de fotos clásico",
-    "price": 15,
-    "discount": 3,
-    "stock": 150,
-    "parent": "carlos"
-  },
-  {
-    "id": 67,
-    "type": "decoration",
-    "name": "Lámpara de techo colgante",
-    "price": 60,
-    "discount": 12,
-    "stock": 200,
-    "parent": "laura"
-  },
-  {
-    "id": 68,
-    "type": "decoration",
-    "name": "Candelabro de metal",
-    "price": 40,
-    "discount": 8,
-    "stock": 180,
-    "parent": "ana"
-  },
-  {
-    "id": 69,
-    "type": "decoration",
-    "name": "Portavelas de cerámica",
-    "price": 20,
-    "discount": 4,
-    "stock": 250,
-    "parent": "mikel"
-  },
-  {
-    "id": 70,
-    "type": "decoration",
-    "name": "Espejo de pared con marco de madera",
-    "price": 70,
-    "discount": 14,
-    "stock": 200,
-    "parent": "carlos"
+    "parent": "lucas"
   }
 ]
 

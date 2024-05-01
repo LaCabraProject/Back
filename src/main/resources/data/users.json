@@ -37,5 +37,78 @@
       "admin",
       "client"
     ]
+  },
+  {
+    "id": "maria",
+    "passwd": "maria456",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "javier",
+    "passwd": "javier789",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "luis",
+    "passwd": "luispassword",
+    "authorities": [
+      "artist",
+      "client"
+    ]
+  },
+  {
+    "id": "patricia",
+    "passwd": "patricia987",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "sara",
+    "passwd": "sara2023",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "victor",
+    "passwd": "victorpass",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "pablo",
+    "passwd": "pablo777",
+    "authorities": [
+      "admin",
+      "client"
+    ]
+  },
+  {
+    "id": "julia",
+    "passwd": "julia321",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "lucas",
+    "passwd": "lucas2024",
+    "authorities": [
+      "client"
+    ]
+  },
+  {
+    "id": "elena",
+    "passwd": "elena098",
+    "authorities": [
+      "artist",
+      "client"
+    ]
   }
 ]
