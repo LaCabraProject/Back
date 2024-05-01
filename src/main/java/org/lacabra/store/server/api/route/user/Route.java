@@ -44,7 +44,7 @@ public final class Route {
             if (!UserId.is(id))
                 return Response.status(Response.Status.NOT_FOUND).build();
 
-            var user = UserDAO.getInstance().findOne(new Credentials(id));
+            var user = UserDAO.getInstance().findOne(new User(id));
             if (user == null)
                 return Response.status(Response.Status.NOT_FOUND).build();
 

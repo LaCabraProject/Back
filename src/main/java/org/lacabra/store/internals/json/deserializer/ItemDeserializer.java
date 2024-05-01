@@ -5,15 +5,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.lacabra.store.internals.json.exception.JsonSchemaComplianceException;
+import org.lacabra.store.internals.json.validator.JsonSchemaValidator;
 import org.lacabra.store.internals.logging.Logger;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.internals.json.exception.JsonSchemaComplianceException;
-import org.lacabra.store.internals.json.validator.JsonSchemaValidator;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -35,11 +35,15 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
             return null;
         }
 
+        Logger.getLogger().severe(node.toPrettyString());
+
         JsonNode node2;
 
         ObjectId id = null;
         node2 = node.get("id");
-        if (!(node2 == null || node2.isNull())) id = omp.getContext(ObjectId.class).treeToValue(node2, ObjectId.class);
+        if (!(node2 == null || node2.isNull())) {
+            id = omp.getContext(ObjectId.class).treeToValue(node2, ObjectId.class);
+        }
 
         ItemType type = null;
 

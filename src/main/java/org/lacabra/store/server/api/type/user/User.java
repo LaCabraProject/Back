@@ -16,7 +16,9 @@ import org.lacabra.store.server.jdo.dao.Mergeable;
 import javax.jdo.annotations.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Query(name = "FindUser", value = "SELECT FROM User WHERE id == :id")
 @Query(name = "CredMatch", value = "SELECT FROM User WHERE id == :id && passwd == :passwd")
@@ -50,7 +52,7 @@ public class User implements Serializable, Mergeable<User> {
 
     @JsonProperty("authorities")
     @Element(types = {Authority.class}, converter = AuthorityConverter.class)
-    private HashSet<Authority> authorities;
+    private EnumSet<Authority> authorities;
 
     @JsonUnwrapped
     @Embedded
@@ -83,9 +85,8 @@ public class User implements Serializable, Mergeable<User> {
         if (creds != null) {
             this.id = creds.id();
             this.passwd = creds.passwd();
-            this.authorities = new HashSet<Authority>(creds.authorities() == null ?
-                    Collections.emptySet() :
-                    Objects.requireNonNull(creds.authorities()));
+            this.authorities = creds.authorities() == null || creds.authorities().isEmpty() ?
+                    EnumSet.noneOf(Authority.class) : EnumSet.copyOf(creds.authorities());
         }
 
         this.data = data;
@@ -97,7 +98,8 @@ public class User implements Serializable, Mergeable<User> {
     }
 
     public Set<Authority> authorities() {
-        return this.authorities == null ? new HashSet<>() : new HashSet<>(this.authorities);
+        return this.authorities == null || this.authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(this.authorities);
     }
 
     public UserId id() {
@@ -121,7 +123,8 @@ public class User implements Serializable, Mergeable<User> {
     }
 
     private void setAuthorities(Collection<Authority> authorities) {
-        this.authorities = new HashSet<>(authorities == null ? Collections.emptySet() : authorities);
+        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(authorities);
     }
 
     private void setData(UserData data) {
@@ -132,20 +135,15 @@ public class User implements Serializable, Mergeable<User> {
     public User merge(User override) {
         if (override == null) return this;
 
-        if (override.id != null)
-            this.setId(override.id);
+        if (override.id != null) this.setId(override.id);
 
-        if (override.passwd != null)
-            this.setPasswd(override.passwd);
+        if (override.passwd != null) this.setPasswd(override.passwd);
 
-        if (override.authorities != null)
-            this.setAuthorities(override.authorities);
+        if (override.authorities != null) this.setAuthorities(override.authorities);
 
-        if (this.data == null)
-            this.setData(override.data);
+        if (this.data == null) this.setData(override.data);
 
-        else
-            this.setData(this.data.merge(override.data));
+        else this.setData(this.data.merge(override.data));
 
         Mergeable.super.merge(this);
 

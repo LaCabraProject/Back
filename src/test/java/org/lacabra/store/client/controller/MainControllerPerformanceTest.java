@@ -6,10 +6,12 @@ import com.github.noconnor.junitperf.JUnitPerfTest;
 import com.github.noconnor.junitperf.reporting.providers.HtmlReportGenerator;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
-import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.UserId;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -24,7 +26,8 @@ public class MainControllerPerformanceTest {
 
     @BeforeClass
     public static void startAPI() throws IOException {
-        final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn", "jetty:run", "-f", "pom.xml").inheritIO();
+        final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn"
+                , "jetty:run", "-f", "pom.xml").inheritIO();
         b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
         b.redirectOutput(ProcessBuilder.Redirect.DISCARD);
         b.redirectError(ProcessBuilder.Redirect.DISCARD);
@@ -41,8 +44,7 @@ public class MainControllerPerformanceTest {
     public void setUp() throws InterruptedException {
         controller = new MainController();
         for (int i = 0, N = 30; i < N; i++) {
-            if (controller.aliveSync())
-                return;
+            if (controller.aliveSync()) return;
 
             TimeUnit.SECONDS.sleep(1);
         }
@@ -54,8 +56,8 @@ public class MainControllerPerformanceTest {
     @JUnitPerfTest(threads = 10, durationMs = 2000)
     @Test
     public void testAuthentication() {
-        Logger.getLogger().severe("xddddd" + controller.auth("mikel", "1234").join());
-        assertEquals(controller.getUser().toString(), "mikel");
+        controller.authSync("mikel", "1234");
+        assertEquals(controller.getUser(), "mikel");
 
         controller.unauth();
         assertNull(controller.getUser());
@@ -69,11 +71,16 @@ public class MainControllerPerformanceTest {
 
         assertEquals(item.name(), "Camiseta de grupo genérico");
 
-        Logger.getLogger().severe("ID: " + item.id().toString());
         assertEquals(item.id(), 0);
         assertEquals(item.stock().toString(), "1000");
 
-        var items = controller.GET.Item.all().join();
+        List<ItemDTO> items;
+        try {
+            items = controller.GET.Item.all().join();
+        } catch (Exception e) {
+            items = null;
+        }
+
         assertNotNull(items);
 
         for (var i = 0; i < Math.min(items.size(), 20); i++) {
@@ -84,11 +91,9 @@ public class MainControllerPerformanceTest {
     @JUnitPerfTest(threads = 10, durationMs = 2000)
     @Test
     public void testUsers() {
-        controller.auth("mikel", "1234");
-        var user = controller.GET.User;
-        assertNotNull(user);
-        assertEquals(user.toString(), "mikel");
+        final var user = controller.GET.User.id(UserId.from("mikel")).join();
 
-        // user post
+        assertNotNull(user);
+        assertEquals(user.id(), "mikel");
     }
 }

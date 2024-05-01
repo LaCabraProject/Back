@@ -5,20 +5,22 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public final class ObjectIdDeserializer extends JsonDeserializer<ObjectId> {
     @Override
     public ObjectId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonParseException {
-        JsonNode node = jp.readValueAsTree();
+        final JsonNode node = jp.readValueAsTree();
 
         if (node.isNumber())
-            return ObjectId.from(jp.getNumberValueExact());
+            return ObjectId.from(node.numberValue());
 
         if (node.isTextual())
-            return ObjectId.from(jp.getValueAsString());
+            return ObjectId.from(node.textValue());
 
         return null;
     }

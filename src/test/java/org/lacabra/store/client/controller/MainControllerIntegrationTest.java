@@ -1,7 +1,6 @@
 package org.lacabra.store.client.controller;
 
 import categories.IntegrationTest;
-import com.github.noconnor.junitperf.JUnitPerfTest;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.UserId;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -23,17 +23,20 @@ public class MainControllerIntegrationTest {
 
     @BeforeClass
     public static void launchAPI() throws IOException {
-        final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn", "jetty:run", "-f", "pom.xml").inheritIO();
+        final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn"
+                , "jetty:run", "-f", "pom.xml").inheritIO();
         b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
         b.redirectOutput(ProcessBuilder.Redirect.DISCARD);
         b.redirectError(ProcessBuilder.Redirect.DISCARD);
 
         APIProcess = b.start();
     }
+
     @AfterClass
     public static void closeAPI() {
         APIProcess.destroy();
     }
+
     @Before
     public void setUp() throws InterruptedException {
         controller = new MainController();
@@ -50,7 +53,7 @@ public class MainControllerIntegrationTest {
 
     @Test
     public void testAuthentication() {
-        Logger.getLogger().severe("xddddd" + controller.auth("mikel", "1234").join());
+        controller.authSync("mikel", "1234");
         assertEquals(controller.getUser().toString(), "mikel");
 
         controller.unauth();
@@ -78,11 +81,9 @@ public class MainControllerIntegrationTest {
 
     @Test
     public void testUsers() {
-        controller.auth("mikel", "1234");
-        var user = controller.GET.User;
-        assertNotNull(user);
-        assertEquals(user.toString(), "mikel");
+        final var user = controller.GET.User.id(UserId.from("mikel")).join();
 
-        // user post
+        assertNotNull(user);
+        assertEquals(user.id(), "mikel");
     }
 }
