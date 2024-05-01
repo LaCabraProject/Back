@@ -18,12 +18,18 @@ import java.io.IOException;
 import java.util.*;
 
 public final class JsonSchemaFactory {
-    private static final SchemaValidatorsConfig CONFIG = new SchemaValidatorsConfig();
-
     public static final String PREFIX = "https://github.com/LaCabraProject/";
-
+    private static final SchemaValidatorsConfig CONFIG = new SchemaValidatorsConfig();
     private static final Class<?>[] PRELOADED_CLASSES = {User.class, UserId.class, Item.class, ObjectId.class};
     private static final Map<String, String> PRELOADED_SCHEMAS = new HashMap<>();
+    private static final com.networknt.schema.JsonSchemaFactory jsonSchemaFactory =
+            com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012,
+                    builder -> builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix(PREFIX, "classpath" +
+                            ":schema/")).schemaLoaders(schemaLoaders -> schemaLoaders.schemas(PRELOADED_SCHEMAS)));
+    @SuppressWarnings("unchecked")
+    private static final Map<Class<?>, JsonSchema> SCHEMAS =
+            Map.ofEntries(Arrays.stream(PRELOADED_CLASSES).map((x) -> new AbstractMap.SimpleEntry<>(x,
+                    getSchema(x.getSimpleName().toLowerCase()))).toArray(AbstractMap.SimpleEntry[]::new));
 
     static {
         for (Class<?> cls : PRELOADED_CLASSES) {
@@ -39,16 +45,6 @@ public final class JsonSchemaFactory {
             addPreloadedSchema(cls, new File(res.getFile()));
         }
     }
-
-    private static final com.networknt.schema.JsonSchemaFactory jsonSchemaFactory =
-            com.networknt.schema.JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012,
-                    builder -> builder.schemaMappers(schemaMappers -> schemaMappers.mapPrefix(PREFIX, "classpath" +
-                            ":schema/")).schemaLoaders(schemaLoaders -> schemaLoaders.schemas(PRELOADED_SCHEMAS)));
-
-    @SuppressWarnings("unchecked")
-    private static final Map<Class<?>, JsonSchema> SCHEMAS =
-            Map.ofEntries(Arrays.stream(PRELOADED_CLASSES).map((x) -> new AbstractMap.SimpleEntry<>(x,
-                    getSchema(x.getSimpleName().toLowerCase()))).toArray(AbstractMap.SimpleEntry[]::new));
 
     public static JsonSchema getSchema(@NotNull String schema) {
         Objects.requireNonNull(schema);

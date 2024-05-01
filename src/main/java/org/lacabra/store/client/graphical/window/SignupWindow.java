@@ -39,6 +39,21 @@ public final class SignupWindow extends DispatchedWindow {
         super(wd);
     }
 
+    public static void main(final String[] args) throws IOException, NoSuchMethodException, InterruptedException {
+        if (Arrays.stream(args).noneMatch(x -> x.equals("run"))) {
+            ClassRunner.run(SignupWindow.class);
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                LockedWindowDispatcher.fromArgs(args).dispatch(SignupWindow.class);
+
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
     @Override
     public void setDispatcher(WindowDispatcher dispatcher) {
         super.setDispatcher(dispatcher);
@@ -244,21 +259,6 @@ public final class SignupWindow extends DispatchedWindow {
             }
 
             this.setVisible(true);
-        });
-    }
-
-    public static void main(final String[] args) throws IOException, NoSuchMethodException, InterruptedException {
-        if (Arrays.stream(args).noneMatch(x -> x.equals("run"))) {
-            ClassRunner.run(SignupWindow.class);
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            try {
-                LockedWindowDispatcher.fromArgs(args).dispatch(SignupWindow.class);
-
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
         });
     }
 }

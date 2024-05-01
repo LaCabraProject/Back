@@ -7,17 +7,17 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
+import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
+import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.converter.BigIntegerConverter;
 import org.lacabra.store.server.jdo.converter.ItemTypeConverter;
 import org.lacabra.store.server.jdo.converter.ObjectIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
-import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
-import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
-import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
 
 import javax.jdo.annotations.*;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class Item implements Serializable, Mergeable<Item> {
 
     @JsonProperty("keywords")
     @Persistent
-    private Set<String> keywords;
+    private HashSet<String> keywords;
 
     @JsonProperty("price")
     @Column(jdbcType = "DECIMAL", defaultValue = "0")
@@ -174,8 +174,8 @@ public class Item implements Serializable, Mergeable<Item> {
         this.description = description;
     }
 
-    private void setKeywords(Set<String> keywords) {
-        this.keywords = keywords;
+    private void setKeywords(Collection<String> keywords) {
+        this.keywords = keywords == null ? null : new HashSet<>(keywords);
     }
 
     private void setPrice(BigDecimal price) {

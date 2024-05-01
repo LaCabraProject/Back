@@ -19,10 +19,9 @@ import static org.junit.Assert.*;
 @Category(PerformanceTest.class)
 public class MainControllerPerformanceTest {
     static Process APIProcess;
-    MainController controller;
-
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule(new HtmlReportGenerator("target/junitperf/report.html"));
+    MainController controller;
 
     @BeforeClass
     public static void startAPI() throws IOException {

@@ -12,18 +12,18 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 
 public class ItemDetailsWindow extends DispatchedWindow {
     public static final String TITLE = "Detalles del artículo";
-
     public static final Dimension SIZE = new Dimension(800, 600);
     public static final Dimension IMAGE_SIZE = new Dimension(300, 300);
-
     public static final int BORDER = 10;
-
     public static final int UPDATE_ITEM = 1000;
+    @Serial
+    private final static long serialVersionUID = 1L;
 
     public ItemDetailsWindow(final ItemDTO item) {
         this(null, item);
@@ -31,6 +31,10 @@ public class ItemDetailsWindow extends DispatchedWindow {
 
     public ItemDetailsWindow(final WindowDispatcher wd, final ItemDTO item) {
         super(wd, item);
+    }
+
+    public static void main(final String[] args) throws MalformedURLException {
+        WindowDispatcher.fromArgs(args).dispatch(ItemDetailsWindow.class);
     }
 
     @Override
@@ -177,10 +181,6 @@ public class ItemDetailsWindow extends DispatchedWindow {
 
             this.setVisible(true);
         });
-    }
-
-    public static void main(final String[] args) throws MalformedURLException {
-        WindowDispatcher.fromArgs(args).dispatch(ItemDetailsWindow.class);
     }
 }
 

@@ -48,14 +48,17 @@ public class UserDTOTest {
         //dto1.setAuthorities(authorities);
         dto1.setData(data);
     }
+
     @Test
     public void getId() {
         assertEquals(id, dto1.id());
     }
+
     @Test
     public void getPasswd() {
         assertEquals(passwd, dto1.passwd());
     }
+
     //@Test
     //public void getAuthorities() {
     //    assertEquals(authorities, dto1.authorities());

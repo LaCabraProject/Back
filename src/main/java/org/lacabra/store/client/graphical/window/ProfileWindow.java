@@ -8,18 +8,19 @@ import org.lacabra.store.client.graphical.window.AuthWindow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serial;
 import java.util.Map;
 import java.util.function.Function;
 
 public final class ProfileWindow extends DispatchedWindow {
     public static final Function<String, String> TITLE = name -> String.format("Perfil de usuario%s", name == null ?
             "" : (":" + " " + name));
-
     public static final Dimension SIZE = new Dimension(800, 600);
     public static final int INSET = 10;
     public static final int GAP = INSET / 2;
-
     public static final int UPDATE_USER = 1000;
+    @Serial
+    private final static long serialVersionUID = 1L;
 
     public ProfileWindow(final UserDTO user) {
         this(null, user);

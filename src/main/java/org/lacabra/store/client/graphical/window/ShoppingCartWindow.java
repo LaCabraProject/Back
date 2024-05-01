@@ -5,12 +5,14 @@ import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serial;
 
 public final class ShoppingCartWindow extends DispatchedWindow {
     public static final String TITLE = "Carrito de compra";
     public static final Dimension SIZE = new Dimension(800, 600);
-
     public static final int BORDER = 10;
+    @Serial
+    private final static long serialVersionUID = 1L;
 
     public ShoppingCartWindow() {
         this(null);

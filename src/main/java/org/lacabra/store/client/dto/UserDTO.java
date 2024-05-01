@@ -53,6 +53,7 @@ public class UserDTO implements Serializable {
     public Set<Authority> authorities() {
         return new HashSet<>(this.authorities);
     }
+
     public void setAuthorities(Collection<Authority> authorities) {
         this.authorities = new HashSet<>(authorities);
     }
@@ -60,6 +61,7 @@ public class UserDTO implements Serializable {
     public UserId id() {
         return this.id;
     }
+
     public void setId(UserId id) {
         this.id = id;
     }
@@ -67,6 +69,7 @@ public class UserDTO implements Serializable {
     public String passwd() {
         return this.passwd;
     }
+
     public void setPasswd(String passwd) {
         this.passwd = passwd;
     }
@@ -74,6 +77,7 @@ public class UserDTO implements Serializable {
     public UserData data() {
         return data;
     }
+
     public void setData(UserData data) {
         this.data = data;
     }

@@ -5,10 +5,13 @@ import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serial;
 
 public final class AuthWindow extends DispatchedWindow {
     public final static String TITLE = "Autenticación necesaria";
     public final static Dimension SIZE = new Dimension(400, 400);
+    @Serial
+    private final static long serialVersionUID = 1L;
 
     public AuthWindow() {
         this(null);

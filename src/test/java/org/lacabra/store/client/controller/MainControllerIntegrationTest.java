@@ -6,18 +6,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class MainControllerIntegrationTest {
-
     static Process APIProcess;
     MainController controller;
 
@@ -25,9 +24,10 @@ public class MainControllerIntegrationTest {
     public static void launchAPI() throws IOException {
         final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn"
                 , "jetty:run", "-f", "pom.xml").inheritIO();
-        b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
         b.redirectOutput(ProcessBuilder.Redirect.DISCARD);
         b.redirectError(ProcessBuilder.Redirect.DISCARD);
+
+        b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
 
         APIProcess = b.start();
     }
@@ -67,9 +67,8 @@ public class MainControllerIntegrationTest {
 
         assertEquals(item.name(), "Camiseta de grupo genérico");
 
-        Logger.getLogger().severe("ID: " + item.id().toString());
         assertEquals(item.id(), 0);
-        assertEquals(item.stock().toString(), "1000");
+        assertEquals(item.stock(), BigInteger.valueOf(1000L));
 
         var items = controller.GET.Item.all().join();
         assertNotNull(items);

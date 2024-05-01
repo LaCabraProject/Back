@@ -2,9 +2,13 @@ package org.lacabra.store.client.graphical.dispatcher;
 
 import org.lacabra.store.client.controller.MainController;
 
+import java.io.Serial;
 import java.net.MalformedURLException;
 
 public final class LockedWindowDispatcher extends WindowDispatcher {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private boolean dispatched = false;
 
     public LockedWindowDispatcher() {

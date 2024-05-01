@@ -10,9 +10,13 @@ import org.lacabra.store.server.api.type.item.ItemType;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.Serial;
 import java.net.MalformedURLException;
 
 public final class ShoppingWindow extends DispatchedWindow {
+    @Serial
+    private final static long serialVersionUID = 1L;
+
     public final String TITLE = "Buscar artículos";
     public final Dimension SIZE = new Dimension(800, 600);
 
@@ -22,6 +26,10 @@ public final class ShoppingWindow extends DispatchedWindow {
 
     public ShoppingWindow(final WindowDispatcher wd) {
         super(wd);
+    }
+
+    public static void main(final String[] args) throws MalformedURLException {
+        WindowDispatcher.fromArgs(args).dispatch(ShoppingWindow.class);
     }
 
     @Override
@@ -132,9 +140,5 @@ public final class ShoppingWindow extends DispatchedWindow {
 
             this.setVisible(true);
         });
-    }
-
-    public static void main(final String[] args) throws MalformedURLException {
-        WindowDispatcher.fromArgs(args).dispatch(ShoppingWindow.class);
     }
 }

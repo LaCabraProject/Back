@@ -1,20 +1,15 @@
-package org.lacabra.store.client.dto;
+package org.lacabra.store.client.assembler;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.server.api.type.item.Item;
-import org.lacabra.store.server.api.type.item.ItemType;
-import org.lacabra.store.server.api.type.user.User;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.mockito.Mockito.mock;
-
 public class ItemAssemblerTest {
-
     ItemAssembler assembler;
     @Mock
     Item item;

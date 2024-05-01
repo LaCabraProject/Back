@@ -11,12 +11,10 @@ import java.util.function.Consumer;
 public final class Signal<T extends Serializable> implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-
-    private T value;
-
     private transient final Map<Long, Map.Entry<Consumer<T>, Long[]>> effects = new HashMap<>();
     private transient final ConcurrentLinkedQueue<Map.Entry<Long, SwingWorker<Void, T>>> running =
             new ConcurrentLinkedQueue<>();
+    private T value;
     private transient Timer timer;
 
     public Signal() {

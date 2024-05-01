@@ -103,7 +103,7 @@ public final class UserId implements Serializable {
     }
 
     @Override
-    public int hashCode () {
+    public int hashCode() {
         return super.hashCode();
     }
 }

@@ -22,31 +22,18 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class WindowDispatcher implements IWindowDispatcher, Serializable {
+    public static final Color BANNER_COLOR = new Color(254, 5, 20, 215);
+    public static final Dimension MEDIA_BUTTON_SIZE = new Dimension(32, 32);
     @Serial
     private static final long serialVersionUID = 1L;
-
-    public final HashMap<Long, WindowState> state = new HashMap<>();
-    private final HashMap<Long, DispatchedWindow> windows = new HashMap<>();
-
-    private final MainController controller;
-
-    public static final Color BANNER_COLOR = new Color(254, 5, 20, 215);
-
-    private final JPanel[] footer = new JPanel[2];
-
     private static final Color FOOTER_BACKGROUND = Color.LIGHT_GRAY;
     private static final int FOOTER_BORDER = 5;
-
-    public static final Dimension MEDIA_BUTTON_SIZE = new Dimension(32, 32);
-
     private static final Color LINK_FOREGROUND = Color.BLUE;
     private static final URI PRIVACY_POLICY_URI = URI.create("https://www.lipsum.com/");
     private static final URI TERMS_OF_USE_URI = URI.create("https://www.lipsum.com/");
-
     private static final String FACEBOOK_IMG = "facebook.png";
     private static final String INSTAGRAM_IMG = "instagram.png";
     private static final String TWITTER_IMG = "twitter.png";
-
     private static final URI FACEBOOK_URI = URI.create("https://www.facebook.com/Redbubble");
     private static final URI INSTAGRAM_URI = URI.create("https://www.instagram.com/redbubble/");
     private static final URI TWITTER_URI = URI.create("https://twitter.com/redbubble");
@@ -57,6 +44,11 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         UIManager.put("TextField.background", Color.WHITE);
         UIManager.put("TextField.foreground", Color.BLACK);
     }
+
+    public final HashMap<Long, WindowState> state = new HashMap<>();
+    private final HashMap<Long, DispatchedWindow> windows = new HashMap<>();
+    private final MainController controller;
+    private final JPanel[] footer = new JPanel[2];
 
     public WindowDispatcher() {
         this(null);

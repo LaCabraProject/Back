@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.Serial;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,17 +24,20 @@ import java.util.Collection;
 import java.util.List;
 
 public class WindowSalesStall extends DispatchedWindow {
+    @Serial
+    private final static long serialVersionUID = 1L;
+
     private DefaultTableModel tableModel;
     private JTable table;
     private List<Item> lista = new ArrayList<>();
     private MainController mc;
     private JScrollPane scrollPane;
     private JPanel panel = new JPanel();
-    private JPanel bottomPanel,namePanel,addPanel,descriptionPanel,photoPanel,panelPrecio,panelCantidad,
-            panelTipo,panelCrearProducto,controlPanel;
-    private JTextField nameField,addItemField,descriptionField,photoField,precioField,cantidadField;
-    private JButton btnAddItem,btnAddPhoto,modificar,btnRemoveItem,btnClearList,btnBack;
-    private JLabel labelPrecio,labelCantidad,labelTipo,label;
+    private JPanel bottomPanel, namePanel, addPanel, descriptionPanel, photoPanel, panelPrecio, panelCantidad,
+            panelTipo, panelCrearProducto, controlPanel;
+    private JTextField nameField, addItemField, descriptionField, photoField, precioField, cantidadField;
+    private JButton btnAddItem, btnAddPhoto, modificar, btnRemoveItem, btnClearList, btnBack;
+    private JLabel labelPrecio, labelCantidad, labelTipo, label;
     private JComboBox<ItemType> tipoField;
     private List<ItemDTO> itemDTOs;
 
@@ -45,7 +49,7 @@ public class WindowSalesStall extends DispatchedWindow {
     public void setDispatcher(final WindowDispatcher wd) {
         super.setDispatcher(wd);
 
-        mc=wd.controller();
+        mc = wd.controller();
         if (mc == null)
             return;
 
@@ -81,7 +85,8 @@ public class WindowSalesStall extends DispatchedWindow {
                 for (int i = 0; i < 5; i++) {
                     String[] words = {"cabra", "goat", "beast"};
                     Collection<String> keywords = new ArrayList<>(Arrays.asList(words));
-                    Item item = new Item(ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair", keywords
+                    Item item = new Item(ObjectId.from(i + 220), ItemType.Decoration, "chair" + i, "a goated chair",
+                            keywords
                             , 20, 0, new BigInteger("2"), new User("mikel"));
                     lista.add(item);
                 }
@@ -211,7 +216,8 @@ public class WindowSalesStall extends DispatchedWindow {
                         int numero = Integer.parseInt(precioField.getText());
                         BigInteger cantidad = new BigInteger(cantidadField.getText());
                         Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
-                                nameField.getText(), itemDescription, keywords, numero, 0, cantidad, new User(mc.getUser()));
+                                nameField.getText(), itemDescription, keywords, numero, 0, cantidad,
+                                new User(mc.getUser()));
                         //*linea para mandar el item(no hemos decidido)
                         List<Item> list = new ArrayList<>();
                         for (Item t : lista) {

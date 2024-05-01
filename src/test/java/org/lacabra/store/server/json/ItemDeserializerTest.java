@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
-import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
+import org.lacabra.store.server.api.type.item.Item;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 public class ItemDeserializerTest {
     @Test
     public void testDeserialize() throws IOException {
-
         ObjectNode jsonNode = new ObjectMapper().createObjectNode();
         jsonNode.put("id", 0);
         jsonNode.put("type", "clothing");

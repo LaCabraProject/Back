@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +22,7 @@ public class ItemDTO implements Serializable {
     private ItemType type;
     private String name;
     private String description;
-    private Set<String> keywords;
+    private HashSet<String> keywords;
     private BigDecimal price;
     private Integer discount;
     private BigInteger stock;
@@ -49,7 +48,7 @@ public class ItemDTO implements Serializable {
         this.type = type;
         this.name = name;
         this.description = description;
-        this.keywords = keywords == null ? Collections.EMPTY_SET : new HashSet<>(keywords);
+        this.keywords = keywords == null ? null : new HashSet<>(keywords);
         this.price = new BigDecimal(String.valueOf(price));
         this.discount = discount == null ? 0 : discount;
         this.stock = new BigDecimal(String.valueOf(stock)).toBigInteger();
@@ -93,7 +92,7 @@ public class ItemDTO implements Serializable {
     }
 
     public void setKeywords(final Set<String> keywords) {
-        this.keywords = keywords;
+        this.keywords = keywords == null ? null : new HashSet<>(keywords);
     }
 
     public BigDecimal price() {

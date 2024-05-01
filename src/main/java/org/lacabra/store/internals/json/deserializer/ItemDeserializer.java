@@ -1,7 +1,6 @@
 package org.lacabra.store.internals.json.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,10 +22,8 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
     private static final ObjectMapperProvider omp = new ObjectMapperProvider();
 
     @Override
-    public Item deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        final ObjectMapperProvider omp = new ObjectMapperProvider();
-
-        JsonNode node = jp.readValueAsTree();
+    public Item deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+        final JsonNode node = jp.readValueAsTree();
 
         try {
             JsonSchemaValidator.ITEM.validate(node);
@@ -34,8 +31,6 @@ public final class ItemDeserializer extends JsonDeserializer<Item> {
             Logger.getLogger().warning(e);
             return null;
         }
-
-        Logger.getLogger().severe(node.toPrettyString());
 
         JsonNode node2;
 

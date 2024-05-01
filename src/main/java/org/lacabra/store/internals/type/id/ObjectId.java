@@ -2,10 +2,10 @@ package org.lacabra.store.internals.type.id;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.lacabra.store.internals.logging.Logger;
-import org.lacabra.store.server.jdo.dao.DAO;
 import org.lacabra.store.internals.json.deserializer.ObjectIdDeserializer;
 import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
+import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.jdo.dao.DAO;
 
 import java.io.Serial;
 import java.io.Serializable;

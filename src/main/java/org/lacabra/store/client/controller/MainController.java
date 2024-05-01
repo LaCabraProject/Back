@@ -2,9 +2,9 @@ package org.lacabra.store.client.controller;
 
 
 import org.glassfish.jersey.http.ResponseStatus;
-import org.lacabra.store.client.dto.ItemAssembler;
+import org.lacabra.store.client.assembler.ItemAssembler;
+import org.lacabra.store.client.assembler.UserAssembler;
 import org.lacabra.store.client.dto.ItemDTO;
-import org.lacabra.store.client.dto.UserAssembler;
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.RequestMethod;
@@ -35,26 +35,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class MainController implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     public final static Pattern URL_REGEX =
             Pattern.compile("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;" + "]*[-a-zA-Z0-9" + "+&@#/%=~_|]");
-
     public final static int PORT_MIN = 0;
     public final static int PORT_MAX = 65535;
-
     public final static String DEFAULT_HOSTNAME = "http://localhost";
     public final static int DEFAULT_PORT = 8080;
     public final static String DEFAULT_ENDPOINT = "/api";
-
-    private String hostname;
-    private Integer port;
-    private String endpoint;
-
-    private final HttpClient httpClient =
-            HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(20)).build();
-
     public final static Function<String, HttpResponse<String>> RequestError = body -> new HttpResponse<>() {
         @Override
         public int statusCode() {
@@ -96,7 +83,14 @@ public class MainController implements Serializable {
             return null;
         }
     };
-
+    @Serial
+    private static final long serialVersionUID = 1L;
+    public final GET GET = new GET(this);
+    private final HttpClient httpClient =
+            HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(20)).build();
+    private String hostname;
+    private Integer port;
+    private String endpoint;
     private UserId user;
     private String token;
 
@@ -165,6 +159,10 @@ public class MainController implements Serializable {
         return this.hostname;
     }
 
+    public void setHostname(String hostname) throws IllegalArgumentException, MalformedURLException {
+        this.setHostnamePrimitive(hostname);
+    }
+
     private void setHostnamePrimitive(String hostname) throws IllegalArgumentException, MalformedURLException {
         if (hostname == null) {
             this.hostname = MainController.DEFAULT_HOSTNAME;
@@ -194,12 +192,16 @@ public class MainController implements Serializable {
         this.hostname = hostname;
     }
 
-    public void setHostname(String hostname) throws IllegalArgumentException, MalformedURLException {
-        this.setHostnamePrimitive(hostname);
-    }
-
     public Integer getPort() {
         return this.port;
+    }
+
+    public void setPort(final String port) throws NumberFormatException {
+        this.setPortPrimitive(port);
+    }
+
+    public void setPort(final Integer port) throws IllegalArgumentException {
+        this.setPortPrimitive(port);
     }
 
     private void setPortPrimitive(final String port) throws NumberFormatException {
@@ -225,24 +227,16 @@ public class MainController implements Serializable {
         this.port = port;
     }
 
-    public void setPort(final String port) throws NumberFormatException {
-        this.setPortPrimitive(port);
-    }
-
-    public void setPort(final Integer port) throws IllegalArgumentException {
-        this.setPortPrimitive(port);
-    }
-
     public String getEndpoint() {
         return this.endpoint;
     }
 
-    private void setEndpointPrimitive(final String endpoint) {
-        this.endpoint = endpoint == null ? DEFAULT_ENDPOINT : endpoint.replaceAll("^/", "");
-    }
-
     public void setEndpoint(final String endpoint) {
         this.setEndpointPrimitive(endpoint);
+    }
+
+    private void setEndpointPrimitive(final String endpoint) {
+        this.endpoint = endpoint == null ? DEFAULT_ENDPOINT : endpoint.replaceAll("^/", "");
     }
 
     public URL URL() {
@@ -409,7 +403,7 @@ public class MainController implements Serializable {
                         new String[0] : entry.getValue()).map(x -> String.format("%s=%s", entry.getKey(), x))).reduce("?", (acc, param) -> acc + param + "&").replaceAll("&$", "");
             }
 
-            HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(url));
+            var builder = HttpRequest.newBuilder(URI.create(url));
 
             if (this.token != null) builder = builder.header("Authorization", this.token);
 
@@ -480,9 +474,10 @@ public class MainController implements Serializable {
         }
     }
 
-    public final GET GET = new GET(this);
+    public static final class GET implements Serializable {
+        @Serial
+        private final static long serialVersionUID = 1L;
 
-    public static final class GET {
         public final Item Item;
         public final User User;
 
@@ -493,7 +488,18 @@ public class MainController implements Serializable {
             this.User = new User(controller);
         }
 
-        public record Item(MainController controller) {
+        public record Item(MainController controller) implements Serializable {
+            @Serial
+            private final static long serialVersionUID = 1L;
+
+            public CompletableFuture<ItemDTO> id(final Number id) {
+                return this.id(ObjectId.from(id));
+            }
+
+            public CompletableFuture<ItemDTO> id(final String id) {
+                return this.id(ObjectId.from(id));
+            }
+
             public CompletableFuture<ItemDTO> id(final ObjectId id) {
                 if (id == null) return CompletableFuture.completedFuture(null);
 
@@ -508,6 +514,15 @@ public class MainController implements Serializable {
                         return null;
                     }
                 });
+            }
+
+            public ItemDTO idSync(final ObjectId id) {
+                try {
+                    return this.id(id).join();
+                } catch (Exception e) {
+                    Logger.getLogger().severe(e);
+                    return null;
+                }
             }
 
             public CompletableFuture<List<ItemDTO>> all() {
@@ -525,9 +540,25 @@ public class MainController implements Serializable {
                     }
                 });
             }
+
+            public List<ItemDTO> allSync() {
+                try {
+                    return this.all().join();
+                } catch (Exception e) {
+                    Logger.getLogger().severe(e);
+                    return null;
+                }
+            }
         }
 
-        public record User(MainController controller) {
+        public record User(MainController controller) implements Serializable {
+            @Serial
+            private final static long serialVersionUID = 1L;
+
+            public CompletableFuture<UserDTO> id(final String id) {
+                return this.id(UserId.from(id));
+            }
+
             public CompletableFuture<UserDTO> id(final UserId id) {
                 if (id == null) return CompletableFuture.completedFuture(null);
 
@@ -542,6 +573,20 @@ public class MainController implements Serializable {
                         return null;
                     }
                 });
+            }
+
+            public UserDTO idSync(final String id) {
+                return this.idSync(UserId.from(id));
+            }
+
+            public UserDTO idSync(final UserId id) {
+                try {
+                    return this.id(id).join();
+                } catch (Exception e) {
+                    Logger.getLogger().severe(e);
+
+                    return null;
+                }
             }
         }
     }

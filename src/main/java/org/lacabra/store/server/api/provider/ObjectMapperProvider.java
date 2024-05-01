@@ -8,12 +8,12 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.lacabra.store.server.api.type.item.Item;
-import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.internals.json.deserializer.ItemArrayDeserializer;
 import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
 import org.lacabra.store.internals.json.deserializer.UserArrayDeserializer;
 import org.lacabra.store.internals.json.deserializer.UserDeserializer;
+import org.lacabra.store.server.api.type.item.Item;
+import org.lacabra.store.server.api.type.user.User;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.ext.ContextResolver;

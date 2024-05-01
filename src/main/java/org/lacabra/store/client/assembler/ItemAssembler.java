@@ -1,9 +1,11 @@
-package org.lacabra.store.client.dto;
+package org.lacabra.store.client.assembler;
 
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ItemAssembler {
@@ -37,7 +39,7 @@ public class ItemAssembler {
                 itemDTO.price(), itemDTO.discount(), itemDTO.stock(), new User(itemDTO.parent()));
     }
 
-    public List<ItemDTO> ItemsToDTO(final List<Item> items) {
+    public List<ItemDTO> ItemsToDTO(final Collection<Item> items) {
         if (items == null)
             return new ArrayList<>();
 

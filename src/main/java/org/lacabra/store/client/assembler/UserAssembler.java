@@ -1,5 +1,6 @@
-package org.lacabra.store.client.dto;
+package org.lacabra.store.client.assembler;
 
+import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.server.api.type.user.User;
 
 import java.util.ArrayList;

@@ -9,8 +9,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 
 public final class HomeWindow extends DispatchedWindow {
+    @Serial
+    private final static long serialVersionUID = 1L;
+
     public final String TITLE = "GOAT";
     public final Dimension SIZE = new Dimension(800, 600);
 
