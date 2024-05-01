@@ -8,7 +8,6 @@ import org.lacabra.store.server.api.type.item.ItemType;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
 
@@ -20,6 +19,7 @@ public class ItemDTOTest {
     ItemDTO itemDTO1;
     ItemDTO itemDTO2;
     ItemDTO itemDTO3;
+
     @Mock
     private ObjectId id;
     @Mock
@@ -30,9 +30,12 @@ public class ItemDTOTest {
     private UserId parent;
     private String name;
     private String description;
+    @Mock
     private Set<String> keywords;
-    private BigDecimal price;
-    private Integer discount;
+    @Mock
+    private BigInteger price;
+    private Integer discount = 0;
+    @Mock
     private BigInteger stock;
 
     @Before
@@ -49,9 +52,9 @@ public class ItemDTOTest {
         itemDTO1.price(price);
         itemDTO1.discount(discount);
         itemDTO1.stock(stock);
-        itemDTO2.parent(userId);
 
         itemDTO2 = new ItemDTO(type, name, description, keywords, price, discount, stock, userId);
+        itemDTO2.parent(userId);
 
         itemDTO3 = new ItemDTO(id, type, name, description, keywords, price, discount, stock, userId);
 

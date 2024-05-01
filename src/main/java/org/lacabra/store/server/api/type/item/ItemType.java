@@ -37,6 +37,6 @@ public enum ItemType implements Serializable {
         public static final String Clothing = "clothing";
         public static final String Accessories = "accessories";
         public static final String Decoration = "decoration";
-        public static final String Utilities = "Utilities";
+        public static final String Utilities = "utilities";
     }
 }

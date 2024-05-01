@@ -8,9 +8,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
 import org.lacabra.store.server.api.type.item.Item;
+import org.lacabra.store.server.api.type.item.ItemType;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,13 +40,12 @@ public class ItemDeserializerTest {
         Item item = itemDeserializer.deserialize(jsonParser, deserializationContext);
 
         assertNotNull(item);
-        assertEquals(item.id().toInteger().intValue(), 0);
-        assertEquals(item.type().toString(), "clothing");
+        assertEquals(item.id().toInteger(), BigInteger.ZERO);
+        assertEquals(item.type(), ItemType.Clothing);
         assertEquals(item.name(), "Camiseta de grupo genérico");
         assertEquals(item.price().intValue(), 25);
         assertEquals(item.discount().intValue(), 30);
-        assertEquals(item.stock().intValue(), 1000);
-        //assertEquals(item.parent()., "mikel");
-
+        assertEquals(item.stock(), BigInteger.valueOf(1000));
+        assertEquals(item.parent(), "mikel");
     }
 }
