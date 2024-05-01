@@ -21,7 +21,7 @@ public class UserAssemblerTest {
     
     @Before
     public void setUp() {
-        user1 = new User("0", "Mikel");
+        user1 = new User("iker", "Mikel");
         assembler = UserAssembler.getInstance();
     }
     @Test

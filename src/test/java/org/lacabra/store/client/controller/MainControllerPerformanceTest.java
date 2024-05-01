@@ -2,6 +2,7 @@ package org.lacabra.store.client.controller;
 
 import categories.PerformanceTest;
 import com.github.noconnor.junitperf.JUnitPerfRule;
+import com.github.noconnor.junitperf.JUnitPerfTest;
 import com.github.noconnor.junitperf.reporting.providers.HtmlReportGenerator;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
@@ -23,7 +24,7 @@ public class MainControllerPerformanceTest {
 
     @BeforeClass
     public static void startAPI() throws IOException {
-        final var b = new ProcessBuilder().command("mvn", "jetty:run", "-f", "pom.xml").inheritIO();
+        final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn", "jetty:run", "-f", "pom.xml").inheritIO();
         b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
         b.redirectOutput(ProcessBuilder.Redirect.DISCARD);
         b.redirectError(ProcessBuilder.Redirect.DISCARD);
@@ -50,6 +51,7 @@ public class MainControllerPerformanceTest {
         System.exit(1);
     }
 
+    @JUnitPerfTest(threads = 10, durationMs = 2000)
     @Test
     public void testAuthentication() {
         Logger.getLogger().severe("xddddd" + controller.auth("mikel", "1234").join());
@@ -59,6 +61,7 @@ public class MainControllerPerformanceTest {
         assertNull(controller.getUser());
     }
 
+    @JUnitPerfTest(threads = 10, durationMs = 2000)
     @Test
     public void testItems() {
         final var item = controller.GET.Item.id(ObjectId.from(0)).join();
@@ -78,6 +81,7 @@ public class MainControllerPerformanceTest {
         }
     }
 
+    @JUnitPerfTest(threads = 10, durationMs = 2000)
     @Test
     public void testUsers() {
         controller.auth("mikel", "1234");

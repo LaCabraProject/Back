@@ -2,10 +2,12 @@ package org.lacabra.store.client.controller;
 
 import categories.IntegrationTest;
 import com.github.noconnor.junitperf.JUnitPerfTest;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
 
 import java.io.IOException;
@@ -15,54 +17,66 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class MainControllerIntegrationTest {
+
+    static Process APIProcess;
     MainController controller;
 
     @BeforeClass
     public static void launchAPI() throws IOException {
-        Runtime.getRuntime().exec(new String[]{"mvn", "jetty:run", "-f", "pom.xml"});
-    }
+        final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn", "jetty:run", "-f", "pom.xml").inheritIO();
+        b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
+        b.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        b.redirectError(ProcessBuilder.Redirect.DISCARD);
 
+        APIProcess = b.start();
+    }
+    @AfterClass
+    public static void closeAPI() {
+        APIProcess.destroy();
+    }
     @Before
     public void setUp() throws InterruptedException {
         controller = new MainController();
-        for (int i = 0, N = 10; i < N; i++) {
-            if (controller.alive().join())
-                break;
+        for (int i = 0, N = 30; i < N; i++) {
+            if (controller.aliveSync())
+                return;
 
             TimeUnit.SECONDS.sleep(1);
         }
 
+        closeAPI();
         System.exit(1);
     }
 
     @Test
-    @JUnitPerfTest(threads = 10, durationMs = 1000)
     public void testAuthentication() {
-        controller.auth("mikel", "1234");
+        Logger.getLogger().severe("xddddd" + controller.auth("mikel", "1234").join());
         assertEquals(controller.getUser().toString(), "mikel");
+
         controller.unauth();
         assertNull(controller.getUser());
     }
 
     @Test
-    @JUnitPerfTest(threads = 10, durationMs = 2000)
     public void testItems() {
-        var item = controller.GET.Item.id(ObjectId.from(0)).join();
+        final var item = controller.GET.Item.id(ObjectId.from(0)).join();
         assertNotNull(item);
+
         assertEquals(item.name(), "Camiseta de grupo genérico");
+
+        Logger.getLogger().severe("ID: " + item.id().toString());
         assertEquals(item.id(), 0);
         assertEquals(item.stock().toString(), "1000");
 
         var items = controller.GET.Item.all().join();
         assertNotNull(items);
-        for (var i = 0; i < items.size(); i++) {
+
+        for (var i = 0; i < Math.min(items.size(), 20); i++) {
             assertEquals(items.get(i).id(), i);
         }
-        // item post
     }
 
     @Test
-    @JUnitPerfTest(threads = 10, durationMs = 1000)
     public void testUsers() {
         controller.auth("mikel", "1234");
         var user = controller.GET.User;

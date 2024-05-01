@@ -12,8 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ItemDTOTest {
 
@@ -28,7 +27,7 @@ public class ItemDTOTest {
     private String description;
     private Set<String> keywords;
     private BigDecimal price;
-    private int discount;
+    private Integer discount;
     private BigInteger stock;
 
     @Before
@@ -83,7 +82,7 @@ public class ItemDTOTest {
 
     @Test
     public void getDiscount() {
-        assertTrue(discount == itemDTO.discount());
+        assertSame(discount, itemDTO.discount());
     }
 
     @Test
