@@ -1,7 +1,7 @@
-package org.lacabra.types;
+package org.lacabra.store.types;
 
 import org.junit.jupiter.api.Test;
-import org.lacabra.store.server.api.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.ObjectId;
 
 import java.math.BigDecimal;
 

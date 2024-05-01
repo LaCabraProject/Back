@@ -2,8 +2,8 @@ package org.lacabra.store.client.dto;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.lacabra.store.server.api.type.id.ObjectId;
-import org.lacabra.store.server.api.type.id.UserId;
+import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
