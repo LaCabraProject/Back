@@ -159,6 +159,17 @@ public class ItemDetailsWindow extends DispatchedWindow {
                                 {
                                     final var b = new JButton("Agregar reseña");
                                     b.addActionListener(e -> {
+                                        Object[] options = {"1", "2", "3", "4", "5"};
+                                        int choice = JOptionPane.showOptionDialog(
+                                                null,
+                                                "Por favor, seleccione su puntuación del producto:",
+                                                "Valorar",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.PLAIN_MESSAGE,
+                                                null,
+                                                options,
+                                                options[0]);
+                                        int score = choice + 1;
                                         this.input("Escribe tu reseña:");
                                     });
 
