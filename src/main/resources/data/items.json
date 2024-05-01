@@ -178,6 +178,465 @@
     "discount": 10,
     "stock": 80,
     "parent": "mikel"
+  },
+  {
+    "id": 20,
+    "type": "decoration",
+    "name": "Marco de fotos vintage",
+    "price": 20,
+    "discount": 5,
+    "stock": 100,
+    "parent": "laura"
+  },
+  {
+    "id": 21,
+    "type": "decoration",
+    "name": "Lámpara de pie moderna",
+    "price": 80,
+    "discount": 15,
+    "stock": 50,
+    "parent": "carlos"
+  },
+  {
+    "id": 22,
+    "type": "decoration",
+    "name": "Alfombra tejida a mano",
+    "price": 70,
+    "discount": 10,
+    "stock": 80,
+    "parent": "laura"
+  },
+  {
+    "id": 23,
+    "type": "decoration",
+    "name": "Centro de mesa de cristal",
+    "price": 50,
+    "discount": 8,
+    "stock": 120,
+    "parent": "ana"
+  },
+  {
+    "id": 24,
+    "type": "decoration",
+    "name": "Juego de velas aromáticas",
+    "price": 25,
+    "discount": 5,
+    "stock": 200,
+    "parent": "mikel"
+  },
+  {
+    "id": 25,
+    "type": "accessories",
+    "name": "Bufanda de lana",
+    "price": 15,
+    "discount": 3,
+    "stock": 200,
+    "parent": "laura"
+  },
+  {
+    "id": 26,
+    "type": "accessories",
+    "name": "Guantes de cuero",
+    "price": 20,
+    "discount": 5,
+    "stock": 150,
+    "parent": "carlos"
+  },
+  {
+    "id": 27,
+    "type": "accessories",
+    "name": "Calcetines de algodón",
+    "price": 10,
+    "discount": 2,
+    "stock": 300,
+    "parent": "mikel"
+  },
+  {
+    "id": 28,
+    "type": "accessories",
+    "name": "Sombrero de paja",
+    "price": 12,
+    "discount": 2,
+    "stock": 250,
+    "parent": "ana"
+  },
+  {
+    "id": 29,
+    "type": "accessories",
+    "name": "Zapatos deportivos",
+    "price": 50,
+    "discount": 8,
+    "stock": 200,
+    "parent": "daniel"
+  },
+  {
+    "id": 30,
+    "type": "accessories",
+    "name": "Botas de senderismo",
+    "price": 80,
+    "discount": 15,
+    "stock": 100,
+    "parent": "laura"
+  },
+  {
+    "id": 31,
+    "type": "accessories",
+    "name": "Chaqueta de cuero",
+    "price": 100,
+    "discount": 20,
+    "stock": 120,
+    "parent": "carlos"
+  },
+  {
+    "id": 32,
+    "type": "accessories",
+    "name": "Vestido de noche elegante",
+    "price": 120,
+    "discount": 25,
+    "stock": 80,
+    "parent": "maria"
+  },
+  {
+    "id": 33,
+    "type": "accessories",
+    "name": "Pantalones vaqueros ajustados",
+    "price": 40,
+    "discount": 7,
+    "stock": 150,
+    "parent": "daniel"
+  },
+  {
+    "id": 34,
+    "type": "accessories",
+    "name": "Abrigo de invierno acolchado",
+    "price": 150,
+    "discount": 30,
+    "stock": 100,
+    "parent": "mikel"
+  },
+  {
+    "id": 35,
+    "type": "accessories",
+    "name": "Camiseta de manga larga",
+    "price": 20,
+    "discount": 4,
+    "stock": 300,
+    "parent": "mikel"
+  },
+  {
+    "id": 36,
+    "type": "accessories",
+    "name": "Traje de baño de una pieza",
+    "price": 35,
+    "discount": 7,
+    "stock": 200,
+    "parent": "laura"
+  },
+  {
+    "id": 37,
+    "type": "accessories",
+    "name": "Pantalones cortos deportivos",
+    "price": 25,
+    "discount": 5,
+    "stock": 250,
+    "parent": "carlos"
+  },
+  {
+    "id": 38,
+    "type": "accessories",
+    "name": "Falda plisada",
+    "price": 30,
+    "discount": 6,
+    "stock": 150,
+    "parent": "laura"
+  },
+  {
+    "id": 39,
+    "type": "accessories",
+    "name": "Chaqueta de punto",
+    "price": 25,
+    "discount": 5,
+    "stock": 200,
+    "parent": "ana"
+  },
+  {
+    "id": 40,
+    "type": "accessories",
+    "name": "Vestido de verano floral",
+    "price": 45,
+    "discount": 9,
+    "stock": 120,
+    "parent": "maria"
+  },
+  {
+    "id": 41,
+    "type": "accessories",
+    "name": "Blusa de seda",
+    "price": 35,
+    "discount": 7,
+    "stock": 180,
+    "parent": "laura"
+  },
+  {
+    "id": 42,
+    "type": "accessories",
+    "name": "Corbata de seda",
+    "price": 30,
+    "discount": 6,
+    "stock": 250,
+    "parent": "carlos"
+  },
+  {
+    "id": 43,
+    "type": "accessories",
+    "name": "Cinturón de cuero",
+    "price": 20,
+    "discount": 4,
+    "stock": 200,
+    "parent": "mikel"
+  },
+  {
+    "id": 44,
+    "type": "accessories",
+    "name": "Bolsa de hombro de cuero",
+    "price": 70,
+    "discount": 14,
+    "stock": 150,
+    "parent": "ana"
+  },
+  {
+    "id": 45,
+    "type": "accessories",
+    "name": "Maletín de negocios",
+    "price": 90,
+    "discount": 18,
+    "stock": 100,
+    "parent": "mikel"
+  },
+  {
+    "id": 46,
+    "type": "accessories",
+    "name": "Gorra de béisbol",
+    "price": 15,
+    "discount": 3,
+    "stock": 200,
+    "parent": "carlos"
+  },
+  {
+    "id": 47,
+    "type": "accessories",
+    "name": "Mochila de senderismo",
+    "price": 60,
+    "discount": 12,
+    "stock": 150,
+    "parent": "laura"
+  },
+  {
+    "id": 48,
+    "type": "accessories",
+    "name": "Gafas de sol",
+    "price": 25,
+    "discount": 5,
+    "stock": 300,
+    "parent": "mikel"
+  },
+  {
+    "id": 49,
+    "type": "accessories",
+    "name": "Reloj de pulsera elegante",
+    "price": 50,
+    "discount": 10,
+    "stock": 180,
+    "parent": "ana"
+  },
+  {
+    "id": 50,
+    "type": "accessories",
+    "name": "Paraguas plegable",
+    "price": 15,
+    "discount": 3,
+    "stock": 250,
+    "parent": "carlos"
+  },
+  {
+    "id": 51,
+    "type": "utilities",
+    "name": "Lavadora compacta",
+    "price": 300,
+    "discount": 20,
+    "stock": 50,
+    "parent": "laura"
+  },
+  {
+    "id": 52,
+    "type": "utilities",
+    "name": "Aspiradora robot",
+    "price": 200,
+    "discount": 15,
+    "stock": 80,
+    "parent": "carlos"
+  },
+  {
+    "id": 53,
+    "type": "utilities",
+    "name": "Batidora de mano",
+    "price": 50,
+    "discount": 10,
+    "stock": 100,
+    "parent": "laura"
+  },
+  {
+    "id": 54,
+    "type": "utilities",
+    "name": "Plancha de vapor",
+    "price": 40,
+    "discount": 8,
+    "stock": 120,
+    "parent": "ana"
+  },
+  {
+    "id": 55,
+    "type": "utilities",
+    "name": "Set de utensilios de cocina",
+    "price": 60,
+    "discount": 12,
+    "stock": 150,
+    "parent": "laura"
+  },
+  {
+    "id": 56,
+    "type": "utilities",
+    "name": "Exprimidor eléctrico",
+    "price": 25,
+    "discount": 5,
+    "stock": 200,
+    "parent": "mikel"
+  },
+  {
+    "id": 57,
+    "type": "utilities",
+    "name": "Plancha para pelo",
+    "price": 30,
+    "discount": 6,
+    "stock": 150,
+    "parent": "laura"
+  },
+  {
+    "id": 58,
+    "type": "utilities",
+    "name": "Cafetera programable",
+    "price": 70,
+    "discount": 14,
+    "stock": 100,
+    "parent": "mikel"
+  },
+  {
+    "id": 59,
+    "type": "utilities",
+    "name": "Calentador de ambiente eléctrico",
+    "price": 80,
+    "discount": 16,
+    "stock": 120,
+    "parent": "carlos"
+  },
+  {
+    "id": 60,
+    "type": "utilities",
+    "name": "Termo eléctrico",
+    "price": 100,
+    "discount": 20,
+    "stock": 80,
+    "parent": "ana"
+  },
+  {
+    "id": 61,
+    "type": "decoration",
+    "name": "Marco de fotos vintage",
+    "price": 20,
+    "discount": 5,
+    "stock": 100,
+    "parent": "laura"
+  },
+  {
+    "id": 62,
+    "type": "decoration",
+    "name": "Lámpara de pie moderna",
+    "price": 80,
+    "discount": 15,
+    "stock": 50,
+    "parent": "carlos"
+  },
+  {
+    "id": 63,
+    "type": "decoration",
+    "name": "Alfombra tejida a mano",
+    "price": 70,
+    "discount": 10,
+    "stock": 80,
+    "parent": "laura"
+  },
+  {
+    "id": 64,
+    "type": "decoration",
+    "name": "Centro de mesa de cristal",
+    "price": 50,
+    "discount": 8,
+    "stock": 120,
+    "parent": "ana"
+  },
+  {
+    "id": 65,
+    "type": "decoration",
+    "name": "Juego de velas aromáticas",
+    "price": 25,
+    "discount": 5,
+    "stock": 200,
+    "parent": "mikel"
+  },
+  {
+    "id": 66,
+    "type": "decoration",
+    "name": "Marco de fotos clásico",
+    "price": 15,
+    "discount": 3,
+    "stock": 150,
+    "parent": "carlos"
+  },
+  {
+    "id": 67,
+    "type": "decoration",
+    "name": "Lámpara de techo colgante",
+    "price": 60,
+    "discount": 12,
+    "stock": 200,
+    "parent": "laura"
+  },
+  {
+    "id": 68,
+    "type": "decoration",
+    "name": "Candelabro de metal",
+    "price": 40,
+    "discount": 8,
+    "stock": 180,
+    "parent": "ana"
+  },
+  {
+    "id": 69,
+    "type": "decoration",
+    "name": "Portavelas de cerámica",
+    "price": 20,
+    "discount": 4,
+    "stock": 250,
+    "parent": "mikel"
+  },
+  {
+    "id": 70,
+    "type": "decoration",
+    "name": "Espejo de pared con marco de madera",
+    "price": 70,
+    "discount": 14,
+    "stock": 200,
+    "parent": "carlos"
   }
 ]
 
