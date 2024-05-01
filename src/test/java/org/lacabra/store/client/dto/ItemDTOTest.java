@@ -16,9 +16,13 @@ import static org.junit.Assert.*;
 
 public class ItemDTOTest {
 
-    ItemDTO itemDTO;
+    ItemDTO itemDTO1;
+    ItemDTO itemDTO2;
+    ItemDTO itemDTO3;
     @Mock
     private ObjectId id;
+    @Mock
+    private UserId userId;
     @Mock
     private ItemType type;
     @Mock
@@ -33,60 +37,63 @@ public class ItemDTOTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        itemDTO = new ItemDTO();
-        itemDTO.setId(id);
-        itemDTO.setType(type);
-        itemDTO.setParent(parent);
-        itemDTO.setName(name);
-        itemDTO.setDescription(description);
-        itemDTO.setKeywords(keywords);
-        itemDTO.setPrice(price);
-        itemDTO.setDiscount(discount);
-        itemDTO.setStock(stock);
+        itemDTO1 = new ItemDTO();
+        itemDTO2 = new ItemDTO(type, name, description, keywords, price, discount, stock, userId);
+        itemDTO3 = new ItemDTO(id, type, name, description, keywords, price, discount, stock, userId);
+        itemDTO1.setId(id);
+        itemDTO1.setType(type);
+        itemDTO1.setParent(parent);
+        itemDTO1.setName(name);
+        itemDTO1.setDescription(description);
+        itemDTO1.setKeywords(keywords);
+        itemDTO1.setPrice(price);
+        itemDTO1.setDiscount(discount);
+        itemDTO1.setStock(stock);
+        itemDTO2.setParent(userId);
     }
 
     @Test
     public void getId() {
-        assertEquals(id, itemDTO.id());
+        assertEquals(id, itemDTO1.id());
     }
 
     @Test
     public void getType() {
-        assertEquals(type, itemDTO.type());
+        assertEquals(type, itemDTO1.type());
     }
 
     @Test
     public void getParent() {
-        assertEquals(parent, itemDTO.parent());
+        assertEquals(parent, itemDTO1.parent());
     }
 
     @Test
     public void getName() {
-        assertEquals(name, itemDTO.name());
+        assertEquals(name, itemDTO1.name());
     }
 
     @Test
     public void getDescription() {
-        assertEquals(description, itemDTO.description());
+        assertEquals(description, itemDTO1.description());
     }
 
     @Test
     public void getKeywords() {
-        assertEquals(keywords, itemDTO.keywords());
+        assertEquals(keywords, itemDTO1.keywords());
     }
 
     @Test
     public void getPrice() {
-        assertEquals(price, itemDTO.price());
+        assertEquals(price, itemDTO1.price());
     }
 
     @Test
     public void getDiscount() {
-        assertSame(discount, itemDTO.discount());
+        assertSame(discount, itemDTO1.discount());
     }
 
     @Test
     public void getStock() {
-        assertEquals(stock, itemDTO.stock());
+        assertEquals(stock, itemDTO1.stock());
     }
 }

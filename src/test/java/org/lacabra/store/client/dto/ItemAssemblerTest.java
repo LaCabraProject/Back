@@ -16,15 +16,10 @@ import static org.mockito.Mockito.mock;
 public class ItemAssemblerTest {
 
     ItemAssembler assembler;
+    @Mock
     Item item;
     @Mock
-    ObjectId id;
-    @Mock
-    ItemType type;
-
-    User user;
-
-    List mockedList = mock(List.class);
+    List<Item> items;
 
     @Before
     public void setUp() {
@@ -34,12 +29,7 @@ public class ItemAssemblerTest {
 
     @Test
     public void testItemToDTO() {
-        //ItemDTO dto = assembler.ItemToDTO(item);
-        //assertEquals(dto.id(), item.id());
-        //assertEquals(dto.name(), item.name());
-        //assertEquals(dto.description(), item.description());
-        //assertEquals(dto.price(), item.price());
-        //assertSame(dto.discount(), item.discount());
-        //assertEquals(dto.stock(), item.stock());
+        ItemDTO dto = assembler.ItemToDTO(item);
+        List<ItemDTO> dtos = assembler.ItemsToDTO(items);
     }
 }
