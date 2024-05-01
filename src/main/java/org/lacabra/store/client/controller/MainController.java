@@ -455,7 +455,7 @@ public class MainController implements Serializable {
 
             var builder = HttpRequest.newBuilder(URI.create(url));
 
-            if (this.token != null) builder = builder.header("Authorization", this.token);
+            if (this.token != null) builder = builder.header("Authorization", "Bearer " + this.token);
 
             if (headers != null) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
