@@ -1,5 +1,7 @@
 package org.lacabra.store.server.api.type;
 
-public interface DTOable<Persistent, DTO extends Record> {
+import java.io.Serializable;
+
+public interface DTOable<Persistent, DTO extends Record & Serializable> {
     DTO toDTO();
 }

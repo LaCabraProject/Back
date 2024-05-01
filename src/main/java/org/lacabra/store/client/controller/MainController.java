@@ -6,11 +6,11 @@ import org.lacabra.store.client.assembler.ItemAssembler;
 import org.lacabra.store.client.assembler.UserAssembler;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.dto.UserDTO;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.RequestMethod;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
-import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.user.Credentials;
 
 import javax.net.ssl.SSLSession;
@@ -86,7 +86,7 @@ public class MainController implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     public final GET GET = new GET(this);
-    private final HttpClient httpClient =
+    private transient final HttpClient httpClient =
             HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(20)).build();
     private String hostname;
     private Integer port;

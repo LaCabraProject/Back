@@ -33,7 +33,7 @@ public class ItemDeserializerTest {
 
         when(jsonParser.readValueAsTree()).thenReturn(jsonNode);
 
-        JsonDeserializer<Item> itemDeserializer = new ItemDeserializer();
+        JsonDeserializer<Item> itemDeserializer = new ItemDeserializer.Persistent();
 
         Item item = itemDeserializer.deserialize(jsonParser, deserializationContext);
 

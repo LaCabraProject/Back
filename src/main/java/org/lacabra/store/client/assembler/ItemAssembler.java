@@ -29,7 +29,7 @@ public class ItemAssembler {
             return new ItemDTO((ObjectId) null);
 
         return new ItemDTO(item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(),
-                item.discount(), item.stock(), item.parent().id());
+                item.discount(), item.stock(), item.parent() == null ? null : item.parent().id());
     }
 
     public Item DTOToItem(final ItemDTO itemDTO) {

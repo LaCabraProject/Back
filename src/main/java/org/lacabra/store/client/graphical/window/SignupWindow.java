@@ -17,11 +17,15 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashSet;
 
 public final class SignupWindow extends DispatchedWindow {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public static final String TITLE = "Crear una cuenta";
 
     public static final Dimension SIZE = new Dimension(400, 300);

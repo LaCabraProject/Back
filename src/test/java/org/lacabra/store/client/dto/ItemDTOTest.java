@@ -38,19 +38,23 @@ public class ItemDTOTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+
         itemDTO1 = new ItemDTO();
+        itemDTO1.id(id);
+        itemDTO1.type(type);
+        itemDTO1.parent(parent);
+        itemDTO1.name(name);
+        itemDTO1.description(description);
+        itemDTO1.keywords(keywords);
+        itemDTO1.price(price);
+        itemDTO1.discount(discount);
+        itemDTO1.stock(stock);
+        itemDTO2.parent(userId);
+
         itemDTO2 = new ItemDTO(type, name, description, keywords, price, discount, stock, userId);
+
         itemDTO3 = new ItemDTO(id, type, name, description, keywords, price, discount, stock, userId);
-        itemDTO1.setId(id);
-        itemDTO1.setType(type);
-        itemDTO1.setParent(parent);
-        itemDTO1.setName(name);
-        itemDTO1.setDescription(description);
-        itemDTO1.setKeywords(keywords);
-        itemDTO1.setPrice(price);
-        itemDTO1.setDiscount(discount);
-        itemDTO1.setStock(stock);
-        itemDTO2.setParent(userId);
+
     }
 
     @Test

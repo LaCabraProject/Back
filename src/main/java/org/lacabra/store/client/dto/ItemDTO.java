@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
+import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
 
 import java.io.Serial;
@@ -18,7 +19,8 @@ import java.util.concurrent.atomic.*;
 import java.util.stream.Collectors;
 
 public record ItemDTO(ObjectId id, ItemType type, String name, String description, HashSet<String> keywords,
-                      BigDecimal price, Integer discount, BigInteger stock, UserId parent) implements Serializable {
+                      BigDecimal price, Integer discount, BigInteger stock,
+                      UserId parent) implements Serializable, DTO<ItemDTO, Item> {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -66,6 +68,18 @@ public record ItemDTO(ObjectId id, ItemType type, String name, String descriptio
                    final Collection<String> keywords, final Number price, final Number discount, final Number stock,
                    final String parent) {
         this(id, type, name, description, keywords, price, discount, stock, UserId.from(parent));
+    }
+
+    public ItemDTO(final ItemType type, final String name, final String description,
+                   final Collection<String> keywords, final Number price, final Number discount, final Number stock,
+                   final String parent) {
+        this((String) null, type, name, description, keywords, price, discount, stock, UserId.from(parent));
+    }
+
+    public ItemDTO(final ItemType type, final String name, final String description,
+                   final Collection<String> keywords, final Number price, final Number discount, final Number stock,
+                   final UserId parent) {
+        this((String) null, type, name, description, keywords, price, discount, stock, UserId.from(parent));
     }
 
     public ItemDTO(final ObjectId id, final ItemType type, final String name, final String description,
@@ -208,6 +222,11 @@ public record ItemDTO(ObjectId id, ItemType type, String name, String descriptio
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Item toPersistent() {
+        return Item.fromDTO(this);
     }
 }
 

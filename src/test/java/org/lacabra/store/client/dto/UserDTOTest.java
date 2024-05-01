@@ -6,7 +6,6 @@ import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.server.api.type.user.UserData;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -28,8 +27,6 @@ public class UserDTOTest {
     @Mock
     private Set<Authority> authorities;
     @Mock
-    private UserData data;
-    @Mock
     private Credentials credentials;
     @Mock
     private User user;
@@ -41,12 +38,11 @@ public class UserDTOTest {
         dto2 = new UserDTO("iker");
         dto3 = new UserDTO("iker", "1234");
         dto4 = new UserDTO(credentials);
-        dto5 = new UserDTO(credentials, data);
-        dto6 = new UserDTO(user);
-        dto1.setId(id);
-        dto1.setPasswd(passwd);
+        dto5 = new UserDTO(credentials);
+        dto6 = user.toDTO();
+        dto1.id(id);
+        dto1.passwd(passwd);
         //dto1.setAuthorities(authorities);
-        dto1.setData(data);
     }
 
     @Test
@@ -63,8 +59,4 @@ public class UserDTOTest {
     //public void getAuthorities() {
     //    assertEquals(authorities, dto1.authorities());
     //}
-    @Test
-    public void getData() {
-        assertEquals(data, dto1.data());
-    }
 }
