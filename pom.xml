@@ -29,7 +29,7 @@
         <log4j.version>3.0.0-beta2</log4j.version>
         <slf4j.version>2.0.12</slf4j.version>
         <jjwt.version>0.12.5</jjwt.version>
-        <failsafe.version>3.25</failsafe.version>
+        <failsafe.version>3.2.5</failsafe.version>
     </properties>
 
     <dependencyManagement>
