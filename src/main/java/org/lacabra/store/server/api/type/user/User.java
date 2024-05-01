@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.json.deserializer.UserDeserializer;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.json.serializer.UserIdSerializer;
 import org.lacabra.store.internals.type.id.UserId;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.server.api.type.DTOable;
 import org.lacabra.store.server.jdo.converter.AuthorityConverter;
 import org.lacabra.store.server.jdo.converter.UserIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
@@ -35,8 +37,8 @@ import java.util.Set;
 @Query(name = "CountAdmins", language = "javax.jdo.query.SQL", value = "SELECT * FROM USER u WHERE u.authorities " +
         "LIKE" + " '%admin%'")
 @PersistenceCapable(table = "user")
-@JsonDeserialize(using = UserDeserializer.class)
-public class User implements Serializable, Mergeable<User> {
+@JsonDeserialize(using = UserDeserializer.Persistent.class)
+public class User implements Serializable, Mergeable<User>, DTOable<User, UserDTO> {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -59,40 +61,40 @@ public class User implements Serializable, Mergeable<User> {
     private UserData data;
 
     public User() {
+        super();
     }
 
-    public User(String id) {
+    public User(final String id) {
         this(id, null);
     }
 
-    public User(UserId id) {
+    public User(final UserId id) {
         this(id, null);
     }
 
-    public User(String id, String passwd) {
+    public User(final String id, final String passwd) {
         this(new Credentials(id, passwd));
     }
 
-    public User(UserId id, String passwd) {
+    public User(final UserId id, final String passwd) {
         this(new Credentials(id, passwd));
     }
 
-    public User(Credentials creds) {
+    public User(final Credentials creds) {
         this(creds, null);
     }
 
-    public User(Credentials creds, UserData data) {
+    public User(final Credentials creds, final UserData data) {
         if (creds != null) {
-            this.id = creds.id();
-            this.passwd = creds.passwd();
-            this.authorities = creds.authorities() == null || creds.authorities().isEmpty() ?
-                    EnumSet.noneOf(Authority.class) : EnumSet.copyOf(creds.authorities());
+            this.id(creds.id());
+            this.authorities(creds.authorities());
+            this.passwd(creds.passwd());
         }
 
-        this.data = data;
+        this.data(data);
     }
 
-    public User(User user) {
+    public User(final User user) {
         this(user == null ? null : new Credentials(user.id, user.authorities, user.passwd), user == null ? null :
                 user.data);
     }
@@ -114,40 +116,56 @@ public class User implements Serializable, Mergeable<User> {
         return data;
     }
 
-    private void setId(UserId id) {
+    private void id(final String id) {
+        this.id(UserId.from(id));
+    }
+
+    private void id(final UserId id) {
         this.id = id;
     }
 
-    private void setPasswd(String passwd) {
+    private void passwd(final String passwd) {
         this.passwd = passwd;
     }
 
-    private void setAuthorities(Collection<Authority> authorities) {
-        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
-                EnumSet.copyOf(authorities);
+    private void authorities(final Collection<Authority> authorities) {
+        this.authorities = authorities == null || authorities.isEmpty() ?
+                EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
     }
 
-    private void setData(UserData data) {
+    private void data(final UserData data) {
         this.data = data;
     }
 
     @Override
-    public User merge(User override) {
+    public User merge(final User override) {
         if (override == null) return this;
 
-        if (override.id != null) this.setId(override.id);
+        if (override.id != null) this.id(override.id);
 
-        if (override.passwd != null) this.setPasswd(override.passwd);
+        if (override.passwd != null) this.passwd(override.passwd);
 
-        if (override.authorities != null) this.setAuthorities(override.authorities);
+        if (override.authorities != null) this.authorities(override.authorities);
 
-        if (this.data == null) this.setData(override.data);
+        if (this.data == null) this.data(override.data);
 
-        else this.setData(this.data.merge(override.data));
+        else this.data(this.data.merge(override.data));
 
         Mergeable.super.merge(this);
 
         return this;
+    }
+
+    @Override
+    public UserDTO toDTO() {
+        return new UserDTO(new Credentials(this.id, this.authorities, this.passwd));
+    }
+
+    public static User fromDTO(final UserDTO dto) {
+        if (dto == null)
+            return null;
+
+        return new User(new Credentials(dto.id(), dto.authorities(), dto.passwd()));
     }
 
     @Override

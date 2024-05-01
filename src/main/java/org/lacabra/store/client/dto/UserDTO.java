@@ -1,84 +1,86 @@
 package org.lacabra.store.client.dto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.lacabra.store.internals.json.deserializer.UserDeserializer;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
-import org.lacabra.store.server.api.type.user.UserData;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.EnumSet;
 
-public class UserDTO implements Serializable {
+@JsonDeserialize(using = UserDeserializer.DTO.class)
+public record UserDTO(UserId id, EnumSet<Authority> authorities, String passwd) implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private UserId id;
-    private String passwd;
-    private HashSet<Authority> authorities;
-    private UserData data;
-
     public UserDTO() {
+        this((UserId) null);
     }
 
-    public UserDTO(String id) {
+    public UserDTO(final String id) {
         this(id, null);
     }
 
-    public UserDTO(String id, String passwd) {
+    public UserDTO(final UserId id) {
+        this(id, null);
+    }
+
+    public UserDTO(final String id, final String passwd) {
         this(new Credentials(id, passwd));
     }
 
-    public UserDTO(Credentials creds) {
-        this(creds, null);
+    public UserDTO(final UserId id, final String passwd) {
+        this(new Credentials(id, passwd));
     }
 
-    public UserDTO(Credentials creds, UserData data) {
-        if (creds != null) {
-            this.id = creds.id();
-            this.passwd = creds.passwd();
-            this.authorities = creds.authorities() != null ? new HashSet<>(creds.authorities()) : new HashSet<>();
-        }
-
-        this.data = data;
+    public UserDTO(final UserId id, final Collection<Authority> authorities, final String passwd) {
+        this(id, authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(authorities), passwd);
     }
 
-    public UserDTO(org.lacabra.store.server.api.type.user.User user) {
-        this(user == null ? null : new Credentials(user.id(), user.authorities(), user.passwd()), user == null ? null :
-                user.data());
+    public UserDTO(final Credentials creds) {
+        this(creds == null ? null : creds.id(), creds == null ? null : creds.authorities(), creds == null ? null :
+                creds.passwd());
     }
 
-    public Set<Authority> authorities() {
-        return new HashSet<>(this.authorities);
-    }
-
-    public void setAuthorities(Collection<Authority> authorities) {
-        this.authorities = new HashSet<>(authorities);
-    }
-
-    public UserId id() {
-        return this.id;
-    }
-
-    public void setId(UserId id) {
+    public UserDTO(final UserId id, final EnumSet<Authority> authorities, final String passwd) {
         this.id = id;
-    }
-
-    public String passwd() {
-        return this.passwd;
-    }
-
-    public void setPasswd(String passwd) {
+        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+                EnumSet.copyOf(authorities);
         this.passwd = passwd;
     }
 
-    public UserData data() {
-        return data;
+    public UserDTO(final UserDTO user) {
+        this(user == null ? null : new Credentials(user.id, user.authorities, user.passwd));
     }
 
-    public void setData(UserData data) {
-        this.data = data;
+    public UserDTO id(final String id) {
+        return this.id(UserId.from(id));
+    }
+
+    public UserDTO id(final UserId id) {
+        return new UserDTO(id, this.authorities, this.passwd);
+    }
+
+    public UserDTO authorities(final Collection<Authority> authorities) {
+        return new UserDTO(this.id, authorities, this.passwd);
+    }
+
+    public UserDTO passwd(final String passwd) {
+        return new UserDTO(this.id, this.authorities, passwd);
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return new ObjectMapperProvider().getContext(UserDTO.class).writerWithDefaultPrettyPrinter().writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

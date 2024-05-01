@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lacabra.store.internals.json.serializer.UserIdSerializer;
 import org.lacabra.store.internals.type.id.UserId;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 
 import java.io.Serial;
 import java.io.Serializable;

@@ -10,6 +10,11 @@ import java.math.BigInteger;
 public final class BigIntegerSerializer extends JsonSerializer<BigInteger> {
     @Override
     public void serialize(BigInteger value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        if (value == null) {
+            jgen.writeNull();
+            return;
+        }
+
         jgen.writeNumber(value.toString());
     }
 }

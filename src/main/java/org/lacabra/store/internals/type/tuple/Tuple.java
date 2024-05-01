@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 
 import java.io.IOException;
 import java.io.Serial;

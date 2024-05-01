@@ -10,7 +10,7 @@ import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.RequestMethod;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.user.Credentials;
 
 import javax.net.ssl.SSLSession;

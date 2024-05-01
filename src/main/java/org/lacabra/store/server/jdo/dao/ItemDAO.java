@@ -3,7 +3,7 @@ package org.lacabra.store.server.jdo.dao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.lacabra.store.internals.logging.Logger;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 
 import java.io.IOException;

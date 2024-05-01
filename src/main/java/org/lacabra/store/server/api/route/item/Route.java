@@ -7,7 +7,7 @@ import org.glassfish.jersey.process.internal.RequestScoped;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.tuple.Pair;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
 import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;

@@ -1,4 +1,4 @@
-package org.lacabra.store.server.api.provider;
+package org.lacabra.store.internals.json.provider;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -8,16 +8,23 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.lacabra.store.internals.json.deserializer.ItemArrayDeserializer;
-import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
-import org.lacabra.store.internals.json.deserializer.UserArrayDeserializer;
-import org.lacabra.store.internals.json.deserializer.UserDeserializer;
+import org.lacabra.store.client.dto.ItemDTO;
+import org.lacabra.store.client.dto.UserDTO;
+import org.lacabra.store.internals.json.deserializer.*;
+import org.lacabra.store.internals.json.serializer.BigDecimalSerializer;
+import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
+import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
+import org.lacabra.store.internals.json.serializer.UserIdSerializer;
+import org.lacabra.store.internals.type.id.ObjectId;
+import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,16 +33,34 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     private final Map<Class<?>, ObjectMapper> mappers = new HashMap<>();
 
     public ObjectMapperProvider() {
+        super();
     }
 
     private static ObjectMapper createObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
+        final var mapper = new ObjectMapper();
 
-        SimpleModule mod = new SimpleModule();
-        mod.addDeserializer(User[].class, new UserArrayDeserializer());
-        mod.addDeserializer(User.class, new UserDeserializer());
-        mod.addDeserializer(Item[].class, new ItemArrayDeserializer());
-        mod.addDeserializer(Item.class, new ItemDeserializer());
+        final var mod = new SimpleModule();
+
+        mod.addDeserializer(User[].class, new UserArrayDeserializer.Persisent());
+        mod.addDeserializer(UserDTO[].class, new UserArrayDeserializer.DTO());
+
+        mod.addDeserializer(User.class, new UserDeserializer.Persistent());
+        mod.addDeserializer(UserDTO.class, new UserDeserializer.DTO());
+
+        mod.addDeserializer(Item[].class, new ItemArrayDeserializer.Persisent());
+        mod.addDeserializer(ItemDTO[].class, new ItemArrayDeserializer.DTO());
+
+        mod.addDeserializer(Item.class, new ItemDeserializer.Persistent());
+        mod.addDeserializer(ItemDTO.class, new ItemDeserializer.DTO());
+
+        mod.addDeserializer(UserId.class, new UserIdDeserializer());
+        mod.addDeserializer(ObjectId.class, new ObjectIdDeserializer());
+
+        mod.addSerializer(UserId.class, new UserIdSerializer());
+        mod.addSerializer(ObjectId.class, new ObjectIdSerializer());
+
+        mod.addSerializer(BigInteger.class, new BigIntegerSerializer());
+        mod.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 
         mapper.registerModule(mod);
         mapper.registerModule(new Jdk8Module());
@@ -56,7 +81,7 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
     }
 
     @Override
-    public ObjectMapper getContext(@NotNull Class<?> type) {
+    public ObjectMapper getContext(@NotNull final Class<?> type) {
         if (type == null)
             return null;
 

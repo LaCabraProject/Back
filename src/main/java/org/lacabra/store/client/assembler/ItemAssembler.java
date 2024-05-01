@@ -1,6 +1,7 @@
 package org.lacabra.store.client.assembler;
 
 import org.lacabra.store.client.dto.ItemDTO;
+import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
@@ -25,7 +26,7 @@ public class ItemAssembler {
 
     public ItemDTO ItemToDTO(final Item item) {
         if (item == null)
-            return new ItemDTO(null);
+            return new ItemDTO((ObjectId) null);
 
         return new ItemDTO(item.id(), item.type(), item.name(), item.description(), item.keywords(), item.price(),
                 item.discount(), item.stock(), item.parent().id());

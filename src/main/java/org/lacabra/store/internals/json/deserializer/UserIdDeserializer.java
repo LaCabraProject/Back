@@ -12,7 +12,7 @@ import java.io.IOException;
 public final class UserIdDeserializer extends JsonDeserializer<UserId> {
     @Override
     public UserId deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        JsonNode node = jp.readValueAsTree();
+        final JsonNode node = jp.readValueAsTree();
 
         if (!node.isTextual())
             return null;

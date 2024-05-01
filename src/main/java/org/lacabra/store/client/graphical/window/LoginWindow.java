@@ -14,14 +14,15 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 public final class LoginWindow extends DispatchedWindow {
+    @Serial
+    private final static long serialVersionUID = 1L;
+
     public static final String TITLE = "Iniciar sesión";
     public static final Dimension SIZE = new Dimension(400, 400);
     public static final Dimension FIELD_SIZE = new Dimension(200, 30);
     public static final Dimension BACK_BUTTON_SIZE = new Dimension(120, 20);
     public static final int BORDER = 20;
     public static final int INSET = 5;
-    @Serial
-    private final static long serialVersionUID = 1L;
 
     public LoginWindow() {
         this(null);

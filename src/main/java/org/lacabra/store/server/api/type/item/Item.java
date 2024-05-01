@@ -7,12 +7,15 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.serializer.BigDecimalSerializer;
 import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
 import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
+import org.lacabra.store.server.api.type.DTOable;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.converter.BigIntegerConverter;
 import org.lacabra.store.server.jdo.converter.ItemTypeConverter;
@@ -27,17 +30,17 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
+import java.util.concurrent.atomic.*;
+import java.util.stream.Collectors;
 
-@JsonDeserialize(using = ItemDeserializer.class)
+@JsonDeserialize(using = ItemDeserializer.Persistent.class)
 @PersistenceCapable(table = "item")
-@ForeignKey(name = "parent", members = "id", columns = {@Column(name = "parent", defaultValue = "#NULL",
-        allowsNull = "true")},
-        unique = "false", deleteAction =
-        ForeignKeyAction.NONE, updateAction = ForeignKeyAction.NONE)
+@ForeignKey(name = "parent", members = "id", columns = {@Column(name = "parent", defaultValue = "#NULL", allowsNull =
+        "true")}, unique = "false", deleteAction = ForeignKeyAction.NONE, updateAction = ForeignKeyAction.NONE)
 @Query(name = "FindItem", value = "SELECT FROM Item WHERE id == :id")
 @Query(name = "FindByParent", language = "javax.jdo.query.SQL", value = "SELECT * FROM ITEM WHERE parent = :parent")
-public class Item implements Serializable, Mergeable<Item> {
+public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDTO> {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -66,8 +69,10 @@ public class Item implements Serializable, Mergeable<Item> {
     @Persistent
     private HashSet<String> keywords;
 
+    @Persistent
     @JsonProperty("price")
     @Column(jdbcType = "DECIMAL", defaultValue = "0")
+    @JsonSerialize(using = BigDecimalSerializer.class)
     private BigDecimal price;
 
     @JsonProperty("discount")
@@ -91,34 +96,37 @@ public class Item implements Serializable, Mergeable<Item> {
     public Item() {
     }
 
-    public Item(ObjectId id) {
+    public Item(final ObjectId id) {
         this(id, null, null, null, null, null, null, null, null);
     }
 
-    public Item(ItemType type, String name, String description, Collection<String> keywords, Number price,
-                Integer discount, BigInteger stock, User parent) {
+    public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
+                final Number price, final Integer discount, final BigInteger stock, final User parent) {
         this(ObjectId.random(Item.class), type, name, description, keywords, price, discount, stock, parent);
     }
 
-    public Item(ObjectId id, ItemType type, String name, String description, Collection<String> keywords,
-                Number price, Integer discount, Number stock, User parent) {
-        this.id = id;
-        this.type = type;
-        this.name = name;
-        this.description = description;
-        this.keywords = keywords == null ? null : new HashSet<>(keywords);
-        this.price = price == null ? null : new BigDecimal(String.valueOf(price));
-        this.discount = discount;
-        this.stock = stock == null ? null : new BigDecimal(String.valueOf(stock)).toBigInteger();
-        this.parent = parent;
+    public Item(final ObjectId id, final ItemType type, final String name, final String description,
+                final Collection<String> keywords, final Number price, final Number discount, final Number stock,
+                final User parent) {
+        super();
+
+        this.id(id);
+        this.type(type);
+        this.name(name);
+        this.description(description);
+        this.keywords(keywords);
+        this.price(price);
+        this.discount(discount);
+        this.stock(stock);
+        this.parent(parent);
     }
 
-    public Item(ObjectId id, Item item) {
+    public Item(final ObjectId id, final Item item) {
         this(id, item.type, item.name, item.description, item.keywords, item.price, item.discount, item.stock,
                 item.parent);
     }
 
-    public Item(Item item) {
+    public Item(final Item item) {
         this(item.id, item);
     }
 
@@ -138,8 +146,8 @@ public class Item implements Serializable, Mergeable<Item> {
         return this.description;
     }
 
-    public Set<String> keywords() {
-        return this.keywords == null ? null : new HashSet<>(this.keywords);
+    public HashSet<String> keywords() {
+        return this.keywords == null ? new HashSet<>() : new HashSet<>(this.keywords);
     }
 
     public BigDecimal price() {
@@ -158,64 +166,127 @@ public class Item implements Serializable, Mergeable<Item> {
         return this.parent;
     }
 
-    private void setId(ObjectId id) {
+    private void id(final String id) {
+        this.id(ObjectId.from(id));
+    }
+
+    private void id(final Number id) {
+        this.id(ObjectId.from(id));
+    }
+
+    private void id(final ObjectId id) {
         this.id = id;
     }
 
-    private void setType(ItemType type) {
+    private void type(final ItemType type) {
         this.type = type;
     }
 
-    private void setName(String name) {
+    private void name(final String name) {
         this.name = name;
     }
 
-    private void setDescription(String description) {
+    private void description(final String description) {
         this.description = description;
     }
 
-    private void setKeywords(Collection<String> keywords) {
-        this.keywords = keywords == null ? null : new HashSet<>(keywords);
+    private void keywords(final Collection<String> keywords) {
+        this.keywords = keywords == null ? new HashSet<>() :
+                keywords.stream().filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
     }
 
-    private void setPrice(BigDecimal price) {
-        this.price = price;
+    private void price(final Number price) {
+        this.price = (price == null ? BigDecimal.ZERO : new BigDecimal(price.toString())).max(BigDecimal.ZERO);
     }
 
-    private void setStock(BigInteger stock) {
-        this.stock = stock;
+    private void stock(final Number stock) {
+        this.stock = (switch (stock) {
+            case Byte b -> BigInteger.valueOf(b);
+            case Short s -> BigInteger.valueOf(s);
+            case Integer i -> BigInteger.valueOf(i);
+            case AtomicInteger ai -> BigInteger.valueOf(ai.get());
+            case Long l -> BigInteger.valueOf(l);
+            case AtomicLong al -> BigInteger.valueOf(al.get());
+            case LongAccumulator la -> BigInteger.valueOf(la.get());
+            case LongAdder la -> BigInteger.valueOf(la.sum());
+            case BigInteger bi -> bi;
+
+            case Float f -> BigDecimal.valueOf((double) f).toBigInteger();
+            case Double d -> BigDecimal.valueOf(d).toBigInteger();
+            case DoubleAccumulator da -> BigDecimal.valueOf(da.get()).toBigInteger();
+            case DoubleAdder da -> BigDecimal.valueOf(da.sum()).toBigInteger();
+
+            case BigDecimal dec -> dec.toBigInteger();
+
+            case null, default -> BigInteger.ZERO;
+        }).min(BigInteger.ZERO);
     }
 
-    private void setDiscount(Integer discount) {
-        this.discount = discount;
+    private void discount(final Number discount) {
+        this.discount = switch (discount) {
+            case Byte b -> Integer.valueOf(b);
+            case Short s -> Integer.valueOf(s);
+            case Integer i -> Integer.valueOf(i);
+            case AtomicInteger ai -> ai.get();
+            case Long l -> Long.valueOf(Math.max(Integer.MIN_VALUE, Math.min(l, Integer.MAX_VALUE))).intValue();
+            case AtomicLong al ->
+                    Long.valueOf(Math.max(Integer.MIN_VALUE, Math.min(al.get(), Integer.MAX_VALUE))).intValue();
+            case LongAccumulator la ->
+                    Long.valueOf(Math.max(Integer.MIN_VALUE, Math.min(la.get(), Integer.MAX_VALUE))).intValue();
+            case LongAdder la ->
+                    Long.valueOf(Math.max(Integer.MIN_VALUE, Math.min(la.sum(), Integer.MAX_VALUE))).intValue();
+            case BigInteger bi ->
+                    bi.min(BigInteger.valueOf(Integer.MAX_VALUE)).max(BigInteger.valueOf(Integer.MIN_VALUE)).intValue();
+
+            case Float f ->
+                    BigDecimal.valueOf((double) f).min(BigDecimal.valueOf(Integer.MAX_VALUE)).max(BigDecimal.valueOf(Integer.MIN_VALUE)).intValue();
+            case Double d ->
+                    BigDecimal.valueOf(d).min(BigDecimal.valueOf(Integer.MAX_VALUE)).max(BigDecimal.valueOf(Integer.MIN_VALUE)).intValue();
+            case DoubleAccumulator da ->
+                    BigDecimal.valueOf(da.get()).min(BigDecimal.valueOf(Integer.MAX_VALUE)).max(BigDecimal.valueOf(Integer.MIN_VALUE)).intValue();
+            case DoubleAdder da ->
+                    BigDecimal.valueOf(da.sum()).min(BigDecimal.valueOf(Integer.MAX_VALUE)).max(BigDecimal.valueOf(Integer.MIN_VALUE)).intValue();
+
+            case BigDecimal dec ->
+                    dec.min(BigDecimal.valueOf(Integer.MAX_VALUE)).max(BigDecimal.valueOf(Integer.MIN_VALUE)).intValue();
+
+            case null, default -> 0;
+        };
     }
 
-    private void setParent(User parent) {
+    private void parent(final String parent) {
+        this.parent(UserId.from(parent));
+    }
+
+    private void parent(final UserId parent) {
+        this.parent(new User(parent));
+    }
+
+    private void parent(final User parent) {
         this.parent = parent;
     }
 
     @Override
-    public Item merge(Item override) {
+    public Item merge(final Item override) {
         if (override == null) return this;
 
-        if (override.id != null)
-            this.setId(override.id);
+        if (override.id != null) this.id(override.id);
 
-        if (override.type != null) this.setType(override.type);
+        if (override.type != null) this.type(override.type);
 
-        if (override.name != null) this.setName(override.name);
+        if (override.name != null) this.name(override.name);
 
-        if (override.description != null) this.setDescription(override.description);
+        if (override.description != null) this.description(override.description);
 
-        if (override.keywords != null) this.setKeywords(override.keywords);
+        if (override.keywords != null) this.keywords(override.keywords);
 
-        if (override.price != null) this.setPrice(override.price);
+        if (override.price != null) this.price(override.price);
 
-        if (override.stock != null) this.setStock(override.stock);
+        if (override.stock != null) this.stock(override.stock);
 
-        if (override.discount != null) this.setDiscount(override.discount);
+        if (override.discount != null) this.discount(override.discount);
 
-        if (override.parent != null) this.setParent(override.parent);
+        if (override.parent != null) this.parent(override.parent);
 
         Mergeable.super.merge(this);
 
@@ -229,6 +300,18 @@ public class Item implements Serializable, Mergeable<Item> {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ItemDTO toDTO() {
+        return null;
+    }
+
+    public static Item fromDTO(final ItemDTO dto) {
+        if (dto == null) return null;
+
+        return new Item(dto.id(), dto.type(), dto.name(), dto.description(), dto.keywords(), dto.price(),
+                dto.discount(), dto.stock(), new User(dto.parent()));
     }
 
     public static final class UserToIdSerializer extends JsonSerializer<User> {
