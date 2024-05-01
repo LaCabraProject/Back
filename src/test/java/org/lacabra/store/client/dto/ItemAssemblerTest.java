@@ -2,18 +2,16 @@ package org.lacabra.store.client.dto;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.internals.type.id.ObjectId;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
-import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class ItemAssemblerTest {
 
@@ -33,6 +31,7 @@ public class ItemAssemblerTest {
         MockitoAnnotations.openMocks(this);
         assembler = ItemAssembler.getInstance();
     }
+
     @Test
     public void testItemToDTO() {
         //ItemDTO dto = assembler.ItemToDTO(item);

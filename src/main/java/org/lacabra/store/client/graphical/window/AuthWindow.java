@@ -55,20 +55,14 @@ public final class AuthWindow extends DispatchedWindow {
 
                     {
                         final JButton b = new JButton("Iniciar sesión");
-                        b.addActionListener(e -> {
-                            this.close();
-                            this.dispatch(LoginWindow.class);
-                        });
+                        b.addActionListener(e -> this.replace(LoginWindow.class));
 
                         p2.add(b);
                     }
 
                     {
                         final JButton b = new JButton("Crear cuenta");
-                        b.addActionListener(e -> {
-                            this.close();
-                            this.dispatch(SignupWindow.class);
-                        });
+                        b.addActionListener(e -> this.replace(SignupWindow.class));
 
                         p2.add(b);
                     }
@@ -77,6 +71,7 @@ public final class AuthWindow extends DispatchedWindow {
                 }
 
                 this.getContentPane().add(p, BorderLayout.CENTER);
+                this.setVisible(true);
             }
         });
     }

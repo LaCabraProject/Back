@@ -5,6 +5,8 @@ import org.lacabra.store.client.controller.MainController;
 import java.net.MalformedURLException;
 
 public final class LockedWindowDispatcher extends WindowDispatcher {
+    private boolean dispatched = false;
+
     public LockedWindowDispatcher() {
         this(null);
     }
@@ -19,11 +21,21 @@ public final class LockedWindowDispatcher extends WindowDispatcher {
 
     @Override
     public Long dispatch(final Class<? extends DispatchedWindow> cls) {
-        return null;
+        if (this.dispatched)
+            return null;
+
+        this.dispatched = true;
+
+        return super.dispatch(cls);
     }
 
     @Override
     public Long dispatch(final DispatchedWindow w) {
-        return null;
+        if (this.dispatched)
+            return null;
+
+        this.dispatched = true;
+
+        return super.dispatch(w);
     }
 }

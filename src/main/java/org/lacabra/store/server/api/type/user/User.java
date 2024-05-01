@@ -97,7 +97,7 @@ public class User implements Serializable, Mergeable<User> {
     }
 
     public Set<Authority> authorities() {
-        return this.authorities == null ? null : new HashSet<>(this.authorities);
+        return this.authorities == null ? new HashSet<>() : new HashSet<>(this.authorities);
     }
 
     public UserId id() {

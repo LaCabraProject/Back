@@ -4,11 +4,16 @@ package org.lacabra.store.client.graphical.dispatcher;
 import org.lacabra.store.client.controller.MainController;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 
 public abstract class DispatchedWindow extends JFrame implements IWindowDispatcher {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private WindowDispatcher dispatcher;
 
     public DispatchedWindow() {
@@ -32,6 +37,7 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     public DispatchedWindow(final WindowDispatcher wd, final Signal<?>... signals) {
         super();
 
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setDispatcher(wd, signals);
     }
 
@@ -45,17 +51,23 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     public Signal<?>[] signals() {
         final var state = this.state();
 
-        if (state == null)
-            return new Signal<?>[0];
+        if (state == null) return new Signal<?>[0];
 
         return state.getAll();
     }
 
-    public Long connect(final Signal<?> signal) {
+    public Long[] connect(final Signal<?>... signals) {
         final var d = this.getDispatcher();
         if (d == null) return null;
 
-        return d.connect(this, signal);
+        return d.connect(this, signals);
+    }
+
+    public Long connect(final Signal<?> signal) {
+        final var ret = this.connect(new Signal<?>[]{signal});
+        if (ret == null || ret.length == 0) return null;
+
+        return ret[0];
     }
 
     public Signal<?> disconnect(final Signal<?> signal) {
@@ -99,7 +111,7 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     public void setDispatcher(final WindowDispatcher dispatcher, final Signal<?>... signals) {
         this.close();
         this.dispatcher = dispatcher;
-        this.state().connect(signals);
+        this.connect(signals);
     }
 
     public Long getId() {
@@ -141,9 +153,13 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     public DispatchedWindow replace(final Class<? extends DispatchedWindow> cls) {
         final var d = this.getDispatcher();
 
-        this.close();
+        if (d == null) {
+            this.close();
+            return null;
+        }
 
-        if (d == null) return null;
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.close();
 
         return d.getWindow(d.dispatch(cls));
     }
@@ -175,7 +191,14 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     }
 
     public void close() {
-        if (!this.dispatcher.close(this)) this.dispose();
+        final var d = this.getDispatcher();
+
+        if (d == null || !d.close(this)) {
+            if (this.getWindowListeners().length > 0)
+                this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+
+            else this.dispose();
+        }
     }
 
     public JPanel banner() {

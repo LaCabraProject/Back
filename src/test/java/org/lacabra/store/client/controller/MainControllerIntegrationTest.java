@@ -2,49 +2,39 @@ package org.lacabra.store.client.controller;
 
 import categories.IntegrationTest;
 import com.github.noconnor.junitperf.JUnitPerfTest;
-import org.junit.Test;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import io.jsonwebtoken.lang.Collections;
-import org.lacabra.store.client.dto.ItemAssembler;
-import org.lacabra.store.client.dto.ItemDTO;
-import org.lacabra.store.client.dto.UserAssembler;
-import org.lacabra.store.client.dto.UserDTO;
-import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
-import org.lacabra.store.server.api.type.item.Item;
-import org.lacabra.store.server.api.type.user.User;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
 @Category(IntegrationTest.class)
 public class MainControllerIntegrationTest {
-
     MainController controller;
+
     @BeforeClass
     public static void launchAPI() throws IOException {
-        Runtime.getRuntime().exec(new String [] { "mvn", "jetty:run", "-f pom.xml" });
+        Runtime.getRuntime().exec(new String[]{"mvn", "jetty:run", "-f", "pom.xml"});
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         controller = new MainController();
+        for (int i = 0, N = 10; i < N; i++) {
+            if (controller.alive().join())
+                break;
+
+            TimeUnit.SECONDS.sleep(1);
+        }
+
+        System.exit(1);
     }
+
     @Test
     @JUnitPerfTest(threads = 10, durationMs = 1000)
     public void testAuthentication() {
@@ -53,6 +43,7 @@ public class MainControllerIntegrationTest {
         controller.unauth();
         assertNull(controller.getUser());
     }
+
     @Test
     @JUnitPerfTest(threads = 10, durationMs = 2000)
     public void testItems() {
@@ -69,6 +60,7 @@ public class MainControllerIntegrationTest {
         }
         // item post
     }
+
     @Test
     @JUnitPerfTest(threads = 10, durationMs = 1000)
     public void testUsers() {

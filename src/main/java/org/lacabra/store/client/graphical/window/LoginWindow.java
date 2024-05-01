@@ -26,12 +26,12 @@ public final class LoginWindow extends DispatchedWindow {
         this(null);
     }
 
-    public LoginWindow(WindowDispatcher wd) {
+    public LoginWindow(final WindowDispatcher wd) {
         super(wd);
     }
 
     @Override
-    public void setDispatcher(WindowDispatcher dispatcher) {
+    public void setDispatcher(final WindowDispatcher dispatcher) {
         super.setDispatcher(dispatcher);
 
         final WindowDispatcher d = this.getDispatcher();

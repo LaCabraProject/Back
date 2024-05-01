@@ -45,38 +45,47 @@ public class ItemDTOTest {
         itemDTO.setDiscount(discount);
         itemDTO.setStock(stock);
     }
+
     @Test
     public void getId() {
         assertEquals(id, itemDTO.id());
     }
+
     @Test
     public void getType() {
         assertEquals(type, itemDTO.type());
     }
+
     @Test
     public void getParent() {
         assertEquals(parent, itemDTO.parent());
     }
+
     @Test
     public void getName() {
         assertEquals(name, itemDTO.name());
     }
+
     @Test
     public void getDescription() {
         assertEquals(description, itemDTO.description());
     }
+
     @Test
     public void getKeywords() {
         assertEquals(keywords, itemDTO.keywords());
     }
+
     @Test
     public void getPrice() {
         assertEquals(price, itemDTO.price());
     }
+
     @Test
     public void getDiscount() {
         assertTrue(discount == itemDTO.discount());
     }
+
     @Test
     public void getStock() {
         assertEquals(stock, itemDTO.stock());

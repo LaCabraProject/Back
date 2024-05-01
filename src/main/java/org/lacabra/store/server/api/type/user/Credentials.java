@@ -3,15 +3,16 @@ package org.lacabra.store.server.api.type.user;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.lacabra.store.server.api.provider.ObjectMapperProvider;
-import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.internals.json.serializer.UserIdSerializer;
+import org.lacabra.store.internals.type.id.UserId;
+import org.lacabra.store.server.api.provider.ObjectMapperProvider;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Objects;
 
 public final class Credentials implements Serializable {
     @Serial
@@ -105,28 +106,39 @@ public final class Credentials implements Serializable {
     }
 
     public EnumSet<Authority> authorities() {
-        return this.authorities == null ? null : authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
+        return this.authorities == null || this.authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
                 EnumSet.copyOf(this.authorities);
+    }
+
+    public Credentials authorities(final Collection<Authority> authorities) {
+        return new Credentials(this.id, authorities, this.passwd);
     }
 
     public UserId id() {
         return this.id;
     }
 
+    public Credentials id(final String id) {
+        return this.id(UserId.from(id));
+    }
+
+    public Credentials id(final UserId id) {
+        return new Credentials(id, this.authorities, this.passwd);
+    }
+
     public String passwd() {
         return this.passwd;
     }
 
+    public Credentials passwd(final String passwd) {
+        return new Credentials(this.id, this.authorities, passwd);
+    }
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         return switch (o) {
-            case Credentials u -> switch (u.id) {
-                case null -> false;
-                case UserId i -> this.id.equals(i);
-            } && switch (u.passwd) {
-                case null -> false;
-                case String p -> this.passwd.equals(p);
-            } && this.authorities.equals(u.authorities);
+            case Credentials u ->
+                    Objects.equals(this.id, u.id) && Objects.equals(this.passwd, u.passwd) && Objects.equals(this.authorities, u.authorities);
 
             case null, default -> false;
         };

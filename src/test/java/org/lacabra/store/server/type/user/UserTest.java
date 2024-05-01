@@ -15,19 +15,23 @@ public class UserTest {
     User user1;
     @Mock
     UserData data;
+
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        user1 = new User(new Credentials("0", "iker"), data);
+        user1 = new User(new Credentials("abc", "iker"), data);
     }
+
     @Test
     public void testGetId() {
-        assertEquals(user1.id().toString(), "0");
+        assertEquals(user1.id().toString(), "abc");
     }
+
     @Test
     public void testGetPasswd() {
         assertEquals(user1.passwd(), "iker");
     }
+
     @Test
     public void testGetData() {
         assertEquals(user1.data(), data);

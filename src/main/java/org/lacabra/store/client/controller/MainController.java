@@ -268,6 +268,36 @@ public class MainController implements Serializable {
         this.token = null;
     }
 
+    public boolean authSync() {
+        try {
+            return this.auth().join();
+        } catch (Exception e) {
+            Logger.getLogger().severe(e);
+
+            return false;
+        }
+    }
+
+    public boolean authSync(final String id, String passwd) {
+        try {
+            return this.auth(id, passwd).join();
+        } catch (Exception e) {
+            Logger.getLogger().severe(e);
+
+            return false;
+        }
+    }
+
+    public boolean authSync(final Credentials creds) {
+        try {
+            return this.auth(creds).join();
+        } catch (Exception e) {
+            Logger.getLogger().severe(e);
+
+            return false;
+        }
+    }
+
     public CompletableFuture<Boolean> auth() {
         return this.authResp().thenApply(r -> this.token != null);
     }
@@ -372,13 +402,6 @@ public class MainController implements Serializable {
         if (method == null) throw new IllegalArgumentException("No request method provided.");
 
         try {
-            HttpRequest.BodyPublisher b = switch (body) {
-                case null -> HttpRequest.BodyPublishers.noBody();
-                case HttpRequest.BodyPublisher bp -> bp;
-                default ->
-                        HttpRequest.BodyPublishers.ofString(new ObjectMapperProvider().getContext(body.getClass()).writerWithDefaultPrettyPrinter().writeValueAsString(body));
-            };
-
             String url = this.URL() + "/" + route.replaceAll("^/", "");
 
             if (params != null) {
@@ -395,6 +418,15 @@ public class MainController implements Serializable {
                     builder = builder.setHeader(header.getKey(), header.getValue());
                 }
             }
+
+            final HttpRequest.BodyPublisher b = switch (body) {
+                case null -> HttpRequest.BodyPublishers.noBody();
+                case HttpRequest.BodyPublisher bp -> bp;
+                default -> {
+                    builder.setHeader("Content-Type", "application/json");
+                    yield HttpRequest.BodyPublishers.ofString(new ObjectMapperProvider().getContext(body.getClass()).writerWithDefaultPrettyPrinter().writeValueAsString(body));
+                }
+            };
 
             HttpRequest request = switch (method) {
                 case GET -> builder.GET().build();
@@ -427,6 +459,24 @@ public class MainController implements Serializable {
             Logger.getLogger().warning(e);
 
             return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public boolean aliveSync() {
+        try {
+            return this.alive().join();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public final CompletableFuture<Boolean> alive() {
+        try {
+            return this.request("alive", RequestMethod.HEAD).thenApply(r -> r.statusCode() == 200);
+        } catch (Exception e) {
+            Logger.getLogger().severe(e);
+
+            return CompletableFuture.completedFuture(false);
         }
     }
 

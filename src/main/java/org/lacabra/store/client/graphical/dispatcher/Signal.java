@@ -79,6 +79,7 @@ public final class Signal<T extends Serializable> implements Serializable {
                 }
             };
 
+            w.doInBackground();
             this.running.add(new AbstractMap.SimpleImmutableEntry<>(id, w));
         });
 

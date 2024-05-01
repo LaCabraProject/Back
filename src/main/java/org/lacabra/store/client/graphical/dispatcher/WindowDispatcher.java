@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.awt.font.TextAttribute;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -225,6 +226,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
             if (keys.contains(l)) continue;
 
             this.windows.put(l, w);
+            w.setDispatcher(this);
 
             return l;
         }
@@ -240,10 +242,13 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         if (id == null) return false;
 
         final DispatchedWindow w = this.windows.remove(id);
-        if (w == null) return false;
+        if (w == null) return true;
 
-        this.stateOf(w).disconnectAll();
-        w.dispose();
+        final var state = this.stateOf(w);
+        if (state != null) state.disconnectAll();
+
+        w.dispatchEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
+
         return true;
     }
 
@@ -309,8 +314,8 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
             footer.setBackground(FOOTER_BACKGROUND);
             footer.setBorder(new EmptyBorder(FOOTER_BORDER, FOOTER_BORDER, FOOTER_BORDER, FOOTER_BORDER));
 
-            for (Map.Entry<String, URI> details : Map.of("Política de privacidad", PRIVACY_POLICY_URI, "Términos de " +
-                    "uso", TERMS_OF_USE_URI).entrySet()) {
+            for (Map.Entry<String, URI> details : Map.of("Política de privacidad", PRIVACY_POLICY_URI,
+                    "Términos de " + "uso", TERMS_OF_USE_URI).entrySet()) {
                 final var title = details.getKey();
                 final var uri = details.getValue();
 
@@ -347,8 +352,8 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
                 footer.add(l);
             }
 
-            for (Map.Entry<String, URI> media : Map.of(FACEBOOK_IMG, FACEBOOK_URI, TWITTER_IMG,
-                    TWITTER_URI, INSTAGRAM_IMG, INSTAGRAM_URI).entrySet()) {
+            for (Map.Entry<String, URI> media : Map.of(FACEBOOK_IMG, FACEBOOK_URI, TWITTER_IMG, TWITTER_URI,
+                    INSTAGRAM_IMG, INSTAGRAM_URI).entrySet()) {
                 final var file = media.getKey();
                 final var uri = media.getValue();
 

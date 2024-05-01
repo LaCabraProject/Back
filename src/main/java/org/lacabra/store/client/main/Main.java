@@ -9,8 +9,9 @@ import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.user.User;
 
+import javax.swing.*;
 import java.io.File;
-import java.net.MalformedURLException;
+import java.lang.reflect.InvocationTargetException;
 
 public final class Main {
     public static void main(final String[] args) {
@@ -25,10 +26,14 @@ public final class Main {
                     JsonSchemaFactory.addPreloadedSchema(cls, new File(res.getFile()));
             }
 
-            WindowDispatcher.fromArgs(args).dispatch(HomeWindow.class);
-        } catch (IllegalArgumentException e) {
-            Logger.getLogger().severe(e);
-        } catch (MalformedURLException e) {
+            SwingUtilities.invokeAndWait(() -> {
+                try {
+                    WindowDispatcher.fromArgs(args).dispatch(HomeWindow.class);
+                } catch (Exception e) {
+                    Logger.getLogger().severe(e);
+                }
+            });
+        } catch (IllegalArgumentException | InterruptedException | InvocationTargetException e) {
             Logger.getLogger().severe(e);
 
             System.exit(1);

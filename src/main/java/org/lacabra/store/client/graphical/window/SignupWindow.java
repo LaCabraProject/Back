@@ -1,23 +1,25 @@
 package org.lacabra.store.client.graphical.window;
 
-import org.lacabra.store.client.controller.MainController;
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
 import org.lacabra.store.client.graphical.dispatcher.LockedWindowDispatcher;
+import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
+import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.internals.maven.ClassRunner;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.ws.rs.core.Response;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Supplier;
-import java.util.stream.StreamSupport;
+import java.util.HashSet;
 
 public final class SignupWindow extends DispatchedWindow {
     public static final String TITLE = "Crear una cuenta";
@@ -54,7 +56,13 @@ public final class SignupWindow extends DispatchedWindow {
                 return;
             }
 
-            this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            this.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(final WindowEvent e) {
+                    removeWindowListener(this);
+                    replace(AuthWindow.class);
+                }
+            });
 
             this.setTitle(TITLE);
             this.setSize(SIZE);
@@ -66,37 +74,43 @@ public final class SignupWindow extends DispatchedWindow {
                 p.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
 
                 {
-                    final var user = new JTextField();
-                    final var passwd = new JPasswordField();
-                    final var type = new ButtonGroup();
                     final var confirm = new JButton("Regístrate");
 
-                    final Supplier<Credentials> creds = () -> new Credentials(user.getText(),
-                            StreamSupport.stream(Spliterators.spliteratorUnknownSize(type.getElements().asIterator(),
-                                            Spliterator.ORDERED), false).filter(AbstractButton::isSelected)
-                                    .map(x -> x.getText().equalsIgnoreCase("Comprar") ? Authority.Client :
-                                            x.getText().equalsIgnoreCase("Vender") ? Authority.Artist : null).filter(Objects::nonNull).toList(),
-                            Arrays.toString(passwd.getPassword()));
+                    final Signal<Credentials> creds = new Signal<>(new Credentials());
+                    creds.effect(c -> confirm.setEnabled(!(c.id() == null || c.passwd() == null || c.passwd().isEmpty() || c.authorities().isEmpty())));
 
-                    final ActionListener validate = e -> {
-                        final var c = creds.get();
-                        confirm.setEnabled(!(c.id() == null || c.passwd() == null || c.passwd().isEmpty()));
-                    };
+                    this.connect(creds);
 
                     {
                         final var p2 = new JPanel();
 
                         {
-                            final var label = new JLabel("Nombre de usuario");
+                            final var l = new JLabel("Nombre de usuario");
 
-                            p2.add(label);
+                            p2.add(l);
                         }
 
                         {
-                            user.setPreferredSize(FIELD_SIZE);
-                            user.addActionListener(validate);
+                            final var t = new JTextField();
+                            t.setPreferredSize(FIELD_SIZE);
+                            t.getDocument().addDocumentListener(new DocumentListener() {
+                                @Override
+                                public void insertUpdate(DocumentEvent e) {
+                                    this.changedUpdate(e);
+                                }
 
-                            p2.add(user);
+                                @Override
+                                public void removeUpdate(DocumentEvent e) {
+                                    this.changedUpdate(e);
+                                }
+
+                                @Override
+                                public void changedUpdate(DocumentEvent e) {
+                                    creds.set(creds.peek().id(t.getText()));
+                                }
+                            });
+
+                            p2.add(t);
                         }
 
                         p.add(p2);
@@ -106,16 +120,33 @@ public final class SignupWindow extends DispatchedWindow {
                         final var p2 = new JPanel();
 
                         {
-                            final var label = new JLabel("Contraseña");
+                            final var l = new JLabel("Contraseña");
 
-                            p2.add(label);
+                            p2.add(l);
                         }
 
                         {
-                            passwd.setPreferredSize(FIELD_SIZE);
-                            passwd.addActionListener(validate);
+                            final var t = new JPasswordField();
 
-                            p2.add(passwd);
+                            t.setPreferredSize(FIELD_SIZE);
+                            t.getDocument().addDocumentListener(new DocumentListener() {
+                                @Override
+                                public void insertUpdate(DocumentEvent e) {
+                                    this.changedUpdate(e);
+                                }
+
+                                @Override
+                                public void removeUpdate(DocumentEvent e) {
+                                    this.changedUpdate(e);
+                                }
+
+                                @Override
+                                public void changedUpdate(DocumentEvent e) {
+                                    creds.set(creds.peek().passwd(Arrays.toString(t.getPassword())));
+                                }
+                            });
+
+                            p2.add(t);
                         }
 
                         p.add(p2);
@@ -141,16 +172,34 @@ public final class SignupWindow extends DispatchedWindow {
 
                             {
                                 final var b = new JCheckBox("Comprar");
+                                b.addActionListener(e -> {
+                                    final var v = creds.peek();
+                                    final var auths = new HashSet<>(v.authorities());
+
+                                    if (b.isSelected()) auths.add(Authority.Client);
+
+                                    else auths.remove(Authority.Client);
+
+                                    creds.set(v.authorities(auths));
+                                });
 
                                 p3.add(b);
-                                type.add(b);
                             }
 
                             {
                                 final var b = new JCheckBox("Vender");
+                                b.addActionListener(e -> {
+                                    final var v = creds.peek();
+                                    final var auths = new HashSet<>(v.authorities());
+
+                                    if (b.isSelected()) auths.add(Authority.Artist);
+
+                                    else auths.remove(Authority.Artist);
+
+                                    creds.set(v.authorities(auths));
+                                });
 
                                 p3.add(b);
-                                type.add(b);
                             }
 
                             p2.add(p3, c);
@@ -163,27 +212,29 @@ public final class SignupWindow extends DispatchedWindow {
                         confirm.setPreferredSize(FIELD_SIZE);
 
                         confirm.setEnabled(false);
-                        confirm.addActionListener(e ->
-                                controller().authResp(creds.get()).thenAccept(r -> {
-                                    final var status = r.statusCode();
+                        confirm.addActionListener(e -> {
+                            final var r = controller.authResp(creds.get()).join();
+                            final var status = r.statusCode();
 
-                                    if (status == Response.Status.OK.getStatusCode()) {
-                                        final var w = this.replace(HomeWindow.class);
+                            if (status == Response.Status.OK.getStatusCode()) {
+                                final var w = this.replace(HomeWindow.class);
 
-                                        if (w != null)
-                                            w.message("¡Te has registrado con éxito! Recuerda que tienes un 10% " +
-                                                    "de descuento en tu primer pedido.");
+                                if (w != null)
+                                    w.message("¡Te has registrado con éxito! Recuerda que tienes un 10% " + "de " +
+                                            "descuento en tu primer pedido.");
 
-                                        return;
-                                    }
+                                return;
+                            }
 
-                                    final var body = r.body();
-                                    this.message(String.format("%s%s",
-                                            status == Response.Status.UNAUTHORIZED.getStatusCode() ? "" :
-                                                    String.format("%d :", status),
-                                            body == null ? "" : body));
-                                })
-                        );
+                            final var body = r.body();
+                            final var msg = String.format("%s%s",
+                                    status == Response.Status.UNAUTHORIZED.getStatusCode() ? "" :
+                                            String.format("%d " + ":", status), body == null ? "" : body);
+
+                            Logger.getLogger().warning(msg);
+
+                            this.message(msg);
+                        });
 
                         p.add(confirm);
                     }
@@ -196,7 +247,18 @@ public final class SignupWindow extends DispatchedWindow {
         });
     }
 
-    public static void main(final String[] args) throws MalformedURLException {
-        new LockedWindowDispatcher(MainController.fromArgs(args)).dispatch(SignupWindow.class);
+    public static void main(final String[] args) throws IOException, NoSuchMethodException, InterruptedException {
+        if (Arrays.stream(args).noneMatch(x -> x.equals("run"))) {
+            ClassRunner.run(SignupWindow.class);
+        }
+
+        SwingUtilities.invokeLater(() -> {
+            try {
+                LockedWindowDispatcher.fromArgs(args).dispatch(SignupWindow.class);
+
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
