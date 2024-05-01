@@ -25,11 +25,11 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -60,12 +60,12 @@ public class MainController implements Serializable {
 
         @Override
         public HttpHeaders headers() {
-            return null;
+            return HttpHeaders.of(Collections.emptyMap(), (x, y) -> true);
         }
 
         @Override
         public String body() {
-            return body;
+            return body == null ? HttpRequest.BodyPublishers.noBody().toString() : body;
         }
 
         @Override
@@ -85,9 +85,10 @@ public class MainController implements Serializable {
     };
     @Serial
     private static final long serialVersionUID = 1L;
+    public static final int TIMEOUT = 2500;
     public final GET GET = new GET(this);
-    private transient final HttpClient httpClient =
-            HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofSeconds(20)).build();
+    private final transient HttpClient httpClient =
+            HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofMillis(TIMEOUT)).build();
     private String hostname;
     private Integer port;
     private String endpoint;
@@ -264,7 +265,9 @@ public class MainController implements Serializable {
 
     public boolean authSync() {
         try {
-            return this.auth().join();
+            return this.auth().get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            return false;
         } catch (Exception e) {
             Logger.getLogger().severe(e);
 
@@ -274,7 +277,9 @@ public class MainController implements Serializable {
 
     public boolean authSync(final String id, String passwd) {
         try {
-            return this.auth(id, passwd).join();
+            return this.auth(id, passwd).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            return false;
         } catch (Exception e) {
             Logger.getLogger().severe(e);
 
@@ -284,7 +289,9 @@ public class MainController implements Serializable {
 
     public boolean authSync(final Credentials creds) {
         try {
-            return this.auth(creds).join();
+            return this.auth(creds).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            return false;
         } catch (Exception e) {
             Logger.getLogger().severe(e);
 
@@ -356,15 +363,58 @@ public class MainController implements Serializable {
 
         this.user = id;
 
-        return this.request("/auth", RequestMethod.POST, null, creds).thenApply(r -> {
-            if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {
-                this.token = null;
-                return r;
-            }
+        try {
+            return this.request("/auth", RequestMethod.POST, null, creds).thenApply(r -> {
+                try {
+                    if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {
+                        this.token = null;
+                        return r;
+                    }
 
-            this.token = r.body();
-            return r;
-        });
+                    this.token = r.body();
+                    return r;
+                } catch (Exception e) {
+                    this.token = null;
+                    return RequestError.apply(e.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            this.token = null;
+            return CompletableFuture.completedFuture(RequestError.apply(e.getMessage()));
+        }
+    }
+
+    public HttpResponse<String> requestSync(@NotNull final String route) {
+        return this.requestSync(route, RequestMethod.GET);
+    }
+
+    public HttpResponse<String> requestSync(@NotNull final String route, @NotNull final RequestMethod method) {
+        return this.requestSync(route, method, null);
+    }
+
+    public HttpResponse<String> requestSync(@NotNull final String route, @NotNull final RequestMethod method,
+                                            final Map<String, String[]> params) {
+        return this.requestSync(route, method, params, null);
+    }
+
+    public HttpResponse<String> requestSync(@NotNull final String route, @NotNull final RequestMethod method,
+                                            final Map<String, String[]> params, Object body) {
+        return this.requestSync(route, method, params, body, null);
+    }
+
+    public HttpResponse<String> requestSync(@NotNull final String route, @NotNull final RequestMethod method,
+                                            final Map<String, String[]> params, Object body,
+                                            Map<String, String> headers) {
+        try {
+            return this.request(route, method, params, body, headers).get((long) (TIMEOUT * 1.2),
+                    TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            return RequestError.apply(e.getMessage());
+        } catch (Exception e) {
+            Logger.getLogger().severe(e);
+
+            return RequestError.apply(e.getMessage());
+        }
     }
 
     public CompletableFuture<HttpResponse<String>> request(@NotNull final String route) {
@@ -422,7 +472,7 @@ public class MainController implements Serializable {
                 }
             };
 
-            HttpRequest request = switch (method) {
+            return httpClient.sendAsync(switch (method) {
                 case GET -> builder.GET().build();
                 case HEAD -> builder.HEAD().build();
                 case POST -> builder.POST(b).build();
@@ -434,39 +484,50 @@ public class MainController implements Serializable {
                 case TRACE -> throw new UnsupportedOperationException("TRACE method not supported.");
                 case PATCH ->
                         builder.method(RequestMethod.PATCH.toString(), HttpRequest.BodyPublishers.noBody()).build();
-            };
+            }, HttpResponse.BodyHandlers.ofString()).thenApply((r) -> {
+                try {
+                    Logger.getLogger().info(String.format("%s: %d", route.replaceAll("^([^/])", "/$1"),
+                            r.statusCode()));
 
-            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply((r) -> {
-                Logger.getLogger().info(String.format("%s: %d", route.replaceAll("^([^/])", "/$1"), r.statusCode()));
+                    if (r.statusCode() != ResponseStatus.ClientError4xx.UNAUTHORIZED_401.getStatusCode()) return r;
 
-                if (r.statusCode() != ResponseStatus.ClientError4xx.UNAUTHORIZED_401.getStatusCode()) return r;
+                    if (Pattern.matches("^/?auth(/refresh?)?/?$", route)) return r;
 
-                if (Pattern.matches("^/?auth(/refresh?)?/?$", route)) return r;
-
-                return this.auth().thenApply((auth) -> {
-                    if (auth) return this.request(route, method, params, b, headers).getNow(r);
+                    if (this.authSync()) return this.requestSync(route, method, params, b, headers);
 
                     return r;
-                }).getNow(r);
+                } catch (Exception e) {
+                    return RequestError.apply(e.getMessage());
+                }
             });
         } catch (Exception e) {
             Logger.getLogger().warning(e);
 
-            return CompletableFuture.failedFuture(e);
+            return CompletableFuture.completedFuture(RequestError.apply(e.getMessage()));
         }
     }
 
     public boolean aliveSync() {
         try {
-            return this.alive().join();
+            return this.alive().get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+        } catch (TimeoutException | ExecutionException | InterruptedException e) {
+            return false;
         } catch (Exception e) {
+            Logger.getLogger().severe(e);
+
             return false;
         }
     }
 
     public final CompletableFuture<Boolean> alive() {
         try {
-            return this.request("alive", RequestMethod.HEAD).thenApply(r -> r.statusCode() == 200);
+            return this.request("alive", RequestMethod.HEAD).thenApply(r -> {
+                try {
+                    return r.statusCode() == 200;
+                } catch (Exception e) {
+                    return false;
+                }
+            });
         } catch (Exception e) {
             Logger.getLogger().severe(e);
 
@@ -518,9 +579,12 @@ public class MainController implements Serializable {
 
             public ItemDTO idSync(final ObjectId id) {
                 try {
-                    return this.id(id).join();
+                    return this.id(id).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+                } catch (TimeoutException | ExecutionException | InterruptedException e) {
+                    return null;
                 } catch (Exception e) {
                     Logger.getLogger().severe(e);
+
                     return null;
                 }
             }
@@ -543,9 +607,12 @@ public class MainController implements Serializable {
 
             public List<ItemDTO> allSync() {
                 try {
-                    return this.all().join();
+                    return this.all().get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+                } catch (TimeoutException | ExecutionException | InterruptedException e) {
+                    return null;
                 } catch (Exception e) {
                     Logger.getLogger().severe(e);
+
                     return null;
                 }
             }
@@ -581,7 +648,9 @@ public class MainController implements Serializable {
 
             public UserDTO idSync(final UserId id) {
                 try {
-                    return this.id(id).join();
+                    return this.id(id).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+                } catch (TimeoutException | ExecutionException | InterruptedException e) {
+                    return null;
                 } catch (Exception e) {
                     Logger.getLogger().severe(e);
 

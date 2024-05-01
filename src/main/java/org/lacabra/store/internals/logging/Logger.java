@@ -33,7 +33,7 @@ public final class Logger {
             }
         };
 
-        java.util.logging.ConsoleHandler ch = new java.util.logging.ConsoleHandler();
+        final java.util.logging.ConsoleHandler ch = new java.util.logging.ConsoleHandler();
         ch.setFormatter(fm);
 
         try {

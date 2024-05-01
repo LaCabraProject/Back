@@ -7,15 +7,18 @@ import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.when;
 
 public class ItemDTOTest {
-
     ItemDTO itemDTO1;
     ItemDTO itemDTO2;
     ItemDTO itemDTO3;
@@ -32,15 +35,17 @@ public class ItemDTOTest {
     private String description;
     @Mock
     private Set<String> keywords;
-    @Mock
-    private BigInteger price;
+    @Spy
+    private BigDecimal price = BigDecimal.ZERO;
     private Integer discount = 0;
-    @Mock
-    private BigInteger stock;
+    @Spy
+    private BigInteger stock = BigInteger.ZERO;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        when(keywords.stream()).thenAnswer(x -> Stream.empty());
 
         itemDTO1 = new ItemDTO();
         itemDTO1.id(id);

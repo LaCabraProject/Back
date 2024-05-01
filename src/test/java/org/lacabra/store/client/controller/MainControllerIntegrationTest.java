@@ -2,7 +2,6 @@ package org.lacabra.store.client.controller;
 
 import categories.IntegrationTest;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -18,10 +17,10 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class MainControllerIntegrationTest {
     static Process APIProcess;
-    MainController controller;
+    static MainController controller;
 
     @BeforeClass
-    public static void launchAPI() throws IOException {
+    public static void launchAPI() throws IOException, InterruptedException {
         final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn"
                 , "jetty:run", "-f", "pom.xml").inheritIO();
         b.redirectOutput(ProcessBuilder.Redirect.DISCARD);
@@ -30,15 +29,7 @@ public class MainControllerIntegrationTest {
         b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
 
         APIProcess = b.start();
-    }
 
-    @AfterClass
-    public static void closeAPI() {
-        APIProcess.destroy();
-    }
-
-    @Before
-    public void setUp() throws InterruptedException {
         controller = new MainController();
         for (int i = 0, N = 30; i < N; i++) {
             if (controller.aliveSync())
@@ -49,6 +40,11 @@ public class MainControllerIntegrationTest {
 
         closeAPI();
         System.exit(1);
+    }
+
+    @AfterClass
+    public static void closeAPI() {
+        APIProcess.destroy();
     }
 
     @Test
@@ -62,7 +58,7 @@ public class MainControllerIntegrationTest {
 
     @Test
     public void testItems() {
-        final var item = controller.GET.Item.id(ObjectId.from(0)).join();
+        final var item = controller.GET.Item.idSync(ObjectId.from(0));
         assertNotNull(item);
 
         assertEquals(item.name(), "Camiseta de grupo genérico");
@@ -70,7 +66,7 @@ public class MainControllerIntegrationTest {
         assertEquals(item.id(), 0);
         assertEquals(item.stock(), BigInteger.valueOf(1000L));
 
-        var items = controller.GET.Item.all().join();
+        var items = controller.GET.Item.allSync();
         assertNotNull(items);
 
         for (var i = 0; i < Math.min(items.size(), 20); i++) {
@@ -80,7 +76,7 @@ public class MainControllerIntegrationTest {
 
     @Test
     public void testUsers() {
-        final var user = controller.GET.User.id(UserId.from("mikel")).join();
+        final var user = controller.GET.User.idSync(UserId.from("mikel"));
 
         assertNotNull(user);
         assertEquals(user.id(), "mikel");

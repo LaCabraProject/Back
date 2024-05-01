@@ -71,17 +71,17 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
 
     @Persistent
     @JsonProperty("price")
-    @Column(jdbcType = "DECIMAL", defaultValue = "0")
+    @Column(jdbcType = "NUMERIC", sqlType = "NUMERIC", defaultValue = "0")
     @JsonSerialize(using = BigDecimalSerializer.class)
     private BigDecimal price;
 
     @JsonProperty("discount")
-    @Column(jdbcType = "INTEGER", defaultValue = "0")
+    @Column(jdbcType = "INTEGER", sqlType = "INTEGER", defaultValue = "0")
     @Persistent
     private Integer discount;
 
     @Persistent
-    @Column(jdbcType = "BIGINT", defaultValue = "0")
+    @Column(jdbcType = "BIGINT", sqlType = "BIGINT", defaultValue = "0")
     @Convert(BigIntegerConverter.class)
     @JsonProperty("stock")
     @JsonSerialize(using = BigIntegerSerializer.class)
