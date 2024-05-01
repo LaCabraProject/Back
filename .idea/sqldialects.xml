@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/src/main/java/org/lacabra/store/server/api/type/user/User.java" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/src/main/resources/sql/create_user.sql" dialect="MariaDB" />
-  </component>
-</project>

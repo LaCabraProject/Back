@@ -42,13 +42,16 @@ public final class HomeWindow extends DispatchedWindow {
                 return;
             }
 
-            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            //ajustes iniciales de la ventana
+            {
+                this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                this.setTitle(TITLE);
+                this.setSize(SIZE);
+                this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                this.setLocationRelativeTo(null);
+            }
 
-            this.setTitle(TITLE);
-            this.setSize(SIZE);
-            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            this.setLocationRelativeTo(null);
-
+            //JMenuBar
             {
                 final var bar = new JMenuBar();
                 this.setJMenuBar(bar);
@@ -125,6 +128,7 @@ public final class HomeWindow extends DispatchedWindow {
                 }
             }
 
+            //banner
             {
                 final var banner = this.banner();
 
@@ -132,6 +136,7 @@ public final class HomeWindow extends DispatchedWindow {
                     this.add(banner, BorderLayout.NORTH);
             }
 
+            //contenidos
             {
                 JScrollPane scroll;
 
@@ -140,11 +145,37 @@ public final class HomeWindow extends DispatchedWindow {
                     carousel.setLayout(new GridLayout(1, 1));
                     carousel.setPreferredSize(new Dimension(200, 200));
 
-                    for (int i = 1; i <= 5; i++) {
-                        final var label = new JLabel("Ítem " + i);
-                        label.setHorizontalAlignment(JLabel.CENTER);
+                    //mensajes en el centro sobre la tienda
+                    {
+                        for (int i = 1; i <= 5; i++) {
+                            String texto = "";
+                            if (i == 1) {
+                                texto = "¡No te pierdas las ofertas de primavera en la web de GOAT!" +
+                                        " Descuentos irresistibles en moda, decoración y más. ¡Renueva tu estilo al mejor" +
+                                        " precio!";
+                            } else if (i == 2) {
+                                texto = "¡Tu primera compra en la web de GOAT tendrá un descuento del 10%! No pierdas la " +
+                                        "oportunidad de estrenarte con estilo y ahorra en tus productos favoritos. " +
+                                        "¡Compra ahora y disfruta de esta increíble oferta!";
+                            } else if (i == 3) {
+                                texto = "¿Buscas regalos originales y únicos? ¡En GOAT los tenemos! Explora nuestra " +
+                                        "selección de productos diseñados por artistas independientes y encuentra el " +
+                                        "regalo perfecto para esa persona especial. ¡Haz que tus regalos destaquen!";
+                            } else if (i == 4) {
+                                texto = "¡Si eres un artista o tienes habilidades manuales, ahora puedes poner tus productos " +
+                                        "a la venta fácilmente con tu propio puesto de ventas virtual en GOAT! Es una forma " +
+                                        "sencilla y cómoda de exhibir tus creaciones al mundo.";
+                            } else if (i == 5) {
+                                texto = "¡Expresa tu estilo y personalidad con productos únicos de artistas independientes en " +
+                                        "GOAT! Desde camisetas hasta tazas, nuestra plataforma ofrece una amplia variedad de " +
+                                        "productos para todos los gustos. ¡Descubre tu próxima pieza favorita hoy!";
+                            }
 
-                        carousel.add(label);
+                            final var label = new JLabel(texto);
+                            label.setHorizontalAlignment(JLabel.CENTER);
+
+                            carousel.add(label);
+                        }
                     }
 
                     scroll = new JScrollPane(carousel);
@@ -167,6 +198,7 @@ public final class HomeWindow extends DispatchedWindow {
                 this.add(scroll, BorderLayout.CENTER);
             }
 
+            //footer
             {
                 final var footer = this.footer();
 
