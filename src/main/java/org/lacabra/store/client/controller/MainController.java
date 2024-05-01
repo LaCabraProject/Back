@@ -265,7 +265,7 @@ public class MainController implements Serializable {
 
     public boolean authSync() {
         try {
-            return this.auth().get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+            return this.auth().get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -277,7 +277,7 @@ public class MainController implements Serializable {
 
     public boolean authSync(final String id, String passwd) {
         try {
-            return this.auth(id, passwd).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+            return this.auth(id, passwd).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -289,7 +289,7 @@ public class MainController implements Serializable {
 
     public boolean authSync(final Credentials creds) {
         try {
-            return this.auth(creds).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+            return this.auth(creds).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -406,7 +406,7 @@ public class MainController implements Serializable {
                                             final Map<String, String[]> params, Object body,
                                             Map<String, String> headers) {
         try {
-            return this.request(route, method, params, body, headers).get((long) (TIMEOUT * 1.2),
+            return this.request(route, method, params, body, headers).get((long) (TIMEOUT * 1.75),
                     TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return RequestError.apply(e.getMessage());
@@ -491,7 +491,7 @@ public class MainController implements Serializable {
 
                     if (r.statusCode() != ResponseStatus.ClientError4xx.UNAUTHORIZED_401.getStatusCode()) return r;
 
-                    if (Pattern.matches("^/?auth(/refresh?)?/?$", route)) return r;
+                    if (Pattern.matches("^/?auth(/refresh?)?/?$", r.uri().getPath())) return r;
 
                     if (this.authSync()) return this.requestSync(route, method, params, b, headers);
 
@@ -509,7 +509,7 @@ public class MainController implements Serializable {
 
     public boolean aliveSync() {
         try {
-            return this.alive().get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+            return this.alive().get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -579,7 +579,7 @@ public class MainController implements Serializable {
 
             public ItemDTO idSync(final ObjectId id) {
                 try {
-                    return this.id(id).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+                    return this.id(id).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     return null;
                 } catch (Exception e) {
@@ -607,7 +607,7 @@ public class MainController implements Serializable {
 
             public List<ItemDTO> allSync() {
                 try {
-                    return this.all().get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+                    return this.all().get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     return null;
                 } catch (Exception e) {
@@ -648,7 +648,7 @@ public class MainController implements Serializable {
 
             public UserDTO idSync(final UserId id) {
                 try {
-                    return this.id(id).get((long) (TIMEOUT * 1.2), TimeUnit.MILLISECONDS);
+                    return this.id(id).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     return null;
                 } catch (Exception e) {

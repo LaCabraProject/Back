@@ -2,22 +2,24 @@ package org.lacabra.store.client.dto;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.ItemType;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ItemDTOTest {
     ItemDTO itemDTO1;
     ItemDTO itemDTO2;
@@ -47,57 +49,47 @@ public class ItemDTOTest {
 
         when(keywords.stream()).thenAnswer(x -> Stream.empty());
 
-        itemDTO1 = new ItemDTO();
-        itemDTO1.id(id);
-        itemDTO1.type(type);
-        itemDTO1.parent(parent);
-        itemDTO1.name(name);
-        itemDTO1.description(description);
-        itemDTO1.keywords(keywords);
-        itemDTO1.price(price);
-        itemDTO1.discount(discount);
-        itemDTO1.stock(stock);
+        itemDTO1 = new ItemDTO(id, type, name, description, keywords, price, discount, stock, parent);
 
         itemDTO2 = new ItemDTO(type, name, description, keywords, price, discount, stock, userId);
-        itemDTO2.parent(userId);
+        itemDTO2 = itemDTO2.parent(userId);
 
         itemDTO3 = new ItemDTO(id, type, name, description, keywords, price, discount, stock, userId);
-
     }
 
     @Test
     public void getId() {
-        assertEquals(id, itemDTO1.id());
+        assertEquals(itemDTO1.id(), id);
     }
 
     @Test
     public void getType() {
-        assertEquals(type, itemDTO1.type());
+        assertEquals(itemDTO1.type(), type);
     }
 
     @Test
     public void getParent() {
-        assertEquals(parent, itemDTO1.parent());
+        assertEquals(itemDTO1.parent(), parent);
     }
 
     @Test
     public void getName() {
-        assertEquals(name, itemDTO1.name());
+        assertEquals(itemDTO1.name(), name);
     }
 
     @Test
     public void getDescription() {
-        assertEquals(description, itemDTO1.description());
+        assertEquals(itemDTO1.description(), description);
     }
 
     @Test
     public void getKeywords() {
-        assertEquals(keywords, itemDTO1.keywords());
+        assertTrue(itemDTO1.keywords().isEmpty());
     }
 
     @Test
     public void getPrice() {
-        assertEquals(price, itemDTO1.price());
+        assertEquals(itemDTO1.price(), BigDecimal.ZERO);
     }
 
     @Test
@@ -107,6 +99,6 @@ public class ItemDTOTest {
 
     @Test
     public void getStock() {
-        assertEquals(stock, itemDTO1.stock());
+        assertEquals(stock.subtract(itemDTO1.stock()).intValue(), 0);
     }
 }

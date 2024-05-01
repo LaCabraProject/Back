@@ -4,10 +4,7 @@ import categories.PerformanceTest;
 import com.github.noconnor.junitperf.JUnitPerfRule;
 import com.github.noconnor.junitperf.JUnitPerfTest;
 import com.github.noconnor.junitperf.reporting.providers.HtmlReportGenerator;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.type.id.ObjectId;
@@ -24,10 +21,10 @@ public class MainControllerPerformanceTest {
     static Process APIProcess;
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule(new HtmlReportGenerator("target/junitperf/report.html"));
-    static MainController controller;
+    MainController controller;
 
     @BeforeClass
-    public static void startAPI() throws IOException, InterruptedException {
+    public static void startAPI() throws IOException {
         final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn"
                 , "jetty:run", "-f", "pom.xml").inheritIO();
         b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
@@ -35,7 +32,15 @@ public class MainControllerPerformanceTest {
         b.redirectError(ProcessBuilder.Redirect.DISCARD);
 
         APIProcess = b.start();
+    }
 
+    @AfterClass
+    public static void closeAPI() {
+        APIProcess.destroy();
+    }
+
+    @Before
+    public void setUp() throws InterruptedException {
         controller = new MainController();
         for (int i = 0, N = 30; i < N; i++) {
             if (controller.aliveSync()) return;
@@ -47,12 +52,7 @@ public class MainControllerPerformanceTest {
         System.exit(1);
     }
 
-    @AfterClass
-    public static void closeAPI() {
-        APIProcess.destroy();
-    }
-
-    @JUnitPerfTest(threads = 10, durationMs = 2000)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT)
     @Test
     public void testAuthentication() {
         controller.authSync("mikel", "1234");
@@ -62,10 +62,10 @@ public class MainControllerPerformanceTest {
         assertNull(controller.getUser());
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = 2000)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 2)
     @Test
     public void testItems() {
-        final var item = controller.GET.Item.id(ObjectId.from(0)).join();
+        final var item = controller.GET.Item.idSync(ObjectId.from(0));
         assertNotNull(item);
 
         assertEquals(item.name(), "Camiseta de grupo genérico");
@@ -75,7 +75,7 @@ public class MainControllerPerformanceTest {
 
         List<ItemDTO> items;
         try {
-            items = controller.GET.Item.all().join();
+            items = controller.GET.Item.allSync();
         } catch (Exception e) {
             items = null;
         }
@@ -87,10 +87,10 @@ public class MainControllerPerformanceTest {
         }
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = 2000)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 2)
     @Test
     public void testUsers() {
-        final var user = controller.GET.User.id(UserId.from("mikel")).join();
+        final var user = controller.GET.User.idSync(UserId.from("mikel"));
 
         assertNotNull(user);
         assertEquals(user.id(), "mikel");

@@ -18,8 +18,8 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 @JsonDeserialize(using = UserDeserializer.DTO.class)
-public record UserDTO(@JsonProperty("id") @JsonSerialize(using = UserIdSerializer.class) UserId id, @JsonProperty(
-        "authorities") EnumSet<Authority> authorities,
+public record UserDTO(@JsonProperty("id") @JsonSerialize(using = UserIdSerializer.class) UserId id,
+                      @JsonProperty("authorities") EnumSet<Authority> authorities,
                       @JsonProperty("passwd") String passwd) implements Serializable, DTO<UserDTO, User> {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -45,8 +45,7 @@ public record UserDTO(@JsonProperty("id") @JsonSerialize(using = UserIdSerialize
     }
 
     public UserDTO(final UserId id, final Collection<Authority> authorities, final String passwd) {
-        this(id, authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) :
-                EnumSet.copyOf(authorities), passwd);
+        this(id, authorities == null || authorities.isEmpty() ? null : EnumSet.copyOf(authorities), passwd);
     }
 
     public UserDTO(final Credentials creds) {
