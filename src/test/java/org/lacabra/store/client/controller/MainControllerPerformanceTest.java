@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Category(PerformanceTest.class)
 public class MainControllerPerformanceTest {
@@ -58,7 +60,7 @@ public class MainControllerPerformanceTest {
         controller = new MainController();
     }
 
-/*    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testAuthentication() {
         assertTrue(controller.authSync("mikel", "1234"));
@@ -66,7 +68,7 @@ public class MainControllerPerformanceTest {
 
         controller.unauth();
         assertNull(controller.getUser());
-    }*/
+    }
 
     @JUnitPerfTest(threads = 2, durationMs = MainController.TIMEOUT * 3)
     @Test
