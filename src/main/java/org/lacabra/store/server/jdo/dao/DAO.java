@@ -66,12 +66,15 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
 
         if (del == null) return false;
 
-        Transaction tx = pm.currentTransaction();
+        final var tx = pm.currentTransaction();
 
         try {
-            tx.begin();
+            if (!tx.isActive())
+                tx.begin();
+
             pm.flush();
             pm.removeUserObject(del);
+
             tx.commit();
 
             Logger.getLogger().info(String.format("%s deleted successfully.", del));
@@ -114,9 +117,12 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
                         + "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + str.toLowerCase()).toLowerCase()).replaceFirst(m -> m.group().toUpperCase());
 
         try {
-            tx.begin();
+            if (!tx.isActive())
+                tx.begin();
+
             pm.flush();
             pm.makePersistent(object);
+
             tx.commit();
 
             Logger.getLogger().info(String.format("%s %s stored successfully.", clsname, object));
@@ -181,7 +187,9 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         Transaction tx = pm.currentTransaction();
 
         try {
-            tx.begin();
+            if (!tx.isActive())
+                tx.begin();
+
             pm.flush();
 
             if (query == null) {

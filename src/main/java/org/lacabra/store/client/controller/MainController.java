@@ -3,7 +3,6 @@ package org.lacabra.store.client.controller;
 
 import org.glassfish.jersey.http.ResponseStatus;
 import org.lacabra.store.client.assembler.ItemAssembler;
-import org.lacabra.store.client.assembler.UserAssembler;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
@@ -586,6 +585,14 @@ public class MainController implements Serializable {
                 });
             }
 
+            public ItemDTO idSync(final Number id) {
+                return this.idSync(ObjectId.from(id));
+            }
+
+            public ItemDTO idSync(final String id) {
+                return this.idSync(ObjectId.from(id));
+            }
+
             public ItemDTO idSync(final ObjectId id) {
                 try {
                     return this.id(id).get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
@@ -642,7 +649,7 @@ public class MainController implements Serializable {
                     if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) return null;
 
                     try {
-                        return UserAssembler.getInstance().UserToDTO(new ObjectMapperProvider().getContext(org.lacabra.store.server.api.type.user.User.class).readValue(r.body(), org.lacabra.store.server.api.type.user.User.class));
+                        return new ObjectMapperProvider().getContext(UserDTO.class).readValue(r.body(), UserDTO.class);
                     } catch (Exception e) {
                         Logger.getLogger().warning(e);
 

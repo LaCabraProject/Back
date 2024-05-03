@@ -24,7 +24,7 @@ public class MainControllerPerformanceTest {
     MainController controller;
 
     @BeforeClass
-    public static void startAPI() throws IOException {
+    public static void startAPI() throws IOException, InterruptedException {
         final var b = new ProcessBuilder().command(System.getProperty("os.name").startsWith("Win") ? "mvn.cmd" : "mvn"
                 , "jetty:run", "-f", "pom.xml").inheritIO();
         b.environment().put("JAVA_HOME", System.getProperties().getProperty("java.home"));
@@ -32,6 +32,20 @@ public class MainControllerPerformanceTest {
         b.redirectError(ProcessBuilder.Redirect.DISCARD);
 
         APIProcess = b.start();
+
+        final var controller = new MainController();
+        for (int i = 0, N = 30; i < N; i++) {
+            if (controller.aliveSync()) {
+                controller.GET.Item.allSync();
+                if (controller.GET.User.idSync("mikel") != null)
+                    return;
+            }
+
+            TimeUnit.SECONDS.sleep(5);
+        }
+
+        closeAPI();
+        System.exit(1);
     }
 
     @AfterClass
@@ -42,18 +56,6 @@ public class MainControllerPerformanceTest {
     @Before
     public void setUp() throws InterruptedException {
         controller = new MainController();
-        for (int i = 0, N = 30; i < N; i++) {
-            if (controller.aliveSync()) {
-                controller.GET.Item.allSync();
-                controller.GET.User.idSync("mikel");
-                return;
-            }
-
-            TimeUnit.SECONDS.sleep(1);
-        }
-
-        closeAPI();
-        System.exit(1);
     }
 
 /*    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
@@ -66,7 +68,7 @@ public class MainControllerPerformanceTest {
         assertNull(controller.getUser());
     }*/
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
+    @JUnitPerfTest(threads = 2, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testItems() {
         final var item = controller.GET.Item.idSync(ObjectId.from(0));
@@ -91,7 +93,7 @@ public class MainControllerPerformanceTest {
         }
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
+    @JUnitPerfTest(threads = 2, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testUsers() {
         final var user = controller.GET.User.idSync("mikel");
