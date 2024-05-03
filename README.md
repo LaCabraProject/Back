@@ -15,7 +15,7 @@
 
 1. La base de datos del proyecto y su usuario asociado ejecutando el script SQL
    *src/main/resources/sql/create_user.sql*.
-
+   (```mysql –uroot -p < sql/create-user.sql```).
 1. (Opcional) Limpiar el directorio de trabajo de aquellos archivos que hayan sido
    generados durante la construcción del proyecto con el target *clean:clean* de Maven
    (```mvn clean:clean -f pom.xml```).
@@ -25,3 +25,9 @@
 3. Ejecutar el servidor mediante el target *jetty:run* de Maven (```mvn jetty:run -f pom.xml```).
 
 4. Ejecutar el client mediante el target *exec:java* de Maven (```mvn exec:java -P client -f pom.xml```).
+
+5. Ejecutar los teses unitarios mediante el LifeCycle "test" de Maven (```mvn test -f pom.xml```);
+
+6. Ejecutar los teses de integracion (```mvn verify -Pintegration-tests```);
+
+7. Ejecutar los teses de rendimiento (```mvn verify -Pperformance-tests```);
