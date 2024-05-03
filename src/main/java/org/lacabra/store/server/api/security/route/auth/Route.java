@@ -33,7 +33,14 @@ public class Route {
     @POST
     @Path("refresh")
     @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
     public Response refresh(@Context ContainerRequestContext context) {
-        return Response.ok(new AuthToken(AuthTokenUtils.refresh(((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails()))).build();
+        final var token =
+                new AuthToken(AuthTokenUtils.refresh(((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails()));
+
+        if (token.token() == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        return Response.ok(token).build();
     }
 }

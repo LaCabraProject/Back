@@ -1,8 +1,13 @@
 package org.lacabra.store.client.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.item.Item;
@@ -18,9 +23,13 @@ import java.util.Objects;
 import java.util.concurrent.atomic.*;
 import java.util.stream.Collectors;
 
-public record ItemDTO(ObjectId id, ItemType type, String name, String description, HashSet<String> keywords,
-                      BigDecimal price, Integer discount, BigInteger stock,
-                      UserId parent) implements Serializable, DTO<ItemDTO, Item> {
+@JsonDeserialize(using = ItemDeserializer.DTO.class)
+public record ItemDTO(@JsonProperty("id") @JsonSerialize(using = ObjectIdSerializer.class) ObjectId id,
+                      @JsonProperty("type") ItemType type, @JsonProperty("name") String name,
+                      @JsonProperty("description") String description,
+                      @JsonProperty("keywords") HashSet<String> keywords, @JsonProperty("price") BigDecimal price,
+                      @JsonProperty("discount") Integer discount, @JsonProperty("stock") BigInteger stock,
+                      @JsonProperty("parent") UserId parent) implements Serializable, DTO<ItemDTO, Item> {
     @Serial
     private static final long serialVersionUID = 1L;
 

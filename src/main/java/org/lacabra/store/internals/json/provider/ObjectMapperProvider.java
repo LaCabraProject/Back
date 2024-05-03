@@ -11,8 +11,6 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.json.deserializer.*;
-import org.lacabra.store.internals.json.serializer.BigDecimalSerializer;
-import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
 import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
 import org.lacabra.store.internals.json.serializer.UserIdSerializer;
 import org.lacabra.store.internals.type.id.ObjectId;
@@ -23,8 +21,6 @@ import org.lacabra.store.server.api.type.user.User;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,9 +54,6 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
         mod.addSerializer(UserId.class, new UserIdSerializer());
         mod.addSerializer(ObjectId.class, new ObjectIdSerializer());
-
-        mod.addSerializer(BigInteger.class, new BigIntegerSerializer());
-        mod.addSerializer(BigDecimal.class, new BigDecimalSerializer());
 
         mapper.registerModule(mod);
         mapper.registerModule(new Jdk8Module());

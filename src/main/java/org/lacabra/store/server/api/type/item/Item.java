@@ -10,17 +10,15 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
-import org.lacabra.store.internals.json.serializer.BigDecimalSerializer;
-import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
 import org.lacabra.store.internals.json.serializer.ObjectIdSerializer;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
 import org.lacabra.store.server.api.type.DTOable;
 import org.lacabra.store.server.api.type.user.User;
-import org.lacabra.store.server.jdo.converter.BigIntegerConverter;
 import org.lacabra.store.server.jdo.converter.ItemTypeConverter;
 import org.lacabra.store.server.jdo.converter.ObjectIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
+import org.lacabra.store.server.jdo.dao.UserDAO;
 
 import javax.jdo.annotations.*;
 import java.io.IOException;
@@ -35,6 +33,7 @@ import java.util.concurrent.atomic.*;
 import java.util.stream.Collectors;
 
 @JsonDeserialize(using = ItemDeserializer.Persistent.class)
+@JsonSerialize
 @PersistenceCapable(table = "item")
 @ForeignKey(name = "parent", members = "id", columns = {@Column(name = "parent", defaultValue = "#NULL", allowsNull =
         "true")}, unique = "false", deleteAction = ForeignKeyAction.NONE, updateAction = ForeignKeyAction.NONE)
@@ -71,20 +70,14 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
 
     @Persistent
     @JsonProperty("price")
-    @Column(jdbcType = "NUMERIC", sqlType = "NUMERIC", defaultValue = "0")
-    @JsonSerialize(using = BigDecimalSerializer.class)
     private BigDecimal price;
 
     @JsonProperty("discount")
-    @Column(jdbcType = "INTEGER", sqlType = "INTEGER", defaultValue = "0")
     @Persistent
     private Integer discount;
 
     @Persistent
-    @Column(jdbcType = "BIGINT", sqlType = "BIGINT", defaultValue = "0")
-    @Convert(BigIntegerConverter.class)
     @JsonProperty("stock")
-    @JsonSerialize(using = BigIntegerSerializer.class)
     private BigInteger stock;
 
     @JsonSerialize(using = UserToIdSerializer.class)
@@ -96,13 +89,61 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
     public Item() {
     }
 
+    public Item(final String id) {
+        this(ObjectId.from(id));
+    }
+
+    public Item(final Number id) {
+        this(ObjectId.from(id));
+    }
+
     public Item(final ObjectId id) {
-        this(id, null, null, null, null, null, null, null, null);
+        this(id, null, null, null, null, null, null, null, (String) null);
     }
 
     public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
-                final Number price, final Integer discount, final BigInteger stock, final User parent) {
+                final Number price, final Number discount, final Number stock, final String parent) {
+        this(type, name, description, keywords, price, discount, stock, UserId.from(parent));
+    }
+
+    public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
+                final Number price, final Number discount, final Number stock, final UserId parent) {
+        this(type, name, description, keywords, price, discount, stock, new User(parent));
+    }
+
+    public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
+                final Number price, final Number discount, final Number stock, final User parent) {
         this(ObjectId.random(Item.class), type, name, description, keywords, price, discount, stock, parent);
+    }
+
+    public Item(final String id, final ItemType type, final String name, final String description,
+                final Collection<String> keywords, final Number price, final Number discount, final Number stock
+            , final String parent) {
+        this(ObjectId.from(id), type, name, description, keywords, price, discount, stock, UserId.from(parent));
+    }
+
+    public Item(final Number id, final ItemType type, final String name, final String description,
+                final Collection<String> keywords, final Number price, final Number discount, final Number stock
+            , final String parent) {
+        this(ObjectId.from(id), type, name, description, keywords, price, discount, stock, UserId.from(parent));
+    }
+
+    public Item(final Number id, final ItemType type, final String name, final String description,
+                final Collection<String> keywords, final Number price, final Number discount, final Number stock
+            , final UserId parent) {
+        this(ObjectId.from(id), type, name, description, keywords, price, discount, stock, new User(parent));
+    }
+
+    public Item(final ObjectId id, final ItemType type, final String name, final String description,
+                final Collection<String> keywords, final Number price, final Number discount, final Number stock
+            , final String parent) {
+        this(id, type, name, description, keywords, price, discount, stock, UserId.from(parent));
+    }
+
+    public Item(final ObjectId id, final ItemType type, final String name, final String description,
+                final Collection<String> keywords, final Number price, final Number discount, final Number stock
+            , final UserId parent) {
+        this(id, type, name, description, keywords, price, discount, stock, new User(parent));
     }
 
     public Item(final ObjectId id, final ItemType type, final String name, final String description,
@@ -151,15 +192,15 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
     }
 
     public BigDecimal price() {
-        return this.price;
+        return this.price == null ? BigDecimal.ZERO : this.price;
     }
 
     public BigInteger stock() {
-        return this.stock;
+        return this.stock == null ? BigInteger.ZERO : this.stock;
     }
 
     public Integer discount() {
-        return this.discount;
+        return this.discount == null ? null : this.discount;
     }
 
     public User parent() {
@@ -191,12 +232,16 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
     }
 
     private void keywords(final Collection<String> keywords) {
-        this.keywords = keywords == null ? new HashSet<>() :
+        this.keywords = keywords == null ? null :
                 keywords.stream().filter(Objects::nonNull).collect(Collectors.toCollection(HashSet::new));
     }
 
     private void price(final Number price) {
-        this.price = (price == null ? BigDecimal.ZERO : new BigDecimal(price.toString())).max(BigDecimal.ZERO);
+        if (price == null)
+            this.price = null;
+
+        else
+            this.price = new BigDecimal(price.toString()).max(BigDecimal.ZERO);
     }
 
     private void stock(final Number stock) {
@@ -218,8 +263,11 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
 
             case BigDecimal dec -> dec.toBigInteger();
 
-            case null, default -> BigInteger.ZERO;
-        }).min(BigInteger.ZERO);
+            case null, default -> null;
+        });
+
+        if (this.stock != null)
+            this.stock = this.stock.max(BigInteger.ZERO);
     }
 
     private void discount(final Number discount) {
@@ -250,8 +298,11 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
             case BigDecimal dec ->
                     dec.min(BigDecimal.valueOf(Integer.MAX_VALUE)).max(BigDecimal.valueOf(Integer.MIN_VALUE)).intValue();
 
-            case null, default -> 0;
+            case null, default -> null;
         };
+
+        if (this.discount != null)
+            this.discount = Math.max(0, Math.min(100, this.discount));
     }
 
     private void parent(final String parent) {
@@ -268,7 +319,13 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
 
     @Override
     public Item merge(final Item override) {
-        if (override == null) return this;
+        UserDAO.getInstance();
+
+        if (override == null) {
+            Mergeable.super.merge(this);
+
+            return this;
+        }
 
         if (override.id != null) this.id(override.id);
 

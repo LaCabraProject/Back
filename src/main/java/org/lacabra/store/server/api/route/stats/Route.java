@@ -1,9 +1,7 @@
 package org.lacabra.store.server.api.route.stats;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.annotation.security.PermitAll;
 import org.glassfish.jersey.process.internal.RequestScoped;
-import org.lacabra.store.internals.json.serializer.BigIntegerSerializer;
 import org.lacabra.store.server.api.type.stats.ItemStats;
 import org.lacabra.store.server.api.type.stats.Stats;
 import org.lacabra.store.server.api.type.stats.UserStats;
@@ -37,7 +35,6 @@ public final class Route {
         @PermitAll
         public final static class Total {
             @GET
-            @JsonSerialize(using = BigIntegerSerializer.class)
             public static BigInteger GET() {
                 return ItemStats.total();
             }
@@ -57,7 +54,6 @@ public final class Route {
         @PermitAll
         public final static class Total {
             @GET
-            @JsonSerialize(using = BigIntegerSerializer.class)
             public static BigInteger GET() {
                 return UserStats.total();
             }

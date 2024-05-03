@@ -265,7 +265,7 @@ public class MainController implements Serializable {
 
     public boolean authSync() {
         try {
-            return this.auth().get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+            return this.auth().get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -277,7 +277,8 @@ public class MainController implements Serializable {
 
     public boolean authSync(final String id, String passwd) {
         try {
-            return this.auth(id, passwd).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+            this.unauth();
+            return this.auth(id, passwd).get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -289,7 +290,8 @@ public class MainController implements Serializable {
 
     public boolean authSync(final Credentials creds) {
         try {
-            return this.auth(creds).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+            this.unauth();
+            return this.auth(creds).get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -320,7 +322,7 @@ public class MainController implements Serializable {
             return CompletableFuture.completedFuture(RequestError.apply(body));
         }
 
-        return this.request("/auth/refresh", RequestMethod.POST, null, null, Map.of("Authorization", this.token)).thenApply((r) -> {
+        return this.request("/auth/refresh", RequestMethod.POST).thenApply((r) -> {
             if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {
                 this.token = null;
                 return r;
@@ -345,6 +347,8 @@ public class MainController implements Serializable {
     }
 
     public CompletableFuture<HttpResponse<String>> authResp(final Credentials creds) {
+        this.unauth();
+
         if (creds == null) {
             final var body = "No credentials were provided.";
 
@@ -406,7 +410,7 @@ public class MainController implements Serializable {
                                             final Map<String, String[]> params, Object body,
                                             Map<String, String> headers) {
         try {
-            return this.request(route, method, params, body, headers).get((long) (TIMEOUT * 1.75),
+            return this.request(route, method, params, body, headers).get((long) (TIMEOUT * 2.5),
                     TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return RequestError.apply(e.getMessage());
@@ -486,14 +490,19 @@ public class MainController implements Serializable {
                         builder.method(RequestMethod.PATCH.toString(), HttpRequest.BodyPublishers.noBody()).build();
             }, HttpResponse.BodyHandlers.ofString()).thenApply((r) -> {
                 try {
-                    Logger.getLogger().info(String.format("%s: %d", route.replaceAll("^([^/])", "/$1"),
-                            r.statusCode()));
+                    Logger.getLogger().info(String.format("%s: %d%s", route.replaceAll("^([^/])", "/$1"),
+                            r.statusCode(), switch (r.statusCode()) {
+                                case 200, 404, 401 -> "";
+
+                                default -> String.format(" (\nBODY\n---\n%s)", r.body().replaceAll("\n", "\n\t"));
+                            }));
 
                     if (r.statusCode() != ResponseStatus.ClientError4xx.UNAUTHORIZED_401.getStatusCode()) return r;
 
-                    if (Pattern.matches("^/?auth(/refresh?)?/?$", r.uri().getPath())) return r;
+                    if (Pattern.matches("^/?auth.*", r.uri().getPath())) return r;
 
-                    if (this.authSync()) return this.requestSync(route, method, params, b, headers);
+                    if (this.token != null && this.authSync())
+                        return this.requestSync(route, method, params, b, headers);
 
                     return r;
                 } catch (Exception e) {
@@ -509,7 +518,7 @@ public class MainController implements Serializable {
 
     public boolean aliveSync() {
         try {
-            return this.alive().get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+            return this.alive().get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
         } catch (TimeoutException | ExecutionException | InterruptedException e) {
             return false;
         } catch (Exception e) {
@@ -579,7 +588,7 @@ public class MainController implements Serializable {
 
             public ItemDTO idSync(final ObjectId id) {
                 try {
-                    return this.id(id).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+                    return this.id(id).get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     return null;
                 } catch (Exception e) {
@@ -607,7 +616,7 @@ public class MainController implements Serializable {
 
             public List<ItemDTO> allSync() {
                 try {
-                    return this.all().get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+                    return this.all().get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     return null;
                 } catch (Exception e) {
@@ -648,7 +657,7 @@ public class MainController implements Serializable {
 
             public UserDTO idSync(final UserId id) {
                 try {
-                    return this.id(id).get((long) (TIMEOUT * 1.75), TimeUnit.MILLISECONDS);
+                    return this.id(id).get((long) (TIMEOUT * 2.5), TimeUnit.MILLISECONDS);
                 } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     return null;
                 } catch (Exception e) {

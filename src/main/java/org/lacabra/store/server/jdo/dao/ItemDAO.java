@@ -1,27 +1,23 @@
 package org.lacabra.store.server.jdo.dao;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.item.Item;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
 
 @ApplicationScoped
-public class ItemDAO extends DAO<Item> {
+public final class ItemDAO extends DAO<Item> {
     private static ItemDAO instance;
 
     static {
-        var dao = ItemDAO.getInstance();
+        final var dao = ItemDAO.getInstance();
         DAO.instances.put(Item.class, dao);
 
-        try (InputStream in = ItemDAO.class.getClassLoader().getResourceAsStream("data/items.json")) {
+        try (final var in = ItemDAO.class.getClassLoader().getResourceAsStream("data/items.json")) {
             if (in != null) {
-                ObjectMapper mapper = new ObjectMapperProvider().getContext(Item[].class);
-                dao.store(mapper.readValue(in, Item[].class));
+                dao.store(new ObjectMapperProvider().getContext(Item[].class).readValue(in, Item[].class));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -51,18 +47,11 @@ public class ItemDAO extends DAO<Item> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean store(Item item) {
-        if (item == null) {
-            return super.store((Item) null);
-        }
+        if (item != null)
+            item = item.merge(new Item(item.id(), null, null, null, null, null, null, null, item.parent() == null ?
+                    null : UserDAO.getInstance().findOne(item.parent())));
 
-        item = item.merge(new Item(item.id(), null, null, null, null, null, null, null,
-                item.parent() == null ? null : UserDAO.getInstance().findOne(item.parent())));
-
-        return super.store(item.merge(new Item(item.id(), null, null, null, item.keywords() == null ?
-                Collections.EMPTY_SET
-                : null, item.price() == null ? 0 : null, item.discount() == null ? 0 : item.discount(),
-                item.stock() == null ? 0 : item.stock(), null)));
+        return super.store(item);
     }
 }

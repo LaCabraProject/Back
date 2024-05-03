@@ -2,8 +2,8 @@ package org.lacabra.store.server.jdo.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
+import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.server.api.type.security.password.PasswordHasher;
 import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 @ApplicationScoped
-public class UserDAO extends DAO<User> {
+public final class UserDAO extends DAO<User> {
     private static UserDAO instance;
 
     static {

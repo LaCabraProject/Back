@@ -3,6 +3,7 @@ package org.lacabra.store.server.jdo.dao;
 import jakarta.el.MethodNotFoundException;
 import org.datanucleus.api.jdo.JDOQuery;
 import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.server.api.type.item.Item;
 
 import javax.jdo.*;
 import java.io.Serializable;
@@ -42,12 +43,10 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     }
 
     public static DAO<?> getInstance(Class<?> objClass) {
-        DAO<?> ret = DAO.instances.get(objClass);
-
+        final var ret = DAO.instances.get(objClass);
         if (ret != null) return ret;
 
-        Optional<?> opt = DAO.instances.keySet().stream().filter((k) -> k.isAssignableFrom(objClass)).findFirst();
-        return opt.isPresent() ? DAO.instances.get(opt.get()) : null;
+        return DAO.instances.keySet().stream().filter((k) -> k.isAssignableFrom(objClass)).findFirst().map(DAO.instances::get).orElse(null);
     }
 
     protected abstract DAO<T> instance();
@@ -62,7 +61,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         try {
             del = this.find(object);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger().severe(e);
         }
 
         if (del == null) return false;
@@ -93,31 +92,39 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
             return false;
         }
 
-        T found = this.findOne(object);
+        if (object instanceof Mergeable<?> o)
+            object = (T) o.merge(null);
+
+        final var found = this.findOne(object);
 
         if (found != null) {
             if (found instanceof Mergeable) {
-                ((Mergeable<T>) found).merge(object);
+                if (found instanceof Item) {
+                    Logger.getLogger().warning("found: " + found);
+                    Logger.getLogger().warning("object: " + object + ", merged: " + ((Mergeable<T>) found).merge(object));
+                }
+                object = ((Mergeable<T>) found).merge(object);
             } else this.delete(found);
         }
 
-        Transaction tx = pm.currentTransaction();
+        final var tx = pm.currentTransaction();
+
+        final var clsname =
+                Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
+                        + "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + str.toLowerCase()).toLowerCase()).replaceFirst(m -> m.group().toUpperCase());
 
         try {
-            if (!(found instanceof Mergeable<?>)) {
-                tx.begin();
-                pm.flush();
-                pm.makePersistent(object);
-                tx.commit();
-            }
+            tx.begin();
+            pm.flush();
+            pm.makePersistent(object);
+            tx.commit();
 
-            Logger.getLogger().info(String.format("%s stored successfully.", object));
+            Logger.getLogger().info(String.format("%s %s stored successfully.", clsname, object));
 
             return true;
         } catch (Exception e) {
             Logger.getLogger().warning(String.format("Could not store %s %s: %s (%s)",
-                    Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
-                            + "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + str.toLowerCase()).toLowerCase()).replaceFirst(m -> m.group().toUpperCase()), object.toString(), e.getMessage(), e.getCause()));
+                    clsname, object.toString(), e.getMessage(), e.getCause()));
 
             return false;
         } finally {
@@ -168,7 +175,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     private Object findCountAttached(Query<T> query, Object param, boolean count, boolean detached, boolean one) {
         Object ret = count ? BigInteger.ZERO : one ? null : Collections.EMPTY_LIST;
 
-        if (query == null && param == null) return ret;
+        if ((query == null || one) && param == null) return ret;
 
         pm.getFetchPlan().setGroup(FetchGroup.ALL);
         Transaction tx = pm.currentTransaction();

@@ -43,7 +43,11 @@ public class MainControllerPerformanceTest {
     public void setUp() throws InterruptedException {
         controller = new MainController();
         for (int i = 0, N = 30; i < N; i++) {
-            if (controller.aliveSync()) return;
+            if (controller.aliveSync()) {
+                controller.GET.Item.allSync();
+                controller.GET.User.idSync("mikel");
+                return;
+            }
 
             TimeUnit.SECONDS.sleep(1);
         }
@@ -52,17 +56,17 @@ public class MainControllerPerformanceTest {
         System.exit(1);
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testAuthentication() {
-        controller.authSync("mikel", "1234");
+        assertTrue(controller.authSync("mikel", "1234"));
         assertEquals(controller.getUser(), "mikel");
 
         controller.unauth();
         assertNull(controller.getUser());
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 2)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testItems() {
         final var item = controller.GET.Item.idSync(ObjectId.from(0));
@@ -87,7 +91,7 @@ public class MainControllerPerformanceTest {
         }
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 2)
+    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testUsers() {
         final var user = controller.GET.User.idSync(UserId.from("mikel"));

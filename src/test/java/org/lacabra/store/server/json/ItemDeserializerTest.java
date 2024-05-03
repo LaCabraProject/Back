@@ -42,7 +42,7 @@ public class ItemDeserializerTest {
             assertEquals(item.price().intValue(), 25);
             assertEquals(item.discount().intValue(), 30);
             assertEquals(item.stock(), BigInteger.valueOf(1000));
-            assertEquals(item.parent(), "mikel");
+            assertEquals(item.parent().id(), "mikel");
         }
 
         {

@@ -6,7 +6,6 @@ import org.lacabra.store.server.api.security.service.token.AuthTokenUtils;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
 import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.security.user.AuthedUserDetails;
-import org.lacabra.store.server.api.type.user.Credentials;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.dao.UserDAO;
 
@@ -35,7 +34,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @SuppressWarnings("unchecked")
     private void handleTokenBasedAuthentication(String token, ContainerRequestContext requestContext) {
         AuthTokenDetails tokenDetails = AuthTokenUtils.parse(token);
-        User user = UserDAO.getInstance().findOne(new Credentials(tokenDetails.username()));
+        User user = UserDAO.getInstance().findOne(new User(tokenDetails.username()));
 
         requestContext.setSecurityContext(new TokenSecurityContext(new AuthedUserDetails(user == null ? null :
                 user.id(),

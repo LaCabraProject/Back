@@ -4,16 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.annotation.security.PermitAll;
 import org.glassfish.jersey.process.internal.RequestScoped;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.tuple.Pair;
-import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
 import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.dao.ItemDAO;
+import org.lacabra.store.server.jdo.dao.UserDAO;
 
 import javax.ws.rs.*;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -33,11 +34,17 @@ public final class Route {
     @PUT
     @PermitAll
     public Response PUT(@Context ContainerRequestContext context, String json) {
-        AuthTokenDetails user = ((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails();
-        if (!user.authorities().contains(Authority.Artist))
-            return Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), "Not an artist.").build();
+        final var utoken = ((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails();
+        User user = null;
+        if (utoken != null) {
+            user = UserDAO.getInstance().findOne(new User(utoken.username()));
+        }
 
-        String uid = user.username();
+        if (user == null || !user.authorities().contains(Authority.Artist)) {
+            Logger.getLogger().info("Not an artist: " + user);
+
+            return Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), "Not an artist.").build();
+        }
 
         var omp = new ObjectMapperProvider();
         var mapper = omp.getContext(Item[].class);
@@ -78,7 +85,7 @@ public final class Route {
 
             if (i.id() != null) {
                 found = dao.findOne(dao.getQuery("FindItem"), i);
-                if (!(found == null || (found.parent() != null && found.parent().id().equals(uid)))) {
+                if (!(found == null || (found.parent() != null && found.parent().id().equals(user.id())))) {
                     final String reason = "Not the parent of the item.";
                     Logger.getLogger().warning("Unauthorized: " + reason);
 
@@ -100,23 +107,18 @@ public final class Route {
                 return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), reason).build();
             }
 
-            trans.add(new Pair<>(found, i.merge(new Item(i.id() == null ? ObjectId.random(Item.class) : null,
-                    null, null, null, null,
-                    null, null, null, new User(uid)))));
+            trans.add(new Pair<>(found, i.merge(new Item(i.id() == null ? ObjectId.random(Item.class) : null, null,
+                    null, null, null, null, null, null, user))));
         }
 
         List<Item> stored = new ArrayList<>();
         for (Pair<Item, Item> pair : trans) {
             final Response.ResponseBuilder r = Response.status(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    String.format(
-                            "Could " +
-                                    "not put item %s.", pair.x().id()));
+                    String.format("Could " + "not put item %s.", pair.x().id()));
 
-            if (!dao.delete(pair.x()))
-                return r.build();
+            if (!dao.delete(pair.x())) return r.build();
 
-            if (!dao.store(pair.y()))
-                return r.build();
+            if (!dao.store(pair.y())) return r.build();
 
             stored.add(pair.y());
         }
@@ -243,8 +245,8 @@ public final class Route {
                 if (item.stock().equals(BigInteger.ZERO))
                     return Response.status(Response.Status.BAD_REQUEST.getStatusCode(), "No stock.").build();
 
-                ItemDAO.getInstance().store(item.merge(new Item(null, null, null, null, null, null, BigInteger.ZERO,
-                        null)));
+                ItemDAO.getInstance().store(item.merge(new Item((String) null, null, null, null, null, null, null,
+                        null, null)));
 
                 return Response.ok().build();
             }

@@ -7,16 +7,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.json.exception.JsonSchemaComplianceException;
+import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.internals.json.validator.JsonSchemaValidator;
 import org.lacabra.store.internals.logging.Logger;
 import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.id.UserId;
-import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.item.ItemType;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.HashSet;
 
 public final class ItemDeserializer {
@@ -71,13 +70,13 @@ public final class ItemDeserializer {
             node2 = node.get("price");
             if (!(node2 == null || node2.isNull())) price = node2.numberValue();
 
-            Integer discount = null;
+            Number discount = null;
             node2 = node.get("discount");
-            if (!(node2 == null || node2.isNull())) discount = node2.intValue();
+            if (!(node2 == null || node2.isNull())) discount = node2.numberValue();
 
-            BigInteger stock = null;
+            Number stock = null;
             node2 = node.get("stock");
-            if (!(node2 == null || node2.isNull())) stock = node2.bigIntegerValue();
+            if (!(node2 == null || node2.isNull())) stock = node2.numberValue();
 
             UserId parent = null;
             node2 = node.get("parent");

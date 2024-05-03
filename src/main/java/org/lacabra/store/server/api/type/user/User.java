@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.json.deserializer.UserDeserializer;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
@@ -16,10 +18,12 @@ import org.lacabra.store.server.jdo.converter.UserIdConverter;
 import org.lacabra.store.server.jdo.dao.Mergeable;
 
 import javax.jdo.annotations.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Query(name = "FindUser", value = "SELECT FROM User WHERE id == :id")
@@ -54,7 +58,10 @@ public class User implements Serializable, Mergeable<User>, DTOable<User, UserDT
 
     @JsonProperty("authorities")
     @Element(types = {Authority.class}, converter = AuthorityConverter.class)
-    private EnumSet<Authority> authorities;
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Persistent
+    private HashSet<Authority> authorities;
 
     @JsonUnwrapped
     @Embedded
@@ -130,7 +137,7 @@ public class User implements Serializable, Mergeable<User>, DTOable<User, UserDT
 
     private void authorities(final Collection<Authority> authorities) {
         this.authorities = authorities == null || authorities.isEmpty() ?
-                EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
+                new HashSet<>() : new HashSet<>(authorities);
     }
 
     private void data(final UserData data) {
