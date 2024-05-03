@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.Generated;
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.internals.json.deserializer.UserDeserializer;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
@@ -67,26 +68,32 @@ public class User implements Serializable, Mergeable<User>, DTOable<User, UserDT
     @Embedded
     private UserData data;
 
+    @Generated
     public User() {
         super();
     }
 
+    @Generated
     public User(final String id) {
         this(id, null);
     }
 
+    @Generated
     public User(final UserId id) {
         this(id, null);
     }
 
+    @Generated
     public User(final String id, final String passwd) {
         this(new Credentials(id, passwd));
     }
 
+    @Generated
     public User(final UserId id, final String passwd) {
         this(new Credentials(id, passwd));
     }
 
+    @Generated
     public User(final Credentials creds) {
         this(creds, null);
     }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Generated;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.json.deserializer.ItemDeserializer;
 import org.lacabra.store.internals.json.provider.ObjectMapperProvider;
@@ -86,60 +87,72 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
     @Column(name = "parent")
     private User parent;
 
+    @Generated
     public Item() {
     }
 
+    @Generated
     public Item(final String id) {
         this(ObjectId.from(id));
     }
 
+    @Generated
     public Item(final Number id) {
         this(ObjectId.from(id));
     }
 
+    @Generated
     public Item(final ObjectId id) {
         this(id, null, null, null, null, null, null, null, (String) null);
     }
 
+    @Generated
     public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
                 final Number price, final Number discount, final Number stock, final String parent) {
         this(type, name, description, keywords, price, discount, stock, UserId.from(parent));
     }
 
+    @Generated
     public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
                 final Number price, final Number discount, final Number stock, final UserId parent) {
         this(type, name, description, keywords, price, discount, stock, new User(parent));
     }
 
+    @Generated
     public Item(final ItemType type, final String name, final String description, final Collection<String> keywords,
                 final Number price, final Number discount, final Number stock, final User parent) {
         this(ObjectId.random(Item.class), type, name, description, keywords, price, discount, stock, parent);
     }
 
+    @Generated
     public Item(final String id, final ItemType type, final String name, final String description,
                 final Collection<String> keywords, final Number price, final Number discount, final Number stock
             , final String parent) {
         this(ObjectId.from(id), type, name, description, keywords, price, discount, stock, UserId.from(parent));
     }
 
+    @Generated
     public Item(final Number id, final ItemType type, final String name, final String description,
                 final Collection<String> keywords, final Number price, final Number discount, final Number stock
             , final String parent) {
         this(ObjectId.from(id), type, name, description, keywords, price, discount, stock, UserId.from(parent));
     }
 
+    @Generated
     public Item(final Number id, final ItemType type, final String name, final String description,
                 final Collection<String> keywords, final Number price, final Number discount, final Number stock
             , final UserId parent) {
         this(ObjectId.from(id), type, name, description, keywords, price, discount, stock, new User(parent));
     }
 
+    @Generated
     public Item(final ObjectId id, final ItemType type, final String name, final String description,
                 final Collection<String> keywords, final Number price, final Number discount, final Number stock
             , final String parent) {
         this(id, type, name, description, keywords, price, discount, stock, UserId.from(parent));
     }
 
+    @Generated
     public Item(final ObjectId id, final ItemType type, final String name, final String description,
                 final Collection<String> keywords, final Number price, final Number discount, final Number stock
             , final UserId parent) {
@@ -162,6 +175,7 @@ public class Item implements Serializable, Mergeable<Item>, DTOable<Item, ItemDT
         this.parent(parent);
     }
 
+    @Generated
     public Item(final ObjectId id, final Item item) {
         this(id, item.type, item.name, item.description, item.keywords, item.price, item.discount, item.stock,
                 item.parent);

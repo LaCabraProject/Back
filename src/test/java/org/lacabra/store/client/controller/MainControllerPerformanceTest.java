@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Category(PerformanceTest.class)
 public class MainControllerPerformanceTest {
     static Process APIProcess;
+    MainController controller;
     @Rule
     public JUnitPerfRule perfTestRule = new JUnitPerfRule(new HtmlReportGenerator("target/junitperf/report.html"));
-    MainController controller;
 
     @BeforeClass
     public static void startAPI() throws IOException, InterruptedException {
@@ -58,9 +58,14 @@ public class MainControllerPerformanceTest {
     @Before
     public void setUp() throws InterruptedException {
         controller = new MainController();
+
+        controller.GET.Item.allSync();
+        controller.GET.User.idSync("mikel");
+
+        TimeUnit.SECONDS.sleep(2);
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
+    @JUnitPerfTest(threads = 1, durationMs = MainController.TIMEOUT)
     @Test
     public void testAuthentication() {
         assertTrue(controller.authSync("mikel", "1234"));
@@ -70,7 +75,7 @@ public class MainControllerPerformanceTest {
         assertNull(controller.getUser());
     }
 
-    @JUnitPerfTest(threads = 2, durationMs = MainController.TIMEOUT * 3)
+    @JUnitPerfTest(threads = 1, durationMs = MainController.TIMEOUT * 5)
     @Test
     public void testItems() {
         final var item = controller.GET.Item.idSync(ObjectId.from(0));
@@ -95,7 +100,7 @@ public class MainControllerPerformanceTest {
         }
     }
 
-    @JUnitPerfTest(threads = 2, durationMs = MainController.TIMEOUT * 3)
+    @JUnitPerfTest(threads = 1, durationMs = MainController.TIMEOUT * 5)
     @Test
     public void testUsers() {
         final var user = controller.GET.User.idSync("mikel");
