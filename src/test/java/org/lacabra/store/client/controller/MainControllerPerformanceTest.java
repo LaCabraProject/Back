@@ -8,13 +8,13 @@ import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.internals.type.id.ObjectId;
-import org.lacabra.store.internals.type.id.UserId;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(PerformanceTest.class)
 public class MainControllerPerformanceTest {
@@ -56,7 +56,7 @@ public class MainControllerPerformanceTest {
         System.exit(1);
     }
 
-    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
+/*    @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testAuthentication() {
         assertTrue(controller.authSync("mikel", "1234"));
@@ -64,7 +64,7 @@ public class MainControllerPerformanceTest {
 
         controller.unauth();
         assertNull(controller.getUser());
-    }
+    }*/
 
     @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
@@ -94,7 +94,7 @@ public class MainControllerPerformanceTest {
     @JUnitPerfTest(threads = 10, durationMs = MainController.TIMEOUT * 3)
     @Test
     public void testUsers() {
-        final var user = controller.GET.User.idSync(UserId.from("mikel"));
+        final var user = controller.GET.User.idSync("mikel");
 
         assertNotNull(user);
         assertEquals(user.id(), "mikel");

@@ -1,5 +1,6 @@
 package org.lacabra.store.client.main;
 
+import org.lacabra.store.client.controller.MainController;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.client.graphical.window.HomeWindow;
 import org.lacabra.store.internals.json.validator.JsonSchemaFactory;
@@ -12,6 +13,7 @@ import org.lacabra.store.server.api.type.user.User;
 import javax.swing.*;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 
 public final class Main {
     public static void main(final String[] args) {
@@ -26,6 +28,8 @@ public final class Main {
                     JsonSchemaFactory.addPreloadedSchema(cls, new File(res.getFile()));
             }
 
+            Logger.getLogger().severe(MainController.fromArgs(args).GET.User.idSync("mikel").toString());
+
             SwingUtilities.invokeAndWait(() -> {
                 try {
                     WindowDispatcher.fromArgs(args).dispatch(HomeWindow.class);
@@ -37,6 +41,8 @@ public final class Main {
             Logger.getLogger().severe(e);
 
             System.exit(1);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
