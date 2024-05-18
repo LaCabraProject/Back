@@ -10,8 +10,13 @@ import org.lacabra.store.server.api.type.item.ItemType;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serial;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public final class ShoppingWindow extends DispatchedWindow {
     @Serial
@@ -19,6 +24,10 @@ public final class ShoppingWindow extends DispatchedWindow {
 
     public final String TITLE = "Buscar artículos";
     public final Dimension SIZE = new Dimension(800, 600);
+
+    private JTable t;
+    private DefaultTableModel tm;
+    private CompletableFuture<List<ItemDTO>> objetosRecibidos;
 
     public ShoppingWindow() {
         this(null);
@@ -57,12 +66,22 @@ public final class ShoppingWindow extends DispatchedWindow {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
             this.setLayout(new BorderLayout());
+            objetosRecibidos=controller.GET.Item.all();
 
             {
                 final var p = new JPanel();
 
                 {
                     final var c = new JComboBox<>(ItemType.values());
+                    c.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            ItemType selectedType = (ItemType) c.getSelectedItem();
+                            updateTable(selectedType);
+                        }
+
+                    });
                     p.add(c);
                 }
 
@@ -95,10 +114,10 @@ public final class ShoppingWindow extends DispatchedWindow {
                     JScrollPane s;
 
                     {
-                        JTable t;
+
 
                         {
-                            final var tm = new DefaultTableModel();
+                            tm = new DefaultTableModel();
 
                             final Pair<?, ?>[] cols = {
                                     new Pair<String, Class<?>>("Nombre", String.class),
@@ -140,5 +159,24 @@ public final class ShoppingWindow extends DispatchedWindow {
 
             this.setVisible(true);
         });
+    }
+
+    private void updateTable(ItemType selectedType) {
+        DefaultListModel<ItemDTO> items = getItemsByType(selectedType);
+
+        tm.setRowCount(0);
+        for (int i = 0; i < items.getSize(); i++) {
+            tm.addRow(new Object[]{items.getElementAt(i).name(), items.getElementAt(i).description()});
+        }
+    }
+
+    private DefaultListModel<ItemDTO> getItemsByType(ItemType selectedType) {
+        DefaultListModel<ItemDTO> items = new DefaultListModel<>();
+        for(int i = 0; i < items.getSize(); i++){
+            if(items.getElementAt(i).type().equals(selectedType)){
+                items.addElement(items.getElementAt(i));
+            }
+        }
+        return items;
     }
 }
