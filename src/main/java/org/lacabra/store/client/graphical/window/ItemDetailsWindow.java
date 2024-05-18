@@ -96,8 +96,8 @@ public class ItemDetailsWindow extends DispatchedWindow {
                     p2.setBorder(new EmptyBorder(BORDER / 2, BORDER / 2, BORDER / 2, BORDER / 2));
 
                     for (Object[] init : new Object[][]{{"Inicio", null, null}, {"Categoría", null, null}, {"Carrito"
-                            , "src/main/java/org/lacabra/store/client/img/carro.png", null}, {"Buscar",
-                            "src/main/java/org/lacabra/store/client/img/lupa.png", null}}) {
+                            , "src/main/resources/img/carro.png", null}, {"Buscar",
+                            "src/main/resources/img/lupa.png", null}}) {
                         final var b = new JButton((String) init[0], new ImageIcon((String) init[1]));
 
                         b.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -115,16 +115,16 @@ public class ItemDetailsWindow extends DispatchedWindow {
                     l.setPreferredSize(IMAGE_SIZE);
 
                     {
-                        var i = new ImageIcon("src/main/java/org/lacabra/store/client/img/utilidad.jpg");
+                        var i = new ImageIcon("src/main/resources/img/utilidad.jpg");
                         ItemDTO item=signal.get();
                         if(item.type().equals(ItemType.Utilities)) {
-                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/utilidad.jpg");
+                            i = new ImageIcon("src/main/resources/img/utilidad.jpg");
                         }else if(item.type().equals(ItemType.Decoration)) {
-                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/decoracion.jpg");
+                            i = new ImageIcon("src/main/resources/img/decoracion.jpg");
                         }else if(item.type().equals(ItemType.Accessories)) {
-                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/accesorio.jpg");
+                            i = new ImageIcon("src/main/resources/img/accesorio.jpg");
                         }else if(item.type().equals(ItemType.Clothing)) {
-                            i = new ImageIcon("src/main/java/org/lacabra/store/client/img/ropa.jpg");
+                            i = new ImageIcon("src/main/resources/img/ropa.jpg");
                         }
                         l.setIcon(i);
                     }
@@ -171,6 +171,7 @@ public class ItemDetailsWindow extends DispatchedWindow {
                                     final var b = new JButton("Agregar reseña");
                                     b.addActionListener(e -> {
                                         Object[] options = {"1", "2", "3", "4", "5"};
+
                                         int choice = JOptionPane.showOptionDialog(
                                                 null,
                                                 "Por favor, seleccione su puntuación del producto:",
@@ -180,6 +181,7 @@ public class ItemDetailsWindow extends DispatchedWindow {
                                                 null,
                                                 options,
                                                 options[0]);
+
                                         int score = choice + 1;
                                         this.input("Escribe tu reseña:");
                                     });

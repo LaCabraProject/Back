@@ -2,15 +2,19 @@ package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
+import org.lacabra.store.internals.logging.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.Serial;
 
 public final class ShoppingCartWindow extends DispatchedWindow {
     public static final String TITLE = "Carrito de compra";
     public static final Dimension SIZE = new Dimension(800, 600);
     public static final int BORDER = 10;
+    private JTextField t = new JTextField();
     @Serial
     private final static long serialVersionUID = 1L;
 
@@ -62,6 +66,28 @@ public final class ShoppingCartWindow extends DispatchedWindow {
                     {
                         final var c = new JComboBox<>(new String[]{"Estándar", "Exprés", "Entrega al día siguiente"});
 
+                        c.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+
+                                JComboBox<?> comboBox = (JComboBox<?>) e.getSource();
+                                String selectedMethod = (String) comboBox.getSelectedItem();
+
+                                if(selectedMethod.equals("Estándar")){
+
+                                }
+
+                                else if(selectedMethod.equals("Exprés")){
+
+                                }
+
+                                else if(selectedMethod.equals("Entrega al día siguiente")){
+
+                                }
+                            }
+                        });
+
                         p2.add(c);
                     }
 
@@ -78,7 +104,7 @@ public final class ShoppingCartWindow extends DispatchedWindow {
                     }
 
                     {
-                        final var t = new JTextField();
+                        t = new JTextField();
                         t.setEditable(false);
                         t.setColumns(10);
 
@@ -125,17 +151,67 @@ public final class ShoppingCartWindow extends DispatchedWindow {
                 {
                     final var b = new JButton("Eliminar producto");
 
+                    b.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+
+                            JList<?> productList = (JList<String>) ((JScrollPane) ((JPanel) ShoppingCartWindow.this.
+                                    getContentPane().getComponent(1)).getComponent(0)).getViewport().getView();
+
+                            DefaultListModel<?> model = (DefaultListModel<?>) productList.getModel();
+                            int selectedIndex = productList.getSelectedIndex();
+
+                            if (selectedIndex != -1) {
+                                model.remove(selectedIndex);
+                            }
+
+                        }
+                    });
+
                     p.add(b);
                 }
 
                 {
                     final var b = new JButton("Aplicar cupón");
 
+                    b.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+
+                            if(!controller.GET.Item.all().join().isEmpty()) {
+                                String msg="El cupón de primera compra ya fue aplicado.";
+                                JOptionPane.showMessageDialog(ShoppingCartWindow.this, msg, "Descuento negado", JOptionPane.INFORMATION_MESSAGE);
+                                Logger.getLogger().info(msg);
+                            }else{
+                                double temporal=Double.parseDouble(t.getText());
+                                temporal=temporal-(temporal*0.2);
+                                t.setText(String.valueOf(temporal));
+                            }
+
+                        }
+
+                    });
+
                     p.add(b);
                 }
 
                 {
                     final var b = new JButton("Realizar pago");
+
+                    b.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+
+                            JList<?> productList = (JList<String>) ((JScrollPane) ((JPanel) ShoppingCartWindow.this.
+                                    getContentPane().getComponent(1)).getComponent(0)).getViewport().getView();
+
+                            DefaultListModel<?> model = (DefaultListModel<?>) productList.getModel();
+                            model.removeAllElements();
+                        }
+                    });
 
                     p.add(b);
                 }
