@@ -50,14 +50,10 @@ public final class ProfileWindow extends DispatchedWindow {
             }
 
             this.setTitle(TITLE.apply(null));
-
             this.setSize(SIZE);
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
             this.setLocationRelativeTo(null);
-
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-
             this.setLayout(new GridBagLayout());
             final var c = new GridBagConstraints();
 
@@ -101,35 +97,63 @@ public final class ProfileWindow extends DispatchedWindow {
                             "Teléfono", "",
                             "Biografía", ""
                     ).forEach((k, v) -> {
-                        if (v == null || v.isBlank())
-                            return;
-
-                        p.add(new JLabel(v));
-
+                        p.add(new JLabel(k));
                         if (k.equals("Biografía")) {
-                            final var t = new JTextArea();
+                            final var t = new JTextArea(v);
                             t.setEditable(false);
-
+                            p.add(new JScrollPane(t));
+                        } else {
+                            final var t = new JTextField(v);
+                            t.setEditable(false);
                             p.add(t);
-
-                            return;
                         }
-
-                        final var t = new JTextField();
-                        t.setEditable(false);
-
-                        p.add(t);
                     });
                 }, update);
 
                 c.gridx = 0;
                 c.gridy = 0;
                 c.weightx = 1;
-
                 this.add(p, c);
+            }
+
+            {
+                final var commentPanel = new JPanel(new BorderLayout());
+                commentPanel.setBorder(BorderFactory.createTitledBorder("Comentarios adicionales"));
+
+                final var commentArea = new JTextArea(5, 30);
+                final var commentScrollPane = new JScrollPane(commentArea);
+                commentPanel.add(commentScrollPane, BorderLayout.CENTER);
+
+                c.gridy = 1;
+                c.weighty = 0.3;
+                c.fill = GridBagConstraints.BOTH;
+                this.add(commentPanel, c);
+            }
+
+            
+            {
+                final var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                final var updateButton = new JButton("Actualizar");
+                final var closeButton = new JButton("Cerrar");
+
+                updateButton.addActionListener(e -> updateUserInfo());
+                closeButton.addActionListener(e -> this.close());
+
+                buttonPanel.add(updateButton);
+                buttonPanel.add(closeButton);
+
+                c.gridy = 2;
+                c.weighty = 0;
+                c.fill = GridBagConstraints.HORIZONTAL;
+                this.add(buttonPanel, c);
             }
 
             this.setVisible(true);
         });
     }
+
+    private void updateUserInfo() {
+        System.out.println("Actualizar la información del usuario");
+    }
 }
+
