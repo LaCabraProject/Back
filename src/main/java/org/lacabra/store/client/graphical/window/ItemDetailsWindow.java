@@ -110,8 +110,7 @@ public class ItemDetailsWindow extends DispatchedWindow {
                             dispatch(ShoppingWindow.class);
                         }
 
-                    }}, {"Carrito"
-                            , "src/main/resources/img/carro.png", new ActionListener() {
+                    }}, {"Carrito", "src/main/resources/img/carro.png", new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             close();

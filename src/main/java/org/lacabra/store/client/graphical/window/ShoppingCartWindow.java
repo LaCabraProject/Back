@@ -1,6 +1,8 @@
 package org.lacabra.store.client.graphical.window;
 
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.internals.logging.Logger;
 
@@ -9,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serial;
+import java.util.ArrayList;
 
 public final class ShoppingCartWindow extends DispatchedWindow {
     public static final String TITLE = "Carrito de compra";
@@ -17,6 +20,7 @@ public final class ShoppingCartWindow extends DispatchedWindow {
     private JTextField t = new JTextField();
     private JScrollPane s;
     private JPanel p;
+    private ArrayList<ItemDTO> carrito;
     @Serial
     private final static long serialVersionUID = 1L;
 
@@ -25,14 +29,18 @@ public final class ShoppingCartWindow extends DispatchedWindow {
     }
 
     public ShoppingCartWindow(final WindowDispatcher wd) {
-        super(wd);
+        super(wd, null);
 
-        this.setDispatcher(wd);
+        this.setDispatcher(wd, (Signal<ArrayList<ItemDTO>>) null);
     }
 
-    @Override
-    public void setDispatcher(final WindowDispatcher wd) {
+
+    public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
         super.setDispatcher(wd);
+
+        if (signal != null) {
+           carrito=signal.get();
+        }
 
         final var controller = this.controller();
         if (controller == null) return;
@@ -136,9 +144,16 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                         {
                             final var lm = new DefaultListModel<>();
+                            if(carrito!=null) {
+                                for (ItemDTO item : carrito) {
+                                    lm.addElement(item);
+                                }
+
+                            }
 
                             l = new JList<>(lm);
                         }
+
 
                         l.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -245,4 +260,5 @@ public final class ShoppingCartWindow extends DispatchedWindow {
             }
         });
     }
+
 }

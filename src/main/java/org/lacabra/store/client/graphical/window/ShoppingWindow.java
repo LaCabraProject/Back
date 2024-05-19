@@ -28,6 +28,8 @@ public final class ShoppingWindow extends DispatchedWindow {
     private JTable t;
     private DefaultTableModel tm;
     private CompletableFuture<List<ItemDTO>> objetosRecibidos;
+    private Signal<ArrayList<ItemDTO>> signal=new Signal<>();
+    private ArrayList<ItemDTO> carrito=new ArrayList<>();
 
     public ShoppingWindow() {
         this(null);
@@ -118,6 +120,9 @@ public final class ShoppingWindow extends DispatchedWindow {
 
                         {
                             tm = new DefaultTableModel();
+                            for(ItemDTO item : objetosRecibidos.join()) {
+                                tm.addRow(new Object[]{item.name(),item.id()});
+                            }
 
                             final Pair<?, ?>[] cols = {
                                     new Pair<String, Class<?>>("Nombre", String.class),
@@ -154,6 +159,48 @@ public final class ShoppingWindow extends DispatchedWindow {
                     p.add(p2, BorderLayout.SOUTH);
                 }
 
+                {
+                    final var p2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+                    {
+                        final var b = new JButton("Meter en carrito");
+                        b.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                int i=t.getSelectedRow();
+                                ItemDTO item = objetosRecibidos.join().get(i);
+                                carrito.add(item);
+                            }
+                        });
+
+                        p2.add(b);
+                    }
+
+
+
+                    p.add(p2, BorderLayout.SOUTH);
+                }
+
+                {
+                    final var p2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+
+                    {
+                        final var b = new JButton("Finalizar compra");
+                        b.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                close();
+                                wd.dispatch(ShoppingCartWindow.class);
+                            }
+                        });
+
+                        p2.add(b);
+                    }
+
+                    p.add(p2, BorderLayout.SOUTH);
+                }
+
+
                 this.add(p, BorderLayout.CENTER);
             }
 
@@ -172,9 +219,9 @@ public final class ShoppingWindow extends DispatchedWindow {
 
     private DefaultListModel<ItemDTO> getItemsByType(ItemType selectedType) {
         DefaultListModel<ItemDTO> items = new DefaultListModel<>();
-        for(int i = 0; i < items.getSize(); i++){
-            if(items.getElementAt(i).type().equals(selectedType)){
-                items.addElement(items.getElementAt(i));
+        for(ItemDTO item: objetosRecibidos.join()){
+            if(item.type().equals(selectedType)){
+                items.addElement(item);
             }
         }
         return items;

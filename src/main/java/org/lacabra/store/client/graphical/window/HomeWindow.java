@@ -10,6 +10,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serial;
+import java.util.ArrayList;
 
 public final class HomeWindow extends DispatchedWindow {
     @Serial
@@ -127,7 +128,7 @@ public final class HomeWindow extends DispatchedWindow {
                     final var carrito = new JMenu("Mi carrito");
                     carrito.addActionListener(e -> {
                         this.close();
-                        this.dispatch(ShoppingCartWindow.class);
+                        this.dispatch(ShoppingWindow.class);
                     });
 
                     bar.add(carrito);
