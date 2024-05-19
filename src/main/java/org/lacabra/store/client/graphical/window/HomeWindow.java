@@ -85,24 +85,40 @@ public final class HomeWindow extends DispatchedWindow {
 
                 {
                     final var clothing = new JMenu("Ropa");
+                    clothing.addActionListener(e -> {
+                    this.close();
+                    this.dispatch(ShoppingWindow.class);
+                    });
 
                     bar.add(clothing);
                 }
 
                 {
-                    final var home = new JMenu("Home");
+                    final var home = new JMenu("Hogar");
+                    home.addActionListener(e -> {
+                        this.close();
+                        this.dispatch(ShoppingWindow.class);
+                    });
 
                     bar.add(home);
                 }
 
                 {
                     final var office = new JMenu("Oficina");
+                    office.addActionListener(e -> {
+                        this.close();
+                        this.dispatch(ShoppingWindow.class);
+                    });
 
                     bar.add(office);
                 }
 
                 {
                     final var decoration = new JMenu("Decoración");
+                    decoration.addActionListener(e -> {
+                        this.close();
+                        this.dispatch(ShoppingWindow.class);
+                    });
 
                     bar.add(decoration);
                 }
@@ -147,7 +163,7 @@ public final class HomeWindow extends DispatchedWindow {
 
                     //mensajes en el centro sobre la tienda
                     {
-                        for (int i = 1; i <= 5; i++) {
+                        for (int i = 0; i <= 5; i++) {
                             String texto = "";
                             if (i == 1) {
                                 texto = "¡No te pierdas las ofertas de primavera en la web de GOAT!" +
@@ -165,7 +181,7 @@ public final class HomeWindow extends DispatchedWindow {
                                 texto = "¡Si eres un artista o tienes habilidades manuales, ahora puedes poner tus productos " +
                                         "a la venta fácilmente con tu propio puesto de ventas virtual en GOAT! Es una forma " +
                                         "sencilla y cómoda de exhibir tus creaciones al mundo.";
-                            } else if (i == 5) {
+                            } else if (i == 0) {
                                 texto = "¡Expresa tu estilo y personalidad con productos únicos de artistas independientes en " +
                                         "GOAT! Desde camisetas hasta tazas, nuestra plataforma ofrece una amplia variedad de " +
                                         "productos para todos los gustos. ¡Descubre tu próxima pieza favorita hoy!";

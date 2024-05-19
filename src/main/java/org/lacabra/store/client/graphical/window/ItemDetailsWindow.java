@@ -12,6 +12,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serial;
 import java.net.MalformedURLException;
@@ -95,9 +96,37 @@ public class ItemDetailsWindow extends DispatchedWindow {
                     p2.setBackground(Color.LIGHT_GRAY);
                     p2.setBorder(new EmptyBorder(BORDER / 2, BORDER / 2, BORDER / 2, BORDER / 2));
 
-                    for (Object[] init : new Object[][]{{"Inicio", null, null}, {"Categoría", null, null}, {"Carrito"
-                            , "src/main/resources/img/carro.png", null}, {"Buscar",
-                            "src/main/resources/img/lupa.png", null}}) {
+                    for (Object[] init : new Object[][]{{"Inicio", null, new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            close();
+                            dispatch(HomeWindow.class);
+                        }
+
+                    }}, {"Categoría", null, new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            close();
+                            dispatch(ShoppingWindow.class);
+                        }
+
+                    }}, {"Carrito"
+                            , "src/main/resources/img/carro.png", new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            close();
+                            dispatch(ShoppingCartWindow.class);
+                        }
+
+                    }}, {"Buscar",
+                            "src/main/resources/img/lupa.png", new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            close();
+                            dispatch(ShoppingWindow.class);
+                        }
+
+                    }}}) {
                         final var b = new JButton((String) init[0], new ImageIcon((String) init[1]));
 
                         b.setHorizontalTextPosition(SwingConstants.CENTER);
