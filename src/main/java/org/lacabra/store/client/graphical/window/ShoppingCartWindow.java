@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serial;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public final class ShoppingCartWindow extends DispatchedWindow {
     public static final String TITLE = "Carrito de compra";
@@ -36,7 +37,7 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
 
     public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
-        super.setDispatcher(wd);
+        super.setDispatcher(wd, signal);
 
         if (signal != null) {
            carrito=signal.get();
@@ -186,7 +187,11 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                             if (selectedIndex != -1) {
                                 model.remove(selectedIndex);
+                                carrito.remove(selectedIndex);
                             }
+                            Signal<ArrayList<ItemDTO>>señal=new Signal<>();
+                            señal.effect((Consumer<ArrayList<ItemDTO>>) carrito);
+                            connect(señal);
 
                         }
                     });
@@ -236,6 +241,7 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                             DefaultListModel<?> model = (DefaultListModel<?>) productList.getModel();
                             model.removeAllElements();
+                            carrito.clear();
                             {
                                 JList<?> l;
 

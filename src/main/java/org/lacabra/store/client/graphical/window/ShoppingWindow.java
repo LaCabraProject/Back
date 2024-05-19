@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public final class ShoppingWindow extends DispatchedWindow {
     @Serial
@@ -39,13 +40,19 @@ public final class ShoppingWindow extends DispatchedWindow {
         super(wd);
     }
 
+    public ShoppingWindow(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
+        super(wd, signal);
+    }
+
     public static void main(final String[] args) throws MalformedURLException {
         WindowDispatcher.fromArgs(args).dispatch(ShoppingWindow.class);
     }
 
-    @Override
-    public void setDispatcher(final WindowDispatcher wd) {
-        super.setDispatcher(wd, new Signal<ItemDTO>());
+    public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
+        super.setDispatcher(wd, signal);
+        if (signal != null) {
+            carrito=signal.get();
+        }
 
         final var controller = this.controller();
         if (controller == null)
@@ -190,6 +197,8 @@ public final class ShoppingWindow extends DispatchedWindow {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 close();
+                                signal.effect((Consumer<ArrayList<ItemDTO>>) carrito);
+                                connect(signal);
                                 wd.dispatch(ShoppingCartWindow.class);
                             }
                         });
