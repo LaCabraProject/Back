@@ -204,7 +204,34 @@ public class ItemDetailsWindow extends DispatchedWindow {
             }
 
             this.setVisible(true);
+            itemCheck(signal.get());
         });
+
     }
+    public void itemCheck(ItemDTO item){
+        String adv="Advertencia";
+        String msg="Mantener fuera del alcance de los niños.";
+        String msg1="Precaución, producto inflamable.";
+        String msg2="Manipular con cuidado. El producto puede contener sustancias nocivas.";
+        if(item.type().equals(ItemType.Accessories)){
+            JOptionPane.showMessageDialog(this, msg,
+                    adv,
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if(item.type().equals(ItemType.Clothing)){
+            JOptionPane.showMessageDialog(this, msg1,
+                    adv,
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if(item.type().equals(ItemType.Utilities)){
+            JOptionPane.showMessageDialog(this, msg2,
+                    adv,
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    }
+
 }
 
