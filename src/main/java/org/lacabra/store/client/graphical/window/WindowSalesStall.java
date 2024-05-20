@@ -190,7 +190,7 @@ public class WindowSalesStall extends DispatchedWindow {
             controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             modificar = new JButton("Modificar seleccionado");
             btnRemoveItem = new JButton("Eliminar artículo seleccionado");
-            btnClearList = new JButton("Borrar lista");
+            btnClearList = new JButton("Borrar todo");
             btnBack = new JButton("Volver al inicio");
             controlPanel.add(modificar);
             controlPanel.add(btnRemoveItem);

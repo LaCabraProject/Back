@@ -1,6 +1,8 @@
 package org.lacabra.store.client.graphical.window;
 
+import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
+import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.internals.logging.Logger;
 
@@ -9,12 +11,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.Serial;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public final class ShoppingCartWindow extends DispatchedWindow {
     public static final String TITLE = "Carrito de compra";
     public static final Dimension SIZE = new Dimension(800, 600);
     public static final int BORDER = 10;
     private JTextField t = new JTextField();
+    private JScrollPane s;
+    private JPanel p;
+    private ArrayList<ItemDTO> carrito;
     @Serial
     private final static long serialVersionUID = 1L;
 
@@ -23,14 +30,18 @@ public final class ShoppingCartWindow extends DispatchedWindow {
     }
 
     public ShoppingCartWindow(final WindowDispatcher wd) {
-        super(wd);
+        super(wd, null);
 
-        this.setDispatcher(wd);
+        this.setDispatcher(wd, (Signal<ArrayList<ItemDTO>>) null);
     }
 
-    @Override
-    public void setDispatcher(final WindowDispatcher wd) {
-        super.setDispatcher(wd);
+
+    public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
+        super.setDispatcher(wd, signal);
+
+        if (signal != null) {
+           carrito=signal.get();
+        }
 
         final var controller = this.controller();
         if (controller == null) return;
@@ -71,8 +82,7 @@ public final class ShoppingCartWindow extends DispatchedWindow {
                             @Override
                             public void actionPerformed(ActionEvent e) {
 
-                                JComboBox<?> comboBox = (JComboBox<?>) e.getSource();
-                                String selectedMethod = (String) comboBox.getSelectedItem();
+                                String selectedMethod = (String) c.getSelectedItem();
 
                                 if(selectedMethod.equals("Estándar")){
 
@@ -83,7 +93,14 @@ public final class ShoppingCartWindow extends DispatchedWindow {
                                 }
 
                                 else if(selectedMethod.equals("Entrega al día siguiente")){
+                                    String msg="Usted no posee el plan Premium y por lo tanto no dispone" +
+                                            "de este privileguio.";
+                                    JOptionPane.showMessageDialog(ShoppingCartWindow.this,
+                                            msg,
+                                            "Plan Premium",
+                                            JOptionPane.INFORMATION_MESSAGE);
 
+                                    c.setSelectedIndex(-1);
                                 }
                             }
                         });
@@ -118,20 +135,26 @@ public final class ShoppingCartWindow extends DispatchedWindow {
             }
 
             {
-                final var p = new JPanel(new BorderLayout());
+                p = new JPanel(new BorderLayout());
                 p.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
 
                 {
-                    JScrollPane s;
 
                     {
                         JList<?> l;
 
                         {
                             final var lm = new DefaultListModel<>();
+                            if(carrito!=null) {
+                                for (ItemDTO item : carrito) {
+                                    lm.addElement(item);
+                                }
+
+                            }
 
                             l = new JList<>(lm);
                         }
+
 
                         l.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -164,7 +187,11 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                             if (selectedIndex != -1) {
                                 model.remove(selectedIndex);
+                                carrito.remove(selectedIndex);
                             }
+                            Signal<ArrayList<ItemDTO>>señal=new Signal<>();
+                            señal.effect((Consumer<ArrayList<ItemDTO>>) carrito);
+                            connect(señal);
 
                         }
                     });
@@ -182,7 +209,11 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                             if(!controller.GET.Item.all().join().isEmpty()) {
                                 String msg="El cupón de primera compra ya fue aplicado.";
-                                JOptionPane.showMessageDialog(ShoppingCartWindow.this, msg, "Descuento negado", JOptionPane.INFORMATION_MESSAGE);
+                                JOptionPane.showMessageDialog(ShoppingCartWindow.this,
+                                        msg,
+                                        "Descuento negado",
+                                        JOptionPane.INFORMATION_MESSAGE);
+
                                 Logger.getLogger().info(msg);
                             }else{
                                 double temporal=Double.parseDouble(t.getText());
@@ -210,6 +241,21 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                             DefaultListModel<?> model = (DefaultListModel<?>) productList.getModel();
                             model.removeAllElements();
+                            carrito.clear();
+                            {
+                                JList<?> l;
+
+                                {
+                                    l = new JList<>(model);
+                                }
+
+                                l.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+                                s = new JScrollPane(l);
+                            }
+
+                            p.revalidate();
+                            p.repaint();
                         }
                     });
 
@@ -220,4 +266,5 @@ public final class ShoppingCartWindow extends DispatchedWindow {
             }
         });
     }
+
 }
