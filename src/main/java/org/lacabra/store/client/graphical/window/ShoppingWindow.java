@@ -1,3 +1,8 @@
+/**
+ * @file ShoppingWindow.java
+ * @brief Define la ventana de compras para la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.dto.ItemDTO;
@@ -19,34 +24,73 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+/**
+ * @class ShoppingWindow
+ * @brief Implementa la interfaz gráfica para la ventana de compras.
+ */
 public final class ShoppingWindow extends DispatchedWindow {
     @Serial
     private final static long serialVersionUID = 1L;
 
+    /** @brief Título de la ventana. */
     public final String TITLE = "Buscar artículos";
+
+    /** @brief Tamaño de la ventana. */
     public final Dimension SIZE = new Dimension(800, 600);
 
+    /** @brief Tabla para mostrar los artículos. */
     private JTable t;
-    private DefaultTableModel tm;
-    private CompletableFuture<List<ItemDTO>> objetosRecibidos;
-    private Signal<ArrayList<ItemDTO>> signal=new Signal<>();
-    private ArrayList<ItemDTO> carrito=new ArrayList<>();
 
+    /** @brief Modelo de la tabla para los artículos. */
+    private DefaultTableModel tm;
+
+    /** @brief Futura lista de artículos recibidos del servidor. */
+    private CompletableFuture<List<ItemDTO>> objetosRecibidos;
+
+    /** @brief Señal para los artículos en el carrito. */
+    private Signal<ArrayList<ItemDTO>> signal = new Signal<>();
+
+    /** @brief Lista de artículos en el carrito. */
+    private ArrayList<ItemDTO> carrito = new ArrayList<>();
+
+    /**
+     * @brief Constructor por defecto.
+     */
     public ShoppingWindow() {
         this(null);
     }
 
+    /**
+     * @brief Constructor con un dispatcher de ventanas.
+     * @param wd Dispatcher de ventanas.
+     */
     public ShoppingWindow(final WindowDispatcher wd) {
         super(wd);
     }
 
+    /**
+     * @brief Constructor con un dispatcher de ventanas y una señal.
+     * @param wd Dispatcher de ventanas.
+     * @param signal Señal de artículos en el carrito.
+     */
     public ShoppingWindow(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
         super(wd, signal);
     }
 
+    /**
+     * @brief Método principal para ejecutar la ventana de compras.
+     * @param args Argumentos de la línea de comandos.
+     * @throws MalformedURLException Si la URL del dispatcher es inválida.
+     */
     public static void main(final String[] args) throws MalformedURLException {
         WindowDispatcher.fromArgs(args).dispatch(ShoppingWindow.class);
     }
+
+    /**
+     * @brief Configura el dispatcher de la ventana con una señal de artículos en el carrito.
+     * @param wd Dispatcher de ventanas.
+     * @param signal Señal de artículos en el carrito.
+     */
 
     public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
         super.setDispatcher(wd, signal);
