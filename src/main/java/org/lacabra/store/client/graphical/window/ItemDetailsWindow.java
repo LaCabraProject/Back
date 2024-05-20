@@ -1,3 +1,8 @@
+/**
+ * @file ItemDetailsWindow.java
+ * @brief Define la ventana para mostrar los detalles de un artículo.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.dto.ItemDTO;
@@ -17,27 +22,60 @@ import java.awt.event.ActionListener;
 import java.io.Serial;
 import java.util.HashMap;
 
+/**
+ * @class ItemDetailsWindow
+ * @brief Implementa la interfaz gráfica para mostrar los detalles de un artículo.
+ */
 public class ItemDetailsWindow extends DispatchedWindow {
+    /** @brief Título de la ventana. */
     public static final String TITLE = "Detalles del artículo";
+    
+    /** @brief Tamaño de la ventana. */
     public static final Dimension SIZE = new Dimension(800, 600);
+    
+    /** @brief Tamaño de la imagen del artículo. */
     public static final Dimension IMAGE_SIZE = new Dimension(300, 300);
+    
+    /** @brief Borde de la ventana. */
     public static final int BORDER = 10;
+    
+    /** @brief Intervalo de actualización del artículo en milisegundos. */
     public static final int UPDATE_ITEM = 1000;
+    
     @Serial
     private final static long serialVersionUID = 1L;
 
+    /**
+     * @brief Constructor de la ventana de detalles del artículo.
+     * @param item Artículo a mostrar los detalles.
+     */
     public ItemDetailsWindow(final ItemDTO item) {
         this(null, item);
     }
 
+    /**
+     * @brief Constructor de la ventana de detalles del artículo.
+     * @param wd Dispatcher de ventanas.
+     * @param item Artículo a mostrar los detalles.
+     */
     public ItemDetailsWindow(final WindowDispatcher wd, final ItemDTO item) {
         super(wd, item);
     }
 
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param wd Dispatcher de ventanas.
+     */
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
         this.setDispatcher(wd, (Signal<ItemDTO>) null);
     }
+
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param wd Dispatcher de ventanas.
+     * @param signal Señal para actualizar el artículo.
+     */
 
     public void setDispatcher(final WindowDispatcher wd, final Signal<ItemDTO> signal) {
         super.setDispatcher(wd, signal);

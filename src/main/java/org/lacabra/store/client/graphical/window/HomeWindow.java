@@ -1,3 +1,8 @@
+/**
+ * @file HomeWindow.java
+ * @brief Define la ventana principal de la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
@@ -8,17 +13,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serial;
 
+/**
+ * @class HomeWindow
+ * @brief Implementa la interfaz gráfica para la ventana principal de la aplicación.
+ */
 public final class HomeWindow extends DispatchedWindow {
-    @Serial
-    private final static long serialVersionUID = 1L;
-
+    /** @brief Título de la ventana principal. */
     public static final String TITLE = "GOAT";
+    
+    /** @brief Tamaño de la ventana principal. */
     public static final Dimension SIZE = new Dimension(800, 600);
+    
+    /** @brief Intervalo del carrusel de banners en milisegundos. */
     public static final int CAROUSEL_INTERVAL = 3000;
+    
+    @Serial
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * @brief Constructor de la ventana principal.
+     * @param wd Dispatcher de ventanas.
+     */
     public HomeWindow(final WindowDispatcher wd) {
         super(wd);
     }
+
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param wd Dispatcher de ventanas.
+     */
 
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
