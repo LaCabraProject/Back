@@ -447,7 +447,7 @@
                         <version>${failsafe.version}</version>
                         <configuration>
                             <includes>
-                                <include>**/*</include>
+                                <include>**/main/java/**</include>
                             </includes>
                             <groups>categories.IntegrationTest</groups>
                         </configuration>
@@ -475,7 +475,7 @@
                         <version>${failsafe.version}</version>
                         <configuration>
                             <includes>
-                                <include>**/*</include>
+                                <include>**/main/java/**</include>
                             </includes>
                             <groups>categories.PerformanceTest</groups>
                         </configuration>
