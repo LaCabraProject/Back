@@ -1,3 +1,8 @@
+/**
+ * @file ProfileWindow.java
+ * @brief Define la ventana de perfil de usuario para la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.dto.UserDTO;
@@ -11,20 +16,46 @@ import java.io.Serial;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * @class ProfileWindow
+ * @brief Implementa la interfaz gráfica para la ventana de perfil de usuario.
+ */
 public final class ProfileWindow extends DispatchedWindow {
+
+    /** @brief Función que genera el título de la ventana. */
     public static final Function<String, String> TITLE = name -> String.format("Perfil de usuario%s", name == null ?
             "" : (":" + " " + name));
+
+    /** @brief Tamaño de la ventana. */
     public static final Dimension SIZE = new Dimension(800, 600);
+
+    /** @brief Margen para los componentes de la ventana. */
     public static final int INSET = 10;
+
+    /** @brief Espacio entre componentes. */
     public static final int GAP = INSET / 2;
+
+    /** @brief Intervalo de actualización del usuario. */
     public static final int UPDATE_USER = 1000;
+
+    /** @brief Serial version UID para la serialización. */
     @Serial
     private final static long serialVersionUID = 1L;
 
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param wd Dispatcher de ventanas.
+     */
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
         this.setDispatcher(wd, (Signal<UserDTO>) null);
     }
+
+    /**
+     * @brief Configura el dispatcher de la ventana con una señal de usuario.
+     * @param wd Dispatcher de ventanas.
+     * @param signal Señal de datos del usuario.
+     */
 
     public void setDispatcher(final WindowDispatcher wd, final Signal<UserDTO> signal) {
         super.setDispatcher(wd, signal);
