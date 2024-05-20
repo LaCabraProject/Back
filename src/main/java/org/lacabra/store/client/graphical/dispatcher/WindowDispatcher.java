@@ -1,5 +1,8 @@
 package org.lacabra.store.client.graphical.dispatcher;
 
+import com.formdev.flatlaf.fonts.jetbrains_mono.FlatJetBrainsMonoFont;
+import com.formdev.flatlaf.intellijthemes.FlatLightFlatIJTheme;
+import com.formdev.flatlaf.util.SystemInfo;
 import org.lacabra.store.client.controller.MainController;
 import org.lacabra.store.internals.logging.Logger;
 
@@ -9,7 +12,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 import java.awt.font.TextAttribute;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -22,10 +24,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class WindowDispatcher implements IWindowDispatcher, Serializable {
-    public static final Color BANNER_COLOR = new Color(254, 5, 20, 215);
-    public static final Dimension MEDIA_BUTTON_SIZE = new Dimension(32, 32);
     @Serial
     private static final long serialVersionUID = 1L;
+
+    public static final Color BANNER_COLOR = new Color(254, 5, 20, 215);
+    public static final Dimension MEDIA_BUTTON_SIZE = new Dimension(32, 32);
     private static final Color FOOTER_BACKGROUND = Color.LIGHT_GRAY;
     private static final int FOOTER_BORDER = 5;
     private static final Color LINK_FOREGROUND = Color.BLUE;
@@ -39,10 +42,30 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     private static final URI TWITTER_URI = URI.create("https://twitter.com/redbubble");
 
     static {
-        UIManager.put("ComboBox.selectionBackground", Color.LIGHT_GRAY);
-        UIManager.put("ComboBox.selectionForeground", Color.BLACK);
-        UIManager.put("TextField.background", Color.WHITE);
-        UIManager.put("TextField.foreground", Color.BLACK);
+        try {
+            if (SystemInfo.isMacOS) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                System.setProperty("apple.awt.application.appearance", "system");
+            }
+
+            if (SystemInfo.isLinux) {
+                JFrame.setDefaultLookAndFeelDecorated(true);
+                JDialog.setDefaultLookAndFeelDecorated(true);
+                System.setProperty("flatlaf.menuBarEmbedded", "false");
+            }
+
+            FlatJetBrainsMonoFont.installLazy();
+            FlatLightFlatIJTheme.setup();
+
+//            UIManager.setLookAndFeel(new FlatLightFlatIJTheme());
+        } catch (Exception e) {
+            Logger.getLogger().severe("Failed to initialize LaF: " + e.getMessage());
+
+            UIManager.put("ComboBox.selectionBackground", Color.LIGHT_GRAY);
+            UIManager.put("ComboBox.selectionForeground", Color.BLACK);
+            UIManager.put("TextField.background", Color.WHITE);
+            UIManager.put("TextField.foreground", Color.BLACK);
+        }
     }
 
     public final HashMap<Long, WindowState> state = new HashMap<>();
@@ -219,6 +242,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
 
             this.windows.put(l, w);
             w.setDispatcher(this);
+            w.requestFocus();
 
             return l;
         }
@@ -227,7 +251,13 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
     }
 
     public boolean close(final DispatchedWindow w) {
-        return this.close(this.getId(w));
+        if (this.close(this.getId(w)))
+            return true;
+
+        if (w != null)
+            w.dispose();
+
+        return false;
     }
 
     public boolean close(final Long id) {
@@ -239,7 +269,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         final var state = this.stateOf(w);
         if (state != null) state.disconnectAll();
 
-        w.dispatchEvent(new WindowEvent(w, WindowEvent.WINDOW_CLOSING));
+        w.dispose();
 
         return true;
     }

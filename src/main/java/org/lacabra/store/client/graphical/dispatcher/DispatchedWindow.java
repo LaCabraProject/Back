@@ -2,17 +2,29 @@ package org.lacabra.store.client.graphical.dispatcher;
 
 
 import org.lacabra.store.client.controller.MainController;
+import org.lacabra.store.client.graphical.component.AsyncLoader;
+import org.lacabra.store.internals.logging.Logger;
+import org.lacabra.store.internals.type.tuple.Pair;
 
 import javax.swing.*;
-import java.awt.event.WindowEvent;
+import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public abstract class DispatchedWindow extends JFrame implements IWindowDispatcher {
     @Serial
     private static final long serialVersionUID = 1L;
+
+    protected final static String AUTH_MESSAGE = "Autenticando...";
+    protected final static int AUTH_TIMEOUT = 5000;
+
+    private static long INSTANCES = 0;
+    final private long instance;
 
     private WindowDispatcher dispatcher;
 
@@ -36,8 +48,11 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
 
     public DispatchedWindow(final WindowDispatcher wd, final Signal<?>... signals) {
         super();
+        this.instance = DispatchedWindow.INSTANCES++;
 
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        this.dispatcher = wd;
         this.setDispatcher(wd, signals);
     }
 
@@ -109,8 +124,15 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     }
 
     public void setDispatcher(final WindowDispatcher dispatcher, final Signal<?>... signals) {
-        this.close();
+        if (Objects.equals(dispatcher, this.dispatcher)) {
+            this.connect(signals);
+            return;
+        }
+
+        if (this.dispatcher != null) this.dispatcher.close(this);
+
         this.dispatcher = dispatcher;
+        dispatcher.dispatch(this);
         this.connect(signals);
     }
 
@@ -151,6 +173,8 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     }
 
     public DispatchedWindow replace(final Class<? extends DispatchedWindow> cls) {
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
         final var d = this.getDispatcher();
 
         if (d == null) {
@@ -158,19 +182,19 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
             return null;
         }
 
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.close();
-
+        d.close(this);
         return d.getWindow(d.dispatch(cls));
     }
 
     public DispatchedWindow replace(final DispatchedWindow w) {
         final var d = this.getDispatcher();
 
-        this.close();
+        if (d == null) {
+            this.close();
+            return null;
+        }
 
-        if (d == null) return null;
-
+        d.close(this);
         return d.getWindow(d.dispatch(w));
     }
 
@@ -193,12 +217,7 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
     public void close() {
         final var d = this.getDispatcher();
 
-        if (d == null || !d.close(this)) {
-            if (this.getWindowListeners().length > 0)
-                this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-
-            else this.dispose();
-        }
+        if (d == null || !d.close(this)) this.dispose();
     }
 
     public JPanel banner() {
@@ -253,5 +272,67 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
 
     public String input(final DispatchedWindow w, final String message) {
         return this.input(this.getId(w), message);
+    }
+
+    private List<Pair<Component, Boolean>> getCompState(final Container c) {
+        final var ret = new ArrayList<Pair<Component, Boolean>>();
+
+        ret.add(new Pair<>(c, c.isEnabled()));
+        for (Component comp : c.getComponents()) {
+            ret.add(new Pair<>(comp, comp.isEnabled()));
+
+            if (comp instanceof Container cont) ret.addAll(getCompState(cont));
+        }
+
+        return ret;
+    }
+
+    public void load(final CompletableFuture<?> fetch, final Consumer<?> then, final String message,
+                     final Integer timeout, final Object value) {
+        this.load(() -> fetch, then, message, timeout, value);
+    }
+
+    public void load(final Supplier<CompletableFuture<?>> fetch, final Consumer<?> then, final String message,
+                     final Integer timeout, final Object value) {
+        final List<Pair<Component, Boolean>> state = getCompState(this);
+        state.forEach(x -> x.x().setEnabled(false));
+
+        try {
+            new AsyncLoader(fetch, (v) -> {
+                state.forEach(x -> x.x().setEnabled(x.y()));
+                ((Consumer) then).accept(v);
+            }, message, timeout, value, false).setLocationRelativeTo(this.isVisible() ? this : null);
+        } catch (Exception e) {
+            Logger.getLogger().severe(e);
+            state.forEach(x -> x.x().setEnabled(x.y()));
+        }
+    }
+
+    public void auth(final Runnable yes, final Runnable no) {
+        final var controller = controller();
+        if (controller == null) {
+            no.run();
+
+            return;
+        }
+
+        this.load(controller.auth(), (final Boolean auth) -> {
+            if (auth) yes.run();
+
+            else no.run();
+        }, AUTH_MESSAGE, AUTH_TIMEOUT, false);
+    }
+
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        return switch (o) {
+            case DispatchedWindow w -> this.instance == w.instance;
+
+            case null, default -> false;
+        };
     }
 }

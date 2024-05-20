@@ -5,7 +5,6 @@ import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.user.Authority;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.Properties;
 import java.util.Set;
@@ -17,12 +16,14 @@ public class AuthTokenUtils {
 
     static {
         Properties properties = new Properties();
-        try (InputStream is = AuthTokenUtils.class.getResourceAsStream("/application.properties")) {
-            properties.load(is);
+        try (final var is = AuthTokenUtils.class.getResourceAsStream("/application.properties")) {
+            if (is != null) {
+                properties.load(is);
 
-            AuthTokenUtils.validFor = Long.valueOf(String.valueOf(properties.get("authentication.jwt.validFor")));
-            AuthTokenUtils.refreshLimit =
-                    Integer.valueOf(String.valueOf(properties.get("authentication.jwt.refreshLimit")));
+                AuthTokenUtils.validFor = Long.valueOf(String.valueOf(properties.get("authentication.jwt.validFor")));
+                AuthTokenUtils.refreshLimit =
+                        Integer.valueOf(String.valueOf(properties.get("authentication.jwt.refreshLimit")));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

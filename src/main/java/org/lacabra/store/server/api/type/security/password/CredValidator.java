@@ -19,9 +19,8 @@ public class CredValidator {
     }
 
     public static User validate(String id, String passwd) {
-        var dao = UserDAO.getInstance();
-
-        User user = dao.findOne(new User(id));
+        final var dao = UserDAO.getInstance();
+        final var user = dao.findOne(new User(id));
 
         if (user == null) {
             throw new AuthenticationException("User not found.");

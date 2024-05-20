@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lacabra.store.internals.json.deserializer.UserIdDeserializer;
 import org.lacabra.store.internals.json.serializer.UserIdSerializer;
+import org.lacabra.store.internals.logging.Logger;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -31,13 +33,14 @@ public final class UserId implements Serializable {
 
         REGEX = Pattern.compile(String.format("^(?!^%s$)(?=.{3,30}$)^([%s]+[-_\\.]?)+$",
                 Invalid.stream().map(x -> String.format("(?:%s)", x)).collect(Collectors.joining("|")),
-                Arrays.stream(chars).map(x -> {
-                    Matcher m = Pattern.compile("(\\\\u.{1,4}-\\\\u.{1,4})|(.-.)").matcher(x);
+                Arrays.stream(chars).flatMap(x -> {
+                    final var m = Pattern.compile("(\\\\u.{1,4}-\\\\u.{1,4})|(.-.)").matcher(x);
 
-                    if (m.find())
-                        return m.group();
+                    final var ret = new ArrayList<String>();
+                    for (; m.find(); )
+                        ret.add(m.group());
 
-                    return null;
+                    return ret.stream();
                 }).filter(Objects::nonNull).sorted((a, b) -> {
                     String[] match = new String[2];
 
@@ -51,6 +54,8 @@ public final class UserId implements Serializable {
                     return (match[0] == null ? a.codePointAt(0) : Integer.parseInt(match[0], 16)) - (match[1] == null ?
                             b.codePointAt(0) : Integer.parseInt(match[1], 16));
                 }).collect(Collectors.joining())));
+
+        Logger.getLogger().severe(REGEX.pattern());
     }
 
     private final String id;

@@ -7,7 +7,6 @@ import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
 import org.lacabra.store.server.api.type.security.password.CredValidator;
 import org.lacabra.store.server.api.type.security.token.AuthToken;
 import org.lacabra.store.server.api.type.user.Credentials;
-import org.lacabra.store.server.api.type.user.User;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -20,13 +19,14 @@ import javax.ws.rs.core.Response;
 
 @RequestScoped
 @Path("/auth")
+@PermitAll
 public class Route {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     @PermitAll
-    public Response POST(Credentials creds) {
-        User user = CredValidator.validate(creds.id(), creds.passwd());
+    public Response POST(final Credentials creds) {
+        final var user = CredValidator.validate(creds.id(), creds.passwd());
         return Response.ok(new AuthToken(AuthTokenUtils.issue(user.id().get(), user.authorities())).token()).build();
     }
 
@@ -36,9 +36,9 @@ public class Route {
     @PermitAll
     public Response refresh(@Context ContainerRequestContext context) {
         final var token =
-                new AuthToken(AuthTokenUtils.refresh(((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails()));
+                new AuthToken(AuthTokenUtils.refresh(((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails())).token();
 
-        if (token.token() == null)
+        if (token == null)
             return Response.status(Response.Status.UNAUTHORIZED).build();
 
         return Response.ok(token).build();

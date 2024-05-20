@@ -13,16 +13,12 @@ public final class AuthWindow extends DispatchedWindow {
     @Serial
     private final static long serialVersionUID = 1L;
 
-    public AuthWindow() {
-        this(null);
-    }
-
-    public AuthWindow(WindowDispatcher wd) {
+    public AuthWindow(final WindowDispatcher wd) {
         super(wd);
     }
 
     @Override
-    public void setDispatcher(WindowDispatcher dispatcher) {
+    public void setDispatcher(final WindowDispatcher dispatcher) {
         super.setDispatcher(dispatcher);
 
         final WindowDispatcher d = this.getDispatcher();
@@ -33,12 +29,8 @@ public final class AuthWindow extends DispatchedWindow {
         if (controller == null)
             return;
 
-        controller.auth().thenAccept((auth) -> {
-            if (auth) {
-                this.replace(HomeWindow.class);
-
-                return;
-            }
+        this.auth(() -> this.replace(HomeWindow.class), () -> {
+            controller.unauth();
 
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -74,6 +66,9 @@ public final class AuthWindow extends DispatchedWindow {
                 }
 
                 this.getContentPane().add(p, BorderLayout.CENTER);
+                this.pack();
+                this.setSize((int) (this.getWidth() * 1.5), this.getHeight());
+
                 this.setVisible(true);
             }
         });

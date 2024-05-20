@@ -1,10 +1,9 @@
-package org.lacabra.store.client.windows;
+package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.dto.UserDTO;
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
 import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
-import org.lacabra.store.client.graphical.window.AuthWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,14 +20,6 @@ public final class ProfileWindow extends DispatchedWindow {
     public static final int UPDATE_USER = 1000;
     @Serial
     private final static long serialVersionUID = 1L;
-
-    public ProfileWindow(final UserDTO user) {
-        this(null, user);
-    }
-
-    public ProfileWindow(final WindowDispatcher wd, final UserDTO user) {
-        super(wd, user);
-    }
 
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
@@ -130,7 +121,7 @@ public final class ProfileWindow extends DispatchedWindow {
                 this.add(commentPanel, c);
             }
 
-            
+
             {
                 final var buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
                 final var updateButton = new JButton("Actualizar");

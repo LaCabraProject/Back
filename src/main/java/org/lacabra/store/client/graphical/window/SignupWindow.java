@@ -1,11 +1,9 @@
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
-import org.lacabra.store.client.graphical.dispatcher.LockedWindowDispatcher;
 import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
 import org.lacabra.store.internals.logging.Logger;
-import org.lacabra.store.internals.maven.ClassRunner;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.Credentials;
 
@@ -16,11 +14,10 @@ import javax.ws.rs.core.Response;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.io.Serial;
-import java.net.MalformedURLException;
-import java.util.Arrays;
+import java.net.http.HttpResponse;
 import java.util.HashSet;
+import java.util.concurrent.CompletableFuture;
 
 public final class SignupWindow extends DispatchedWindow {
     @Serial
@@ -30,32 +27,14 @@ public final class SignupWindow extends DispatchedWindow {
 
     public static final Dimension SIZE = new Dimension(400, 300);
     public static final Dimension FIELD_SIZE = new Dimension(200, 30);
-    public static final Dimension BACK_BUTTON_SIZE = new Dimension(120, 20);
+    public static final Dimension BACK_BUTTON_SIZE = new Dimension(160, 25);
+    public static final Dimension FORM_LABEL_SIZE = new Dimension(120, 40);
 
     public static final int BORDER = 20;
     public static final int INSET = 5;
 
-    public SignupWindow() {
-        this(null);
-    }
-
     public SignupWindow(WindowDispatcher wd) {
         super(wd);
-    }
-
-    public static void main(final String[] args) throws IOException, NoSuchMethodException, InterruptedException {
-        if (Arrays.stream(args).noneMatch(x -> x.equals("run"))) {
-            ClassRunner.run(SignupWindow.class);
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            try {
-                LockedWindowDispatcher.fromArgs(args).dispatch(SignupWindow.class);
-
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     @Override
@@ -68,24 +47,37 @@ public final class SignupWindow extends DispatchedWindow {
         final var controller = d.controller();
         if (controller == null) return;
 
-        controller.auth().thenAccept((auth) -> {
-            if (auth) {
-                this.replace(HomeWindow.class);
+        this.auth(() -> this.replace(HomeWindow.class), () -> {
+            controller.unauth();
 
-                return;
-            }
-
-            this.addWindowListener(new WindowAdapter() {
+            final var closed = new WindowAdapter() {
                 @Override
-                public void windowClosing(final WindowEvent e) {
-                    removeWindowListener(this);
+                public void windowClosed(final WindowEvent e) {
                     replace(AuthWindow.class);
                 }
-            });
+            };
+
+            this.addWindowListener(closed);
 
             this.setTitle(TITLE);
             this.setSize(SIZE);
             this.setLocationRelativeTo(null);
+
+            {
+                final var p = new JPanel();
+                p.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+                {
+                    final var b = new JButton("Volver al inicio");
+                    b.setPreferredSize(BACK_BUTTON_SIZE);
+
+                    b.addActionListener((e) -> this.close());
+
+                    p.add(b);
+                }
+
+                this.add(p, BorderLayout.NORTH);
+            }
 
             {
                 final var p = new JPanel();
@@ -95,17 +87,19 @@ public final class SignupWindow extends DispatchedWindow {
                 {
                     final var confirm = new JButton("Regístrate");
 
-                    final Signal<Credentials> creds = new Signal<>(new Credentials());
+                    final var creds = new Signal<>(new Credentials());
                     creds.effect(c -> confirm.setEnabled(!(c.id() == null || c.passwd() == null || c.passwd().isEmpty() || c.authorities().isEmpty())));
 
                     this.connect(creds);
 
                     {
                         final var p2 = new JPanel();
+                        p2.setLayout(new FlowLayout(FlowLayout.LEFT));
 
                         {
-                            final var l = new JLabel("Nombre de usuario");
+                            final var l = new JLabel("Nombre de usuario", SwingConstants.LEFT);
 
+                            l.setPreferredSize(FORM_LABEL_SIZE);
                             p2.add(l);
                         }
 
@@ -137,10 +131,12 @@ public final class SignupWindow extends DispatchedWindow {
 
                     {
                         final var p2 = new JPanel();
+                        p2.setLayout(new FlowLayout(FlowLayout.LEFT));
 
                         {
-                            final var l = new JLabel("Contraseña");
+                            final var l = new JLabel("Contraseña", SwingConstants.LEADING);
 
+                            l.setPreferredSize(FORM_LABEL_SIZE);
                             p2.add(l);
                         }
 
@@ -161,7 +157,7 @@ public final class SignupWindow extends DispatchedWindow {
 
                                 @Override
                                 public void changedUpdate(DocumentEvent e) {
-                                    creds.set(creds.peek().passwd(Arrays.toString(t.getPassword())));
+                                    creds.set(creds.peek().passwd(new String(t.getPassword())));
                                 }
                             });
 
@@ -230,29 +226,40 @@ public final class SignupWindow extends DispatchedWindow {
                     {
                         confirm.setPreferredSize(FIELD_SIZE);
 
-                        confirm.setEnabled(false);
                         confirm.addActionListener(e -> {
-                            final var r = controller.authResp(creds.get()).join();
-                            final var status = r.statusCode();
+                            final var c = creds.get();
 
-                            if (status == Response.Status.OK.getStatusCode()) {
-                                final var w = this.replace(HomeWindow.class);
+                            this.load(() -> {
+                                try {
+                                    return controller.authResp(c);
+                                } catch (Exception exception) {
+                                    return CompletableFuture.completedFuture(false);
+                                }
+                            }, (final HttpResponse<Boolean> r) -> {
+                                final var status = r.statusCode();
 
-                                if (w != null)
-                                    w.message("¡Te has registrado con éxito! Recuerda que tienes un 10% " + "de " +
-                                            "descuento en tu primer pedido.");
+                                if (status == Response.Status.OK.getStatusCode()) {
+                                    final var w = this.replace(HomeWindow.class);
 
-                                return;
-                            }
+                                    if (w != null)
+                                        w.message("¡Te has registrado con éxito! Recuerda que tienes un 10% " + "de " +
+                                                "descuento en tu primer pedido.");
 
-                            final var body = r.body();
-                            final var msg = String.format("%s%s",
-                                    status == Response.Status.UNAUTHORIZED.getStatusCode() ? "" :
-                                            String.format("%d " + ":", status), body == null ? "" : body);
+                                    return;
+                                }
 
-                            Logger.getLogger().warning(msg);
+                                final var body = r.body();
+                                final var msg = String.format("%s%s",
+                                        status == Response.Status.UNAUTHORIZED.getStatusCode() ? "" :
+                                                String.format("%d " + ":", status), body == null ? "" : body);
 
-                            this.message(msg);
+                                Logger.getLogger().warning(msg);
+
+                                this.message(msg);
+
+                                this.removeWindowListener(closed);
+                                this.replace(HomeWindow.class);
+                            }, DispatchedWindow.AUTH_MESSAGE, DispatchedWindow.AUTH_TIMEOUT, false);
                         });
 
                         p.add(confirm);

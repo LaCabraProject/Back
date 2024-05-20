@@ -91,7 +91,7 @@ public class MainController implements Serializable {
     private String hostname;
     private Integer port;
     private String endpoint;
-    private UserId user;
+    private UserDTO user;
     private String token;
 
     public MainController() {
@@ -253,7 +253,7 @@ public class MainController implements Serializable {
         }
     }
 
-    public UserId getUser() {
+    public UserDTO getUser() {
         return this.user;
     }
 
@@ -314,16 +314,13 @@ public class MainController implements Serializable {
 
     public CompletableFuture<HttpResponse<String>> authResp() {
         if (this.token == null) {
-            final var body = "Requested token-based authentication without an existing token.";
-
-            Logger.getLogger().warning(body);
-
-            return CompletableFuture.completedFuture(RequestError.apply(body));
+            return CompletableFuture.completedFuture(RequestError.apply("Requested token-based authentication without" +
+                    " an existing token."));
         }
 
         return this.request("/auth/refresh", RequestMethod.POST).thenApply((r) -> {
             if (r.statusCode() != ResponseStatus.Success2xx.OK_200.getStatusCode()) {
-                this.token = null;
+                this.unauth();
                 return r;
             }
 
@@ -364,7 +361,7 @@ public class MainController implements Serializable {
             return CompletableFuture.completedFuture(RequestError.apply(body));
         }
 
-        this.user = id;
+        this.user = new UserDTO(creds);
 
         try {
             return this.request("/auth", RequestMethod.POST, null, creds).thenApply(r -> {
@@ -375,6 +372,11 @@ public class MainController implements Serializable {
                     }
 
                     this.token = r.body();
+                    this.GET.User.id(id).thenAccept(u -> {
+                        if (u != null)
+                            this.user = u;
+                    });
+
                     return r;
                 } catch (Exception e) {
                     this.token = null;
@@ -449,7 +451,7 @@ public class MainController implements Serializable {
         if (method == null) throw new IllegalArgumentException("No request method provided.");
 
         try {
-            String url = this.URL() + "/" + route.replaceAll("^/", "");
+            var url = this.URL() + "/" + route.replaceAll("^/", "");
 
             if (params != null) {
                 url += params.entrySet().stream().flatMap((entry) -> Arrays.stream(entry.getValue() == null ?
