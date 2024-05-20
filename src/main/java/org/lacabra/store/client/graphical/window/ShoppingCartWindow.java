@@ -1,3 +1,8 @@
+/**
+ * @file ShoppingCartWindow.java
+ * @brief Define la ventana del carrito de compras para la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.dto.ItemDTO;
@@ -14,26 +19,58 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+/**
+ * @class ShoppingCartWindow
+ * @brief Implementa la interfaz gráfica para la ventana del carrito de compras.
+ */
 public final class ShoppingCartWindow extends DispatchedWindow {
+    /** @brief Título de la ventana. */
     public static final String TITLE = "Carrito de compra";
+
+    /** @brief Tamaño de la ventana. */
     public static final Dimension SIZE = new Dimension(800, 600);
+
+    /** @brief Bordes de los componentes. */
     public static final int BORDER = 10;
+
+    /** @brief Campo de texto para mostrar el costo total. */
     private JTextField t = new JTextField();
+
+    /** @brief Panel con scroll para los productos en el carrito. */
     private JScrollPane s;
+
+    /** @brief Panel principal de la ventana. */
     private JPanel p;
+
+    /** @brief Lista de productos en el carrito. */
     private ArrayList<ItemDTO> carrito;
+
+    /** @brief Serial version UID para la serialización. */
     @Serial
     private final static long serialVersionUID = 1L;
 
+    /**
+     * @brief Constructor por defecto.
+     */
     public ShoppingCartWindow() {
         this(null);
     }
 
+    /**
+     * @brief Constructor con un dispatcher de ventanas.
+     * @param wd Dispatcher de ventanas.
+     */
     public ShoppingCartWindow(final WindowDispatcher wd) {
         super(wd, null);
 
         this.setDispatcher(wd, (Signal<ArrayList<ItemDTO>>) null);
     }
+
+    /**
+     * @brief Configura el dispatcher de la ventana con una señal de productos.
+     * @param wd Dispatcher de ventanas.
+     * @param signal Señal de datos de los productos.
+     */
 
 
     public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
