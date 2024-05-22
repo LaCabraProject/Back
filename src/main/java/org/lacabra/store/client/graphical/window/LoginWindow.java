@@ -1,8 +1,7 @@
 /**
-
-@file LoginWindow.java
-@brief Define la ventana de inicio de sesión para la aplicación.
-*/
+ * @file LoginWindow.java
+ * @brief Define la ventana de inicio de sesión para la aplicación.
+ */
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
@@ -21,54 +20,63 @@ import java.io.Serial;
 import java.util.concurrent.CompletableFuture;
 
 /**
-
-@class LoginWindow
-
-@brief Implementa la interfaz gráfica para la ventana de inicio de sesión.
-*/
+ * @class LoginWindow
+ * @brief Implementa la interfaz gráfica para la ventana de inicio de sesión.
+ */
 
 public final class LoginWindow extends DispatchedWindow {
     @Serial
     private final static long serialVersionUID = 1L;
 
-    /** @brief Serial version UID para la serialización. */
+    /**
+     * @brief Serial version UID para la serialización.
+     */
     @Serial
     private final static long serialVersionUID1 = 1L;
 
-    /** @brief Título de la ventana. */
+    /**
+     * @brief Título de la ventana.
+     */
     public static final String TITLE = "Iniciar sesión";
 
-    /** @brief Tamaño de la ventana. */
+    /**
+     * @brief Tamaño de la ventana.
+     */
     public static final Dimension SIZE = new Dimension(600, 400);
 
-    /** @brief Tamaño de los campos de entrada. */
+    /**
+     * @brief Tamaño de los campos de entrada.
+     */
     public static final Dimension FIELD_SIZE = new Dimension(200, 30);
 
-    /** @brief Tamaño del botón "Volver al inicio". */
+    /**
+     * @brief Tamaño del botón "Volver al inicio".
+     */
     public static final Dimension BACK_BUTTON_SIZE = new Dimension(160, 25);
 
-    /** @brief Tamaño de las etiquetas del formulario. */
+    /**
+     * @brief Tamaño de las etiquetas del formulario.
+     */
     public static final Dimension FORM_LABEL_SIZE = new Dimension(140, 40);
 
-    /** @brief Ancho del borde del formulario. */
-    public static final int BORDER = 20;
-    
     /**
+     * @brief Ancho del borde del formulario.
+     */
+    public static final int BORDER = 20;
 
-    @brief Constructor de la clase LoginWindow.
-    @param wd Dispatcher de ventanas.
-    */
+    /**
+     * @param wd Dispatcher de ventanas.
+     * @brief Constructor de la clase LoginWindow.
+     */
 
     public LoginWindow(final WindowDispatcher wd) {
         super(wd);
     }
-    
+
     /**
-
-    @brief Configura el dispatcher de la ventana.
-
-    @param dispatcher El dispatcher de ventanas a configurar.
-    */
+     * @param dispatcher El dispatcher de ventanas a configurar.
+     * @brief Configura el dispatcher de la ventana.
+     */
 
     @Override
     public void setDispatcher(final WindowDispatcher dispatcher) {
@@ -86,6 +94,18 @@ public final class LoginWindow extends DispatchedWindow {
         controller.unauth();
 
         this.auth(() -> this.replace(HomeWindow.class), () -> {
+            {
+                final var w = windows();
+
+                if (w != null) {
+                    final var lw = w.values().stream().filter(x -> x.getClass().equals(LoginWindow.class)).findFirst();
+                    if (lw.isPresent()) {
+                        this.close();
+                        lw.get().requestFocus();
+                    }
+                }
+            }
+
             final var id = new JTextField();
             if (uid != null)
                 id.setText(uid.toString());
@@ -96,7 +116,6 @@ public final class LoginWindow extends DispatchedWindow {
                     replace(AuthWindow.class);
                 }
             };
-
             this.addWindowListener(closed);
 
             this.addWindowFocusListener(new WindowAdapter() {

@@ -17,26 +17,30 @@ import java.io.Serial;
  * @brief Implementa la interfaz gráfica para la ventana de autenticación.
  */
 public final class AuthWindow extends DispatchedWindow {
-    /** @brief Título de la ventana de autenticación. */
+    /**
+     * @brief Título de la ventana de autenticación.
+     */
     public static final String TITLE = "Autenticación necesaria";
-    
-    /** @brief Tamaño de la ventana de autenticación. */
+
+    /**
+     * @brief Tamaño de la ventana de autenticación.
+     */
     public static final Dimension SIZE = new Dimension(400, 400);
-    
+
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * @brief Constructor de la ventana de autenticación.
      * @param wd Dispatcher de ventanas.
+     * @brief Constructor de la ventana de autenticación.
      */
     public AuthWindow(final WindowDispatcher wd) {
         super(wd);
     }
 
     /**
-     * @brief Configura el dispatcher de la ventana.
      * @param dispatcher Dispatcher de ventanas.
+     * @brief Configura el dispatcher de la ventana.
      */
 
     @Override
@@ -53,6 +57,18 @@ public final class AuthWindow extends DispatchedWindow {
 
         this.auth(() -> this.replace(HomeWindow.class), () -> {
             controller.unauth();
+
+            {
+                final var w = windows();
+
+                if (w != null) {
+                    final var aw = w.values().stream().filter(x -> x.getClass().equals(AuthWindow.class)).findFirst();
+                    if (aw.isPresent()) {
+                        this.close();
+                        aw.get().requestFocus();
+                    }
+                }
+            }
 
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

@@ -26,13 +26,14 @@ public class Route {
     @Produces(MediaType.TEXT_PLAIN)
     @PermitAll
     public Response POST(final Credentials creds) {
-        final var user = CredValidator.validate(creds.id(), creds.passwd());
+        final var user = CredValidator.validate(creds == null ? null : creds.id(), creds == null ? null :
+                creds.passwd());
         return Response.ok(new AuthToken(AuthTokenUtils.issue(user.id().get(), user.authorities())).token()).build();
     }
 
     @POST
     @Path("refresh")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @PermitAll
     public Response refresh(@Context ContainerRequestContext context) {
         final var token =

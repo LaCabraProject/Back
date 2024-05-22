@@ -227,9 +227,16 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
                     signals));
         } catch (NoSuchMethodException e) {
             try {
-                return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException ex) {
+                return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class, Signal.class).newInstance(this,
+                        signals != null && signals.length > 0 ? signals[0] : null));
+            } catch (NoSuchMethodException ex) {
+                try {
+                    return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException exc) {
+                    throw new RuntimeException(exc);
+                }
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException ex) {
                 throw new RuntimeException(ex);
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

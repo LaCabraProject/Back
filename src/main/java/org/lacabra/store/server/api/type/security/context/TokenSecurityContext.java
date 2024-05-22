@@ -9,8 +9,8 @@ import java.security.Principal;
 
 public class TokenSecurityContext implements SecurityContext {
     private final boolean secure;
-    private AuthedUserDetails user;
-    private AuthTokenDetails token;
+    private final AuthedUserDetails user;
+    private final AuthTokenDetails token;
 
     public TokenSecurityContext(AuthedUserDetails user, AuthTokenDetails token, boolean secure) {
         this.user = user;
@@ -25,7 +25,7 @@ public class TokenSecurityContext implements SecurityContext {
 
     @Override
     public boolean isUserInRole(String s) {
-        return user.authorities().contains(Authority.valueOf(s));
+        return user != null && user.authorities().contains(Authority.valueOf(s));
     }
 
     @Override

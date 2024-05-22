@@ -1,6 +1,7 @@
 /**
  * @file UserDTO.java
- * @brief Define la clase UserDTO, un objeto de transferencia de datos (DTO) para transferir información relacionada con usuarios entre el cliente y el servidor.
+ * @brief Define la clase UserDTO, un objeto de transferencia de datos (DTO) para transferir información relacionada
+ * con usuarios entre el cliente y el servidor.
  */
 
 package org.lacabra.store.client.dto;
@@ -20,16 +21,17 @@ import org.lacabra.store.server.api.type.user.User;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.HashSet;
 
 /**
- * @brief Representa un objeto de transferencia de datos (DTO) de usuario utilizado para transferir información relacionada con usuarios entre el cliente y el servidor.
- *        Esta clase es serializable y sirve como contenedor de datos para información relacionada con usuarios.
+ * @brief Representa un objeto de transferencia de datos (DTO) de usuario utilizado para transferir información
+ * relacionada con usuarios entre el cliente y el servidor.
+ * Esta clase es serializable y sirve como contenedor de datos para información relacionada con usuarios.
  */
 @JsonDeserialize(using = UserDeserializer.DTO.class)
 public record UserDTO(
         @JsonProperty("id") @JsonSerialize(using = UserIdSerializer.class) UserId id,
-        @JsonProperty("authorities") EnumSet<Authority> authorities,
+        @JsonProperty("authorities") HashSet<Authority> authorities,
         @JsonProperty("passwd") String passwd
 ) implements Serializable, DTO<UserDTO, User> {
     @Serial
@@ -63,7 +65,7 @@ public record UserDTO(
     /**
      * Construye un objeto UserDTO con el ID de usuario y la contraseña especificados.
      *
-     * @param id El ID de usuario.
+     * @param id     El ID de usuario.
      * @param passwd La contraseña del usuario.
      */
     public UserDTO(final String id, final String passwd) {
@@ -73,22 +75,11 @@ public record UserDTO(
     /**
      * Construye un objeto UserDTO con el ID de usuario y la contraseña especificados.
      *
-     * @param id El ID de usuario.
+     * @param id     El ID de usuario.
      * @param passwd La contraseña del usuario.
      */
     public UserDTO(final UserId id, final String passwd) {
         this(new Credentials(id, passwd));
-    }
-
-    /**
-     * Construye un objeto UserDTO con el ID de usuario, las autoridades y la contraseña especificados.
-     *
-     * @param id El ID de usuario.
-     * @param authorities Las autoridades asociadas con el usuario.
-     * @param passwd La contraseña del usuario.
-     */
-    public UserDTO(final UserId id, final Collection<Authority> authorities, final String passwd) {
-        this(id, authorities == null || authorities.isEmpty() ? null : EnumSet.copyOf(authorities), passwd);
     }
 
     /**
@@ -97,19 +88,31 @@ public record UserDTO(
      * @param creds Las credenciales del usuario.
      */
     public UserDTO(final Credentials creds) {
-        this(creds == null ? null : creds.id(), creds == null ? null : creds.authorities(), creds == null ? null : creds.passwd());
+        this(creds == null ? null : creds.id(), creds == null ? null : creds.authorities(), creds == null ? null :
+                creds.passwd());
     }
 
     /**
      * Construye un objeto UserDTO con el ID de usuario, las autoridades y la contraseña especificados.
      *
-     * @param id El ID de usuario.
+     * @param id          El ID de usuario.
      * @param authorities Las autoridades asociadas con el usuario.
-     * @param passwd La contraseña del usuario.
+     * @param passwd      La contraseña del usuario.
      */
-    public UserDTO(final UserId id, final EnumSet<Authority> authorities, final String passwd) {
+    public UserDTO(final UserId id, final Collection<Authority> authorities, final String passwd) {
+        this(id, new HashSet<>(authorities), passwd);
+    }
+
+    /**
+     * Construye un objeto UserDTO con el ID de usuario, las autoridades y la contraseña especificados.
+     *
+     * @param id          El ID de usuario.
+     * @param authorities Las autoridades asociadas con el usuario.
+     * @param passwd      La contraseña del usuario.
+     */
+    public UserDTO(final UserId id, final HashSet<Authority> authorities, final String passwd) {
         this.id = id;
-        this.authorities = authorities == null || authorities.isEmpty() ? EnumSet.noneOf(Authority.class) : EnumSet.copyOf(authorities);
+        this.authorities = authorities == null ? new HashSet<>() : new HashSet<>(authorities);
         this.passwd = passwd;
     }
 

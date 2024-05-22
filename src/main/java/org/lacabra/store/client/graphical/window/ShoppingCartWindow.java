@@ -1,299 +1,141 @@
-/**
- * @file ShoppingCartWindow.java
- * @brief Define la ventana del carrito de compras para la aplicación.
- */
-
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.dto.ItemDTO;
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
 import org.lacabra.store.client.graphical.dispatcher.Signal;
 import org.lacabra.store.client.graphical.dispatcher.WindowDispatcher;
-import org.lacabra.store.internals.logging.Logger;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
-/**
- * @class ShoppingCartWindow
- * @brief Implementa la interfaz gráfica para la ventana del carrito de compras.
- */
 public final class ShoppingCartWindow extends DispatchedWindow {
-    /** @brief Título de la ventana. */
-    public static final String TITLE = "Carrito de compra";
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    /** @brief Tamaño de la ventana. */
+    /**
+     * @brief Título de la ventana principal.
+     */
+    public static final String TITLE = "GOAT";
+
+    /**
+     * @brief Tamaño de la ventana principal.
+     */
     public static final Dimension SIZE = new Dimension(800, 600);
 
-    /** @brief Bordes de los componentes. */
-    public static final int BORDER = 10;
-
-    /** @brief Campo de texto para mostrar el costo total. */
-    private JTextField t = new JTextField();
-
-    /** @brief Panel con scroll para los productos en el carrito. */
-    private JScrollPane s;
-
-    /** @brief Panel principal de la ventana. */
-    private JPanel p;
-
-    /** @brief Lista de productos en el carrito. */
-    private ArrayList<ItemDTO> carrito;
-
-    /** @brief Serial version UID para la serialización. */
-    @Serial
-    private final static long serialVersionUID = 1L;
-
     /**
-     * @brief Constructor por defecto.
+     * @param wd Dispatcher de ventanas.
+     * @brief Constructor de la ventana principal.
      */
-    public ShoppingCartWindow() {
-        this(null);
+    public ShoppingCartWindow(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO[]>> carrito) {
+        super(wd, carrito);
     }
 
     /**
-     * @brief Constructor con un dispatcher de ventanas.
      * @param wd Dispatcher de ventanas.
+     * @brief Inicializa la ventana.
      */
-    public ShoppingCartWindow(final WindowDispatcher wd) {
-        super(wd, null);
+    @Override
+    public void setDispatcher(final WindowDispatcher wd, final Signal<?>... signals) {
+        assert (signals != null);
+        assert (signals.length == 1);
+        assert (signals[0] != null);
+        assert (signals[0].peek() instanceof ArrayList);
 
-        this.setDispatcher(wd, (Signal<ArrayList<ItemDTO>>) null);
-    }
+        final var carrito = (Signal<ArrayList<ItemDTO>>) signals[0];
 
-    /**
-     * @brief Configura el dispatcher de la ventana con una señal de productos.
-     * @param wd Dispatcher de ventanas.
-     * @param signal Señal de datos de los productos.
-     */
-
-
-    public void setDispatcher(final WindowDispatcher wd, final Signal<ArrayList<ItemDTO>> signal) {
-        super.setDispatcher(wd, signal);
-
-        if (signal != null) {
-           carrito=signal.get();
-        }
+        super.setDispatcher(wd, carrito);
 
         final var controller = this.controller();
         if (controller == null) return;
 
-        controller.auth().thenAccept((auth) -> {
-            if (!auth) {
-                controller.unauth();
-                this.replace(AuthWindow.class);
-
-                return;
-            }
+        this.auth(() -> {
+            final var user = controller.getUser();
+            assert (user != null);
+            final var uid = user.id();
+            assert (uid != null);
 
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
             this.setTitle(TITLE);
             this.setSize(SIZE);
             this.setLocationRelativeTo(null);
-            this.setLayout(new BorderLayout());
+
+            this.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    final var wd = getDispatcher();
+                    if (wd == null) {
+                        close();
+                        return;
+                    }
+
+                    final var w = windows();
+                    if (w != null && w.values().stream().anyMatch(x -> x.getClass().equals(HomeWindow.class))) {
+                        close();
+                    } else {
+                        replace(HomeWindow.class);
+                    }
+                }
+            });
+
+            final var delete = new Signal<>(false);
 
             {
-                final var p = new JPanel(new GridLayout(1, 2, BORDER, 0));
-                p.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
+                final var p = new JPanel(new FlowLayout(FlowLayout.LEADING));
 
                 {
-                    final var p2 = new JPanel(new GridLayout(2, 1));
+                    final var l = new JLabel("Carrito de " + uid.get());
 
-                    {
-                        final var l = new JLabel("Método de envío:");
+                    l.putClientProperty("FlatLaf.styleClass", "h1");
 
-                        p2.add(l);
-                    }
-
-                    {
-                        final var c = new JComboBox<>(new String[]{"Estándar", "Exprés", "Entrega al día siguiente"});
-
-                        c.addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-
-                                String selectedMethod = (String) c.getSelectedItem();
-
-                                if(selectedMethod.equals("Estándar")){
-
-                                }
-
-                                else if(selectedMethod.equals("Exprés")){
-
-                                }
-
-                                else if(selectedMethod.equals("Entrega al día siguiente")){
-                                    String msg="Usted no posee el plan Premium y por lo tanto no dispone" +
-                                            "de este privileguio.";
-                                    JOptionPane.showMessageDialog(ShoppingCartWindow.this,
-                                            msg,
-                                            "Plan Premium",
-                                            JOptionPane.INFORMATION_MESSAGE);
-
-                                    c.setSelectedIndex(-1);
-                                }
-                            }
-                        });
-
-                        p2.add(c);
-                    }
-
-                    p.add(p2);
-                }
-
-                {
-                    final var p2 = new JPanel(new GridLayout(2, 1));
-
-                    {
-                        final var l = new JLabel("Costo total:");
-
-                        p2.add(l);
-                    }
-
-                    {
-                        t = new JTextField();
-                        t.setEditable(false);
-                        t.setColumns(10);
-
-                        p2.add(t);
-                    }
-
-                    p.add(p2);
+                    p.add(l);
                 }
 
                 this.add(p, BorderLayout.NORTH);
             }
 
             {
-                p = new JPanel(new BorderLayout());
-                p.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
+                final var p = new ScrollPane();
 
                 {
-
-                    {
-                        JList<?> l;
-
-                        {
-                            final var lm = new DefaultListModel<>();
-                            if(carrito!=null) {
-                                for (ItemDTO item : carrito) {
-                                    lm.addElement(item);
-                                }
-
-                            }
-
-                            l = new JList<>(lm);
-                        }
+                    final var p2 = new JPanel(new GridLayout(3, 1));
 
 
-                        l.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-                        s = new JScrollPane(l);
-                    }
-
-                    p.add(s, BorderLayout.CENTER);
+                    p.add(p2);
                 }
 
                 this.add(p, BorderLayout.CENTER);
             }
 
             {
-                final var p = new JPanel(new GridLayout(1, 3, BORDER, 0));
-                p.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
+                final var p = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
                 {
-                    final var b = new JButton("Eliminar producto");
+                    final var b = new JButton("Eliminar");
+                    delete.effect(v -> {
+                        if (v)
+                            b.setText("No eliminar");
 
-                    b.addActionListener(new ActionListener() {
-
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-
-                            JList<?> productList = (JList<String>) ((JScrollPane) ((JPanel) ShoppingCartWindow.this.
-                                    getContentPane().getComponent(1)).getComponent(0)).getViewport().getView();
-
-                            DefaultListModel<?> model = (DefaultListModel<?>) productList.getModel();
-                            int selectedIndex = productList.getSelectedIndex();
-
-                            if (selectedIndex != -1) {
-                                model.remove(selectedIndex);
-                                carrito.remove(selectedIndex);
-                            }
-                            Signal<ArrayList<ItemDTO>>señal=new Signal<>();
-                            señal.effect((Consumer<ArrayList<ItemDTO>>) carrito);
-                            connect(señal);
-
-                        }
+                        else
+                            b.setText("Eliminar");
                     });
+
+                    b.addActionListener(e -> delete.set(delete.peek()));
 
                     p.add(b);
                 }
 
                 {
-                    final var b = new JButton("Aplicar cupón");
+                    final var b = new JButton("Realizar pedido");
 
-                    b.addActionListener(new ActionListener() {
+                    carrito.effect(items -> b.setEnabled(items != null && !items.isEmpty()));
 
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-
-                            if(!controller.GET.Item.all().join().isEmpty()) {
-                                String msg="El cupón de primera compra ya fue aplicado.";
-                                JOptionPane.showMessageDialog(ShoppingCartWindow.this,
-                                        msg,
-                                        "Descuento negado",
-                                        JOptionPane.INFORMATION_MESSAGE);
-
-                                Logger.getLogger().info(msg);
-                            }else{
-                                double temporal=Double.parseDouble(t.getText());
-                                temporal=temporal-(temporal*0.2);
-                                t.setText(String.valueOf(temporal));
-                            }
-
-                        }
-
-                    });
-
-                    p.add(b);
-                }
-
-                {
-                    final var b = new JButton("Realizar pago");
-
-                    b.addActionListener(new ActionListener() {
-
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-
-                            JList<?> productList = (JList<String>) ((JScrollPane) ((JPanel) ShoppingCartWindow.this.
-                                    getContentPane().getComponent(1)).getComponent(0)).getViewport().getView();
-
-                            DefaultListModel<?> model = (DefaultListModel<?>) productList.getModel();
-                            model.removeAllElements();
-                            carrito.clear();
-                            {
-                                JList<?> l;
-
-                                {
-                                    l = new JList<>(model);
-                                }
-
-                                l.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-                                s = new JScrollPane(l);
-                            }
-
-                            p.revalidate();
-                            p.repaint();
-                        }
+                    b.addActionListener(e -> {
+                        this.message("Hagamos como que has hecho un pedido :)");
+                        this.close();
                     });
 
                     p.add(b);
@@ -301,7 +143,14 @@ public final class ShoppingCartWindow extends DispatchedWindow {
 
                 this.add(p, BorderLayout.SOUTH);
             }
-        });
-    }
 
+            this.connect(delete);
+            delete.get();
+
+            this.connect(carrito);
+            carrito.get();
+
+            this.setVisible(true);
+        }, () -> this.replace(AuthWindow.class));
+    }
 }

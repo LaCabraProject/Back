@@ -44,20 +44,34 @@ import java.util.stream.Stream;
  */
 
 public class MainController implements Serializable {
-    /** @brief Patrón regex para validar URLs. */
+    /**
+     * @brief Patrón regex para validar URLs.
+     */
     public final static Pattern URL_REGEX =
             Pattern.compile("^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;" + "]*[-a-zA-Z0-9" + "+&@#/%=~_|]");
-    /** @brief Puerto mínimo permitido. */
+    /**
+     * @brief Puerto mínimo permitido.
+     */
     public final static int PORT_MIN = 0;
-    /** @brief Puerto máximo permitido. */
+    /**
+     * @brief Puerto máximo permitido.
+     */
     public final static int PORT_MAX = 65535;
-    /** @brief Hostname por defecto. */
+    /**
+     * @brief Hostname por defecto.
+     */
     public final static String DEFAULT_HOSTNAME = "http://localhost";
-    /** @brief Puerto por defecto. */
+    /**
+     * @brief Puerto por defecto.
+     */
     public final static int DEFAULT_PORT = 8080;
-    /** @brief Endpoint por defecto. */
+    /**
+     * @brief Endpoint por defecto.
+     */
     public final static String DEFAULT_ENDPOINT = "/api";
-    /** @brief Función de error de solicitud. */
+    /**
+     * @brief Función de error de solicitud.
+     */
     public final static Function<String, HttpResponse<String>> RequestError = body -> new HttpResponse<>() {
         @Override
         public int statusCode() {
@@ -100,13 +114,19 @@ public class MainController implements Serializable {
         }
     };
 
-    /** @brief SerialVersionUID para la serialización. */
+    /**
+     * @brief SerialVersionUID para la serialización.
+     */
     @Serial
     private static final long serialVersionUID = 1L;
-    /** @brief Tiempo de espera predeterminado para las solicitudes. */
+    /**
+     * @brief Tiempo de espera predeterminado para las solicitudes.
+     */
     public static final int TIMEOUT = 2500;
     public final GET GET = new GET(this);
-    /** @brief Cliente HTTP para las solicitudes. */
+    /**
+     * @brief Cliente HTTP para las solicitudes.
+     */
     private final transient HttpClient httpClient =
             HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).followRedirects(HttpClient.Redirect.NORMAL).connectTimeout(Duration.ofMillis(TIMEOUT)).build();
     private String hostname;
@@ -128,9 +148,9 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Constructor con el nombre de host proporcionado.
      * @param hostname Nombre de host.
      * @throws MalformedURLException Si la URL proporcionada no es válida.
+     * @brief Constructor con el nombre de host proporcionado.
      */
 
     public MainController(String hostname) throws MalformedURLException {
@@ -138,10 +158,10 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Constructor con el nombre de host y el puerto proporcionados.
      * @param hostname Nombre de host.
-     * @param port Puerto.
+     * @param port     Puerto.
      * @throws MalformedURLException Si la URL proporcionada no es válida.
+     * @brief Constructor con el nombre de host y el puerto proporcionados.
      */
 
     public MainController(String hostname, Integer port) throws MalformedURLException {
@@ -149,10 +169,10 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Constructor con el nombre de host y el endpoint proporcionados.
      * @param hostname Nombre de host.
      * @param endpoint Endpoint.
      * @throws MalformedURLException Si la URL proporcionada no es válida.
+     * @brief Constructor con el nombre de host y el endpoint proporcionados.
      */
 
     public MainController(String hostname, String endpoint) throws MalformedURLException {
@@ -160,11 +180,11 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Constructor con el nombre de host, el puerto y el endpoint proporcionados.
      * @param hostname Nombre de host.
-     * @param port Puerto.
+     * @param port     Puerto.
      * @param endpoint Endpoint.
      * @throws MalformedURLException Si la URL proporcionada no es válida.
+     * @brief Constructor con el nombre de host, el puerto y el endpoint proporcionados.
      */
 
     public MainController(String hostname, Integer port, String endpoint) throws MalformedURLException {
@@ -172,12 +192,12 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Constructor con el nombre de host, el puerto y el endpoint proporcionados.
      * @param hostname Nombre de host.
-     * @param port Puerto.
+     * @param port     Puerto.
      * @param endpoint Endpoint.
      * @throws IllegalArgumentException Si los argumentos proporcionados no son válidos.
-     * @throws MalformedURLException Si la URL proporcionada no es válida.
+     * @throws MalformedURLException    Si la URL proporcionada no es válida.
+     * @brief Constructor con el nombre de host, el puerto y el endpoint proporcionados.
      */
 
     public MainController(String hostname, String port, String endpoint) throws IllegalArgumentException,
@@ -190,8 +210,8 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Constructor de copia.
      * @param mc Controlador principal a copiar.
+     * @brief Constructor de copia.
      */
 
     public MainController(MainController mc) {
@@ -212,10 +232,10 @@ public class MainController implements Serializable {
     }
 
     /**
-     * @brief Crea un controlador principal a partir de los argumentos proporcionados.
      * @param args Argumentos.
      * @return Controlador principal.
      * @throws MalformedURLException Si la URL proporcionada no es válida.
+     * @brief Crea un controlador principal a partir de los argumentos proporcionados.
      */
 
     public static MainController fromArgs(final String[] args) throws MalformedURLException {
@@ -495,8 +515,8 @@ public class MainController implements Serializable {
 
     public CompletableFuture<HttpResponse<String>> authResp() {
         if (this.token == null) {
-            return CompletableFuture.completedFuture(RequestError.apply("Requested token-based authentication without" +
-                    " an existing token."));
+            return CompletableFuture.completedFuture(RequestError.apply("Requested token-based authentication " +
+                    "without an existing token."));
         }
 
         return this.request("/auth/refresh", RequestMethod.POST).thenApply((r) -> {
@@ -567,8 +587,7 @@ public class MainController implements Serializable {
 
                     this.token = r.body();
                     this.GET.User.id(id).thenAccept(u -> {
-                        if (u != null)
-                            this.user = u;
+                        if (u != null) this.user = u;
                     });
 
                     return r;
@@ -578,7 +597,7 @@ public class MainController implements Serializable {
                 }
             });
         } catch (Exception e) {
-            this.token = null;
+            this.unauth();
             return CompletableFuture.completedFuture(RequestError.apply(e.getMessage()));
         }
     }
@@ -586,7 +605,7 @@ public class MainController implements Serializable {
     /**
      * Realiza una solicitud HTTP de manera síncrona.
      *
-     * @param route  La ruta de la solicitud.
+     * @param route La ruta de la solicitud.
      * @return La respuesta HTTP.
      */
     public HttpResponse<String> requestSync(@NotNull final String route) {
@@ -660,7 +679,7 @@ public class MainController implements Serializable {
     /**
      * Realiza una solicitud HTTP de manera asíncrona.
      *
-     * @param route  La ruta de la solicitud.
+     * @param route La ruta de la solicitud.
      * @return Un futuro que representa la respuesta de la solicitud.
      */
     public CompletableFuture<HttpResponse<String>> request(@NotNull final String route) {
@@ -735,7 +754,9 @@ public class MainController implements Serializable {
 
             var builder = HttpRequest.newBuilder(URI.create(url));
 
-            if (this.token != null) builder = builder.header("Authorization", "Bearer " + this.token);
+            if (this.token != null)
+                builder = builder.setHeader(org.glassfish.jersey.http.HttpHeaders.AUTHORIZATION,
+                        "Bearer " + this.token);
 
             if (headers != null) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
@@ -747,7 +768,7 @@ public class MainController implements Serializable {
                 case null -> HttpRequest.BodyPublishers.noBody();
                 case HttpRequest.BodyPublisher bp -> bp;
                 default -> {
-                    builder.setHeader("Content-Type", "application/json");
+                    builder.setHeader(org.glassfish.jersey.http.HttpHeaders.CONTENT_TYPE, "application/json");
                     yield HttpRequest.BodyPublishers.ofString(new ObjectMapperProvider().getContext(body.getClass()).writerWithDefaultPrettyPrinter().writeValueAsString(body));
                 }
             };

@@ -21,30 +21,41 @@ import java.util.function.Function;
  * @brief Implementa la interfaz gráfica para la ventana de perfil de usuario.
  */
 public final class ProfileWindow extends DispatchedWindow {
-
-    /** @brief Función que genera el título de la ventana. */
+    /**
+     * @brief Función que genera el título de la ventana.
+     */
     public static final Function<String, String> TITLE = name -> String.format("Perfil de usuario%s", name == null ?
             "" : (":" + " " + name));
 
-    /** @brief Tamaño de la ventana. */
+    /**
+     * @brief Tamaño de la ventana.
+     */
     public static final Dimension SIZE = new Dimension(800, 600);
 
-    /** @brief Margen para los componentes de la ventana. */
+    /**
+     * @brief Margen para los componentes de la ventana.
+     */
     public static final int INSET = 10;
 
-    /** @brief Espacio entre componentes. */
+    /**
+     * @brief Espacio entre componentes.
+     */
     public static final int GAP = INSET / 2;
 
-    /** @brief Intervalo de actualización del usuario. */
+    /**
+     * @brief Intervalo de actualización del usuario.
+     */
     public static final int UPDATE_USER = 1000;
 
-    /** @brief Serial version UID para la serialización. */
+    /**
+     * @brief Serial version UID para la serialización.
+     */
     @Serial
     private final static long serialVersionUID = 1L;
 
     /**
-     * @brief Configura el dispatcher de la ventana.
      * @param wd Dispatcher de ventanas.
+     * @brief Configura el dispatcher de la ventana.
      */
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
@@ -52,9 +63,9 @@ public final class ProfileWindow extends DispatchedWindow {
     }
 
     /**
-     * @brief Configura el dispatcher de la ventana con una señal de usuario.
-     * @param wd Dispatcher de ventanas.
+     * @param wd     Dispatcher de ventanas.
      * @param signal Señal de datos del usuario.
+     * @brief Configura el dispatcher de la ventana con una señal de usuario.
      */
 
     public void setDispatcher(final WindowDispatcher wd, final Signal<UserDTO> signal) {

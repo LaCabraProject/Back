@@ -30,8 +30,8 @@ public class AuthTokenUtils {
     }
 
     public static String issue(String username, Set<Authority> authorities) {
-        String id = UUID.randomUUID().toString();
-        ZonedDateTime issuedDate = ZonedDateTime.now();
+        final var id = UUID.randomUUID().toString();
+        final var issuedDate = ZonedDateTime.now();
 
         return AuthTokenIssuer.issue(new AuthTokenDetails.Builder()
                 .withId(id)
@@ -49,12 +49,11 @@ public class AuthTokenUtils {
     }
 
     public static String refresh(AuthTokenDetails details) {
-
-        if (!details.isEligibleForRefreshment()) {
+        if (details == null || !details.isEligibleForRefreshment()) {
             throw new AuthTokenRefreshmentException("This token cannot be refreshed");
         }
 
-        ZonedDateTime issuedDate = ZonedDateTime.now();
+        final var issuedDate = ZonedDateTime.now();
 
         return AuthTokenIssuer.issue(new AuthTokenDetails.Builder()
                 .withId(details.id())

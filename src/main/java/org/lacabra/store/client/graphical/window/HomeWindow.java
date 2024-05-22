@@ -22,15 +22,12 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.io.Serial;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
-
-/**
- * @class HomeWindow
- * @brief Implementa la interfaz gráfica para la ventana principal de la aplicación.
- */
 
 /**
  * @class HomeWindow
@@ -61,10 +58,6 @@ public final class HomeWindow extends DispatchedWindow {
     private static final long serialVersionUID = 1L;
 
     /**
-     * @brief Constructor de la ventana principal.
-     * @param wd Dispatcher de ventanas.
-     */
-    /**
      * @param wd Dispatcher de ventanas.
      * @brief Constructor de la ventana principal.
      */
@@ -73,14 +66,9 @@ public final class HomeWindow extends DispatchedWindow {
     }
 
     /**
+     * @param wd Dispatcher de ventanas.
      * @brief Inicializa la ventana.
-     * @param wd Dispatcher de ventanas.
      */
-    /**
-     * @param wd Dispatcher de ventanas.
-     * @brief Configura el dispatcher de la ventana.
-     */
-
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
         super.setDispatcher(wd);
@@ -89,6 +77,18 @@ public final class HomeWindow extends DispatchedWindow {
         if (controller == null) return;
 
         this.auth(() -> {
+            {
+                final var w = windows();
+
+                if (w != null) {
+                    final var hw = w.values().stream().filter(x -> x.getClass().equals(HomeWindow.class)).findFirst();
+                    if (hw.isPresent()) {
+                        this.close();
+                        hw.get().requestFocus();
+                    }
+                }
+            }
+
             final var user = controller.getUser();
             assert (user != null);
             final var uid = user.id();
@@ -100,6 +100,8 @@ public final class HomeWindow extends DispatchedWindow {
             this.setLocationRelativeTo(null);
 
             final var wsize = new Signal<>(SIZE);
+
+            final var cart = new Signal<>(new ArrayList<ItemDTO>());
 
             {
                 final var bar = new JMenuBar();
@@ -169,7 +171,7 @@ public final class HomeWindow extends DispatchedWindow {
 
                     {
                         final var perfil = new JMenuItem("Perfil");
-                        perfil.addActionListener(e -> this.dispatch(ProfileWindow.class));
+                        perfil.addActionListener(e -> this.dispatch(ProfileWindow.class, new Signal<>(user)));
 
                         cuenta.add(perfil);
                     }
@@ -184,9 +186,12 @@ public final class HomeWindow extends DispatchedWindow {
                     bar.add(cuenta);
                 }
 
+                Logger.getLogger().severe(Arrays.toString(user.authorities().toArray(new Authority[0])) + ": "
+                        + Boolean.toString(user.authorities().contains(Authority.Client)));
+
                 if (user.authorities().contains(Authority.Client)) {
                     final var carrito = new JMenuItem("Mi carrito");
-                    carrito.addActionListener(e -> this.replace(ShoppingCartWindow.class));
+                    carrito.addActionListener(e -> this.replace(ShoppingCartWindow.class, cart));
                     carrito.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
                     bar.add(carrito);

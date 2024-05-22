@@ -10,7 +10,6 @@ import org.lacabra.store.internals.type.id.ObjectId;
 import org.lacabra.store.internals.type.tuple.Pair;
 import org.lacabra.store.server.api.type.item.Item;
 import org.lacabra.store.server.api.type.security.context.TokenSecurityContext;
-import org.lacabra.store.server.api.type.security.token.AuthTokenDetails;
 import org.lacabra.store.server.api.type.user.Authority;
 import org.lacabra.store.server.api.type.user.User;
 import org.lacabra.store.server.jdo.dao.ItemDAO;
@@ -35,8 +34,10 @@ public final class Route {
     @PermitAll
     public Response PUT(@Context ContainerRequestContext context, String json) {
         final var utoken = ((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails();
-        User user = null;
-        if (utoken != null) {
+        final User user;
+        if (utoken == null)
+            user = null;
+        else {
             user = UserDAO.getInstance().findOne(new User(utoken.username()));
         }
 
@@ -133,7 +134,7 @@ public final class Route {
     @PATCH
     @PermitAll
     public Response PATCH(@Context ContainerRequestContext context, String json) {
-        AuthTokenDetails user = ((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails();
+        final var user = ((TokenSecurityContext) context.getSecurityContext()).getAuthTokenDetails();
         if (!user.authorities().contains(Authority.Artist))
             return Response.status(Response.Status.UNAUTHORIZED.getStatusCode(), "Not an artist.").build();
 
