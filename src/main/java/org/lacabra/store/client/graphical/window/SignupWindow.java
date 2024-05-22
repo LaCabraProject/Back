@@ -1,3 +1,8 @@
+/**
+ * @file SignupWindow.java
+ * @brief Define la ventana de registro para la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
@@ -19,24 +24,47 @@ import java.net.http.HttpResponse;
 import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @class SignupWindow
+ * @brief Implementa la interfaz gráfica para la ventana de registro de usuarios.
+ */
 public final class SignupWindow extends DispatchedWindow {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /** @brief Título de la ventana de registro. */
     public static final String TITLE = "Crear una cuenta";
 
+    /** @brief Tamaño de la ventana de registro. */
     public static final Dimension SIZE = new Dimension(400, 300);
+    
+    /** @brief Tamaño de los campos de texto. */
     public static final Dimension FIELD_SIZE = new Dimension(200, 30);
+    
+    /** @brief Tamaño del botón de volver al inicio. */
     public static final Dimension BACK_BUTTON_SIZE = new Dimension(160, 25);
+    
+    /** @brief Tamaño de las etiquetas del formulario. */
     public static final Dimension FORM_LABEL_SIZE = new Dimension(120, 40);
 
+    /** @brief Margen del borde de la ventana. */
     public static final int BORDER = 20;
+    
+    /** @brief Espaciado entre componentes. */
     public static final int INSET = 5;
 
+    /**
+     * @brief Constructor de la ventana de registro.
+     * @param wd Dispatcher de ventanas.
+     */
     public SignupWindow(WindowDispatcher wd) {
         super(wd);
     }
 
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param dispatcher Dispatcher de ventanas.
+     */
     @Override
     public void setDispatcher(WindowDispatcher dispatcher) {
         super.setDispatcher(dispatcher);

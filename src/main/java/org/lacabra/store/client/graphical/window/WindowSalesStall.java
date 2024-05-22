@@ -1,3 +1,8 @@
+/**
+ * @file WindowSalesStall.java
+ * @brief Define la ventana de gestión de artículos en venta para la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.controller.MainController;
@@ -23,28 +28,51 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @class WindowSalesStall
+ * @brief Implementa la interfaz gráfica para la ventana de gestión de artículos en venta.
+ */
 public class WindowSalesStall extends DispatchedWindow {
     @Serial
-    private final static long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
+    /** @brief Modelo de la tabla para los artículos. */
     private DefaultTableModel tableModel;
+    
+    /** @brief Tabla para mostrar los artículos. */
     private JTable table;
+    
+    /** @brief Lista de artículos. */
     private List<Item> lista = new ArrayList<>();
+    
+    /** @brief Controlador principal. */
     private MainController mc;
+    
+    /** @brief Panel de desplazamiento para la tabla. */
     private JScrollPane scrollPane;
+    
+    /** @brief Panel principal de la ventana. */
     private JPanel panel = new JPanel();
-    private JPanel bottomPanel, namePanel, addPanel, descriptionPanel, photoPanel, panelPrecio, panelCantidad,
-            panelTipo, panelCrearProducto, controlPanel;
+    
+    private JPanel bottomPanel, namePanel, addPanel, descriptionPanel, photoPanel, panelPrecio, panelCantidad, panelTipo, panelCrearProducto, controlPanel;
     private JTextField nameField, addItemField, descriptionField, photoField, precioField, cantidadField;
     private JButton btnAddItem, btnAddPhoto, modificar, btnRemoveItem, btnClearList, btnBack;
     private JLabel labelPrecio, labelCantidad, labelTipo, label;
     private JComboBox<ItemType> tipoField;
     private List<ItemDTO> itemDTOs;
 
+    /**
+     * @brief Constructor de la ventana de gestión de artículos en venta.
+     * @param wd Dispatcher de ventanas.
+     */
     public WindowSalesStall(final WindowDispatcher wd) {
         super(wd);
     }
 
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param wd Dispatcher de ventanas.
+     */
     @Override
     public void setDispatcher(final WindowDispatcher wd) {
         super.setDispatcher(wd);

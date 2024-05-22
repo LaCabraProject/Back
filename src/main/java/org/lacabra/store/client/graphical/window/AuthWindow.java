@@ -1,3 +1,8 @@
+/**
+ * @file AuthWindow.java
+ * @brief Define la ventana de autenticación necesaria para la aplicación.
+ */
+
 package org.lacabra.store.client.graphical.window;
 
 import org.lacabra.store.client.graphical.dispatcher.DispatchedWindow;
@@ -7,15 +12,32 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serial;
 
+/**
+ * @class AuthWindow
+ * @brief Implementa la interfaz gráfica para la ventana de autenticación.
+ */
 public final class AuthWindow extends DispatchedWindow {
-    public final static String TITLE = "Autenticación necesaria";
-    public final static Dimension SIZE = new Dimension(400, 400);
+    /** @brief Título de la ventana de autenticación. */
+    public static final String TITLE = "Autenticación necesaria";
+    
+    /** @brief Tamaño de la ventana de autenticación. */
+    public static final Dimension SIZE = new Dimension(400, 400);
+    
     @Serial
-    private final static long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * @brief Constructor de la ventana de autenticación.
+     * @param wd Dispatcher de ventanas.
+     */
     public AuthWindow(final WindowDispatcher wd) {
         super(wd);
     }
+
+    /**
+     * @brief Configura el dispatcher de la ventana.
+     * @param dispatcher Dispatcher de ventanas.
+     */
 
     @Override
     public void setDispatcher(final WindowDispatcher dispatcher) {
