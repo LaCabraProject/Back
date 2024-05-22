@@ -31,23 +31,32 @@ import java.util.stream.IntStream;
  * @class HomeWindow
  * @brief Implementa la interfaz gráfica para la ventana principal de la aplicación.
  */
+
 /**
  * @class HomeWindow
  * @brief Implementa la interfaz gráfica para la ventana principal de la aplicación.
  */
 public final class HomeWindow extends DispatchedWindow {
-    /** @brief Título de la ventana principal. */
+    /**
+     * @brief Título de la ventana principal.
+     */
     public static final String TITLE = "GOAT";
-    /** @brief Tamaño de la ventana principal. */
-    
-    /** @brief Tamaño de la ventana principal. */
+
+    /**
+     * @brief Tamaño de la ventana principal.
+     */
     public static final Dimension SIZE = new Dimension(800, 600);
 
-    /** @brief Intervalo del carrusel de banners en milisegundos. */
+    /**
+     * @brief Intervalo del carrusel de banners en milisegundos.
+     */
     public static final int CAROUSEL_INTERVAL = 3000;
-    /** @brief Imágenes usadas en el carrusel. */
-    public static final String[] CAROUSEL_IMGS = {"brushes.png", "sales.png", "office.png"
-    
+
+    /**
+     * @brief Imágenes usadas en el carrusel.
+     */
+    public static final String[] CAROUSEL_IMGS = {"brushes.png", "sales.png", "office.png"};
+
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -56,8 +65,8 @@ public final class HomeWindow extends DispatchedWindow {
      * @param wd Dispatcher de ventanas.
      */
     /**
-     * @brief Constructor de la ventana principal.
      * @param wd Dispatcher de ventanas.
+     * @brief Constructor de la ventana principal.
      */
     public HomeWindow(final WindowDispatcher wd) {
         super(wd);
@@ -68,8 +77,8 @@ public final class HomeWindow extends DispatchedWindow {
      * @param wd Dispatcher de ventanas.
      */
     /**
-     * @brief Configura el dispatcher de la ventana.
      * @param wd Dispatcher de ventanas.
+     * @brief Configura el dispatcher de la ventana.
      */
 
     @Override
