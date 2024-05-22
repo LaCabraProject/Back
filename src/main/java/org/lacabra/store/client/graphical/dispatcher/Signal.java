@@ -21,7 +21,12 @@ public final class Signal<T extends Serializable> implements Serializable {
         this.set(null);
     }
 
-    public Signal(final T value) {
+    @SafeVarargs
+    public Signal(final T value, final Consumer<T>... effects) {
+        for (Consumer<T> effect : effects) {
+            this.effect(effect);
+        }
+
         this.set(value);
     }
 

@@ -219,18 +219,25 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         return this.windows.get(id);
     }
 
-    public Long dispatch(final Class<? extends DispatchedWindow> cls) {
+    public Long dispatch(final Class<? extends DispatchedWindow> cls, final Signal<?>... signals) {
         if (cls == null) return null;
 
         try {
-            return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException e) {
+            return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class, Signal[].class).newInstance(this,
+                    signals));
+        } catch (NoSuchMethodException e) {
+            try {
+                return this.dispatch(cls.getDeclaredConstructor(WindowDispatcher.class).newInstance(this));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Long dispatch(final DispatchedWindow w) {
+    public Long dispatch(final DispatchedWindow w, final Signal<?>... signals) {
         if (w == null) return null;
 
         final Set<Long> keys = Set.of(this.windows.keySet().toArray(new Long[0]));
@@ -241,7 +248,10 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
             if (keys.contains(l)) continue;
 
             this.windows.put(l, w);
+
             w.setDispatcher(this);
+            w.connect(signals);
+
             w.requestFocus();
 
             return l;
@@ -278,7 +288,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         return this.controller;
     }
 
-    private Component yieldComponent(Component c) {
+    private Component yieldComponent(final Component c) {
         if (c == null) return null;
 
         try {
@@ -293,7 +303,7 @@ public class WindowDispatcher implements IWindowDispatcher, Serializable {
         }
     }
 
-    public JPanel banner(JFrame frame) {
+    public JPanel banner(final JFrame frame) {
         try {
             final var p = new JPanel();
             p.setLayout(new BorderLayout());

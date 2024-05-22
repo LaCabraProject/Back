@@ -14,9 +14,9 @@ public interface IWindowDispatcher {
 
     DispatchedWindow getWindow(final Long id);
 
-    Long dispatch(final Class<? extends DispatchedWindow> cls);
+    Long dispatch(final Class<? extends DispatchedWindow> cls, final Signal<?>... signals);
 
-    Long dispatch(final DispatchedWindow w);
+    Long dispatch(final DispatchedWindow w, final Signal<?>... signals);
 
     boolean close(final DispatchedWindow w);
 

@@ -239,7 +239,7 @@ public final class Route {
             public static Response POST(@PathParam("id") String id) {
                 if (!ObjectId.is(id)) return Response.status(Response.Status.NOT_FOUND).build();
 
-                var item = ItemDAO.getInstance().findOne(new Item(ObjectId.from(id)));
+                final var item = ItemDAO.getInstance().findOneAttached(new Item(ObjectId.from(id)));
                 if (item == null) return Response.status(Response.Status.NOT_FOUND).build();
 
                 if (item.stock().equals(BigInteger.ZERO))

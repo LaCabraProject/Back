@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.lacabra.store.internals.json.deserializer.UserIdDeserializer;
 import org.lacabra.store.internals.json.serializer.UserIdSerializer;
-import org.lacabra.store.internals.logging.Logger;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -54,8 +53,6 @@ public final class UserId implements Serializable {
                     return (match[0] == null ? a.codePointAt(0) : Integer.parseInt(match[0], 16)) - (match[1] == null ?
                             b.codePointAt(0) : Integer.parseInt(match[1], 16));
                 }).collect(Collectors.joining())));
-
-        Logger.getLogger().severe(REGEX.pattern());
     }
 
     private final String id;

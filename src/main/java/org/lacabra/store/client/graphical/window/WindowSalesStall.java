@@ -217,7 +217,7 @@ public class WindowSalesStall extends DispatchedWindow {
                         BigInteger cantidad = new BigInteger(cantidadField.getText());
                         Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
                                 nameField.getText(), itemDescription, keywords, numero, 0, cantidad,
-                                new User(mc.getUser()));
+                                new User(mc.getUser().id()));
                         //*linea para mandar el item(no hemos decidido)
                         List<Item> list = new ArrayList<>();
                         for (Item t : lista) {
@@ -228,7 +228,8 @@ public class WindowSalesStall extends DispatchedWindow {
                         }
                         lista = new ArrayList<>(list);
                         Object[] rowData = {item.id(), item.type(), item.name(), item.description(), item.keywords(),
-                                item.price(), item.discount() + "%", item.stock(), new User(mc.getUser()).id().get()};
+                                item.price(), item.discount() + "%", item.stock(),
+                                new User(mc.getUser().id()).id().get()};
                         tableModel.removeRow(selectedRowIndex);
                         tableModel.insertRow(selectedRowIndex, rowData);
 
@@ -246,13 +247,14 @@ public class WindowSalesStall extends DispatchedWindow {
                 int numero = Integer.parseInt(precioField.getText());
                 BigInteger cantidad = new BigInteger(cantidadField.getText());
                 Item item = new Item(ObjectId.from(nameField.getText()), (ItemType) tipoField.getSelectedItem(),
-                        nameField.getText(), itemDescription, keywords, numero, 0, cantidad, new User(mc.getUser()));
+                        nameField.getText(), itemDescription, keywords, numero, 0, cantidad,
+                        new User(mc.getUser().id()));
                 //mc.PutItem(item);
                 lista.add(item);
                 if (!itemName.isEmpty() && cantidadField.getText() != "" && precioField.getText() != "") {
                     Item item1 = lista.get(lista.size() - 1);
                     Object[] rowData = {item1.id(), item1.type(), item1.name(), item1.description(), item1.keywords(),
-                            item1.price(), item1.discount(), item1.stock(), new User(mc.getUser()).id().get()};
+                            item1.price(), item1.discount(), item1.stock(), new User(mc.getUser().id()).id().get()};
                     tableModel.addRow(rowData);
                     addItemField.setText("");
                     descriptionField.setText("");

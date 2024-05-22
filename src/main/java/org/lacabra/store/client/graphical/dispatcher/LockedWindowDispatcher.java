@@ -24,22 +24,22 @@ public final class LockedWindowDispatcher extends WindowDispatcher {
     }
 
     @Override
-    public Long dispatch(final Class<? extends DispatchedWindow> cls) {
+    public Long dispatch(final Class<? extends DispatchedWindow> cls, final Signal<?>... signals) {
         if (this.dispatched)
             return null;
 
         this.dispatched = true;
 
-        return super.dispatch(cls);
+        return super.dispatch(cls, signals);
     }
 
     @Override
-    public Long dispatch(final DispatchedWindow w) {
+    public Long dispatch(final DispatchedWindow w, final Signal<?>... signals) {
         if (this.dispatched)
             return null;
 
         this.dispatched = true;
 
-        return super.dispatch(w);
+        return super.dispatch(w, signals);
     }
 }

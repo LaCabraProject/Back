@@ -69,11 +69,11 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         final var tx = pm.currentTransaction();
 
         try {
-            if (!tx.isActive())
-                tx.begin();
+            if (!tx.isActive()) tx.begin();
 
             pm.flush();
             pm.removeUserObject(del);
+            pm.detachCopy(del);
 
             tx.commit();
 
@@ -95,10 +95,9 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
             return false;
         }
 
-        if (object instanceof Mergeable<?> o)
-            object = (T) o.merge(null);
+        if (object instanceof Mergeable<?> o) object = (T) o.merge(null);
 
-        final var found = this.findOne(object);
+        final var found = this.findOneAttached(object);
 
         if (found != null) {
             if (found instanceof Mergeable) {
@@ -113,15 +112,15 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         final var tx = pm.currentTransaction();
 
         final var clsname =
-                Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
-                        + "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + str.toLowerCase()).toLowerCase()).replaceFirst(m -> m.group().toUpperCase());
+                Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A" +
+                        "-Z" + "][^A-Z])")).reduce("", (total, str) -> total + str.toLowerCase()).toLowerCase()).replaceFirst(m -> m.group().toUpperCase());
 
         try {
-            if (!tx.isActive())
-                tx.begin();
+            if (!tx.isActive()) tx.begin();
 
             pm.flush();
             pm.makePersistent(object);
+            pm.detachCopy(object);
 
             tx.commit();
 
@@ -129,8 +128,8 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
 
             return true;
         } catch (Exception e) {
-            Logger.getLogger().warning(String.format("Could not store %s %s: %s (%s)",
-                    clsname, object.toString(), e.getMessage(), e.getCause()));
+            Logger.getLogger().warning(String.format("Could not store %s %s: %s (%s)", clsname, object.toString(),
+                    e.getMessage(), e.getCause()));
 
             return false;
         } finally {
@@ -146,7 +145,6 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         return this.store(Arrays.stream(objects).toList());
     }
 
-    @SuppressWarnings("unchecked")
     public List<T> findAll() {
         return this.find();
     }
@@ -154,8 +152,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final List<T> find() {
-        return this.find((Query<T>) pm.newQuery(String.format("SELECT FROM %s",
-                this.instance().objClass.getName())));
+        return this.find((Query<T>) pm.newQuery(String.format("SELECT FROM %s", this.instance().objClass.getName())));
     }
 
     @Override
@@ -184,11 +181,10 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
         if ((query == null || one) && param == null) return ret;
 
         pm.getFetchPlan().setGroup(FetchGroup.ALL);
-        Transaction tx = pm.currentTransaction();
+        final var tx = pm.currentTransaction();
 
         try {
-            if (!tx.isActive())
-                tx.begin();
+            if (!tx.isActive()) tx.begin();
 
             pm.flush();
 
@@ -220,8 +216,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
                     query.setResultClass(BigInteger.class);
                     ret = query.executeUnique();
 
-                    if (detached)
-                        ret = pm.detachCopy(ret);
+                    if (detached) ret = pm.detachCopy(ret);
                 } else if (one) {
                     T r;
 
@@ -232,13 +227,13 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
                         r = query.executeUnique();
                     }
 
-                    if (detached && r != null)
-                        ret = pm.detachCopy(r);
+                    if (detached) {
+                        if (r != null) ret = pm.detachCopy(r);
 
-                    else if (!detached)
-                        ret = r;
+                        query.closeAll();
+                    } else ret = r;
                 } else {
-                    List<T> rl;
+                    final List<T> rl;
 
                     if (query instanceof JDOQuery<T> q) {
                         rl = q.executeResultList(this.objClass);
@@ -247,20 +242,21 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
                         rl = query.executeList();
                     }
 
-                    if (detached && !(rl == null || rl.isEmpty())) {
-                        ret = pm.detachCopyAll(rl).stream().toList();
-                    } else if (!detached)
-                        ret = rl;
+                    if (detached) {
+                        if (!(rl == null || rl.isEmpty()))
+                            ret = pm.detachCopyAll(rl).stream().toList();
+
+                        query.closeAll();
+                    } else ret = rl;
                 }
             }
 
             tx.commit();
 
-            Logger.getLogger().info(!count && (ret == null || (ret instanceof List<?> && ((List<?>) ret).isEmpty())) ?
-                    String.format("%s not " +
-                                    "found (param: %s).",
-                            Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
-                                    + "-Z][^A-Z])")).reduce("", (total, str) -> total + "" + str).toLowerCase()).replaceFirst(m -> m.group().toUpperCase()), param == null ? "(null)" : param) : String.format("%s found.", ret));
+            Logger.getLogger().info(!count && (ret == null || (ret instanceof List<?> && ((List<?>) ret).isEmpty()))
+                    ? String.format("%s not " + "found (param: %s).",
+                    Pattern.compile("^.").matcher(Arrays.stream(this.instance().objClass.getSimpleName().split("(?=[A"
+                            + "-Z][^A-Z])")).reduce("", (total, str) -> total + "" + str).toLowerCase()).replaceFirst(m -> m.group().toUpperCase()), param == null ? "(null)" : param) : String.format("%s found.", ret));
 
             return ret;
         } catch (Exception e) {
@@ -274,9 +270,11 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
 
             e.printStackTrace();
 
+            if (query != null)
+                query.closeAll();
+
             return ret;
         } finally {
-            if (query != null) query.closeAll();
             if (tx != null && tx.isActive()) tx.rollback();
         }
     }
@@ -284,15 +282,14 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final T findOne() {
-        return (T) this.findOne(pm.newQuery("javax.jdo.query.SQL",
-                "SELECT From " + this.objClass.getSimpleName()), null);
+        return (T) this.findOne(pm.newQuery("javax.jdo.query.SQL", "SELECT From " + this.objClass.getSimpleName()),
+                null);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final T findOne(Object param) {
-        if (param instanceof Query<?> q)
-            return this.findOne((Query<T>) q, null);
+        if (param instanceof Query<?> q) return this.findOne((Query<T>) q, null);
 
         return this.findOne(this.pkQuery, param);
     }
@@ -305,7 +302,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final T findOne(Query<T> query, Object param) {
-        return (T) this.findCountAttached(query, param, false, false, true);
+        return (T) this.findCountAttached(query, param, false, true, true);
     }
 
     @Override
@@ -354,7 +351,7 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
     @Override
     @SuppressWarnings("unchecked")
     public final T findOneAttached(Query<T> query, Object param) {
-        return (T) this.findCountAttached(query, param, false, true, true);
+        return (T) this.findCountAttached(query, param, false, false, true);
     }
 
     @Override
@@ -376,8 +373,6 @@ public abstract class DAO<T extends Serializable> implements IDAO<T> {
 
     @Override
     public final BigInteger count(Query<T> query, Object param) {
-        return (BigInteger) this.findCountAttached(query, param, true, false, false);
+        return (BigInteger) this.findCountAttached(query, param, true, true, false);
     }
-
-
 }

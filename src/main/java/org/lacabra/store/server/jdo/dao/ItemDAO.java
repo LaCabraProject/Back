@@ -50,7 +50,7 @@ public final class ItemDAO extends DAO<Item> {
     public boolean store(Item item) {
         if (item != null)
             item = item.merge(new Item(item.id(), null, null, null, null, null, null, null, item.parent() == null ?
-                    null : UserDAO.getInstance().findOne(item.parent())));
+                    null : UserDAO.getInstance().findOneAttached(item.parent())));
 
         return super.store(item);
     }

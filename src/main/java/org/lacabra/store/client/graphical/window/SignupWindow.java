@@ -47,15 +47,30 @@ public final class SignupWindow extends DispatchedWindow {
         final var controller = d.controller();
         if (controller == null) return;
 
-        this.auth(() -> this.replace(HomeWindow.class), () -> {
-            controller.unauth();
+        final var user = controller.getUser();
+        final var uid = user != null ? user.id() : null;
 
+        controller.unauth();
+
+        this.auth(() -> this.replace(HomeWindow.class), () -> {
             final var closed = new WindowAdapter() {
                 @Override
                 public void windowClosed(final WindowEvent e) {
                     replace(AuthWindow.class);
                 }
             };
+
+            final var id = new JTextField();
+            if (uid != null) {
+                id.setText(uid.toString());
+            }
+
+            this.addWindowFocusListener(new WindowAdapter() {
+                @Override
+                public void windowGainedFocus(final WindowEvent e) {
+                    id.requestFocusInWindow();
+                }
+            });
 
             this.addWindowListener(closed);
 
@@ -104,9 +119,9 @@ public final class SignupWindow extends DispatchedWindow {
                         }
 
                         {
-                            final var t = new JTextField();
-                            t.setPreferredSize(FIELD_SIZE);
-                            t.getDocument().addDocumentListener(new DocumentListener() {
+                            id.requestFocusInWindow();
+                            id.setPreferredSize(FIELD_SIZE);
+                            id.getDocument().addDocumentListener(new DocumentListener() {
                                 @Override
                                 public void insertUpdate(DocumentEvent e) {
                                     this.changedUpdate(e);
@@ -119,11 +134,11 @@ public final class SignupWindow extends DispatchedWindow {
 
                                 @Override
                                 public void changedUpdate(DocumentEvent e) {
-                                    creds.set(creds.peek().id(t.getText()));
+                                    creds.set(creds.peek().id(id.getText()));
                                 }
                             });
 
-                            p2.add(t);
+                            p2.add(id);
                         }
 
                         p.add(p2);

@@ -156,23 +156,23 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
         return d.getWindow(id);
     }
 
-    public Long dispatch(final Class<? extends DispatchedWindow> w) {
+    public Long dispatch(final Class<? extends DispatchedWindow> w, final Signal<?>... signals) {
         final var d = this.getDispatcher();
 
         if (d == null) return null;
 
-        return d.dispatch(w);
+        return d.dispatch(w, signals);
     }
 
-    public Long dispatch(final DispatchedWindow w) {
+    public Long dispatch(final DispatchedWindow w, final Signal<?>... signals) {
         final var d = this.getDispatcher();
 
         if (d == null) return null;
 
-        return d.dispatch(w);
+        return d.dispatch(w, signals);
     }
 
-    public DispatchedWindow replace(final Class<? extends DispatchedWindow> cls) {
+    public DispatchedWindow replace(final Class<? extends DispatchedWindow> cls, final Signal<?>... signals) {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         final var d = this.getDispatcher();
@@ -183,10 +183,10 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
         }
 
         d.close(this);
-        return d.getWindow(d.dispatch(cls));
+        return d.getWindow(d.dispatch(cls, signals));
     }
 
-    public DispatchedWindow replace(final DispatchedWindow w) {
+    public DispatchedWindow replace(final DispatchedWindow w, final Signal<?>... signals) {
         final var d = this.getDispatcher();
 
         if (d == null) {
@@ -195,7 +195,7 @@ public abstract class DispatchedWindow extends JFrame implements IWindowDispatch
         }
 
         d.close(this);
-        return d.getWindow(d.dispatch(w));
+        return d.getWindow(d.dispatch(w, signals));
     }
 
     public boolean close(final Long id) {

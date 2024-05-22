@@ -40,8 +40,15 @@ public final class LoginWindow extends DispatchedWindow {
         final var controller = d.controller();
         if (controller == null) return;
 
+        final var user = controller.getUser();
+        final var uid = user == null ? null : user.id();
+
+        controller.unauth();
+
         this.auth(() -> this.replace(HomeWindow.class), () -> {
-            controller.unauth();
+            final var id = new JTextField();
+            if (uid != null)
+                id.setText(uid.toString());
 
             final var closed = new WindowAdapter() {
                 @Override
@@ -51,6 +58,13 @@ public final class LoginWindow extends DispatchedWindow {
             };
 
             this.addWindowListener(closed);
+
+            this.addWindowFocusListener(new WindowAdapter() {
+                @Override
+                public void windowGainedFocus(final WindowEvent e) {
+                    id.requestFocusInWindow();
+                }
+            });
 
             this.setTitle(TITLE);
             this.setSize(SIZE);
@@ -88,10 +102,8 @@ public final class LoginWindow extends DispatchedWindow {
 
                 {
                     final var b = new JButton("Iniciar sesión");
-                    final var id = new JTextField();
-                    final var passwd = new JPasswordField();
 
-                    final var creds = new Signal<>(new Credentials(controller.getUser()));
+                    final var creds = new Signal<>(new Credentials(uid));
                     creds.effect(c -> b.setEnabled(!(c.id() == null || c.passwd() == null || c.passwd().isEmpty())));
 
                     this.connect(creds);
@@ -109,6 +121,7 @@ public final class LoginWindow extends DispatchedWindow {
 
                         {
                             id.setPreferredSize(FIELD_SIZE);
+                            id.addActionListener(e -> b.doClick());
                             id.getDocument().addDocumentListener(new DocumentListener() {
                                 @Override
                                 public void insertUpdate(DocumentEvent e) {
@@ -144,8 +157,11 @@ public final class LoginWindow extends DispatchedWindow {
                         }
 
                         {
-                            passwd.setPreferredSize(FIELD_SIZE);
-                            passwd.getDocument().addDocumentListener(new DocumentListener() {
+                            final var t = new JPasswordField();
+
+                            t.setPreferredSize(FIELD_SIZE);
+                            t.addActionListener(e -> b.doClick());
+                            t.getDocument().addDocumentListener(new DocumentListener() {
                                 @Override
                                 public void insertUpdate(DocumentEvent e) {
                                     this.changedUpdate(e);
@@ -158,11 +174,11 @@ public final class LoginWindow extends DispatchedWindow {
 
                                 @Override
                                 public void changedUpdate(DocumentEvent e) {
-                                    creds.set(creds.get().passwd(new String(passwd.getPassword())));
+                                    creds.set(creds.get().passwd(new String(t.getPassword())));
                                 }
                             });
 
-                            p2.add(passwd);
+                            p2.add(t);
                         }
 
                         p.add(p2);
@@ -171,6 +187,7 @@ public final class LoginWindow extends DispatchedWindow {
                     {
                         b.setPreferredSize(FIELD_SIZE);
 
+                        b.setEnabled(false);
                         b.addActionListener(e -> {
                             final var c = creds.get();
 
